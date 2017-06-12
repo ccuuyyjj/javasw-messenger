@@ -1,19 +1,22 @@
 package container;
 
-public class Message {
+import java.io.Serializable;
+
+public class Message implements Serializable {
+	private static final long serialVersionUID = -868641557643453348L;
 	private final long time_created;
 	private String sender;
 	private String receiver;
 	private Object msg;
 	{
-		this.time_created = System.currentTimeMillis();
+		this.time_created = System.currentTimeMillis();	//메세지가 만들어진 시간을 고정 (변경 불가)
 	}
-	public Message(String sender, String receiver, Object msg) {
+	public Message(String sender, String receiver, Object msg) {	//평범한 메세지 or 파일 첨부
 		this.sender = sender;
 		this.receiver = receiver;
 		this.msg = msg;
 	}
-	public Message(LoginInfo login) {
+	public Message(LoginInfo login) {	//로그인시 서버로 보내는 정보
 		this.sender = login.getIdentity();
 		this.receiver = "=SERVER=";
 		this.msg = (Object) login;

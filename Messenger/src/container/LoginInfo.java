@@ -1,6 +1,9 @@
 package container;
 
-public class LoginInfo {
+import java.io.Serializable;
+
+public class LoginInfo implements Serializable {
+	private static final long serialVersionUID = -2672436705888817789L;
 	private String identity, password;
 
 	public LoginInfo(String identity, String password) {
