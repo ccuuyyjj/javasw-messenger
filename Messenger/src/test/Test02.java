@@ -17,6 +17,7 @@ public class Test02 {
 		ObjectInputStream writer = new ObjectInputStream(buffer);
 		Friends f = (Friends) writer.readObject();
 		writer.close();
+		socket.close();
 		System.out.println(f.getIdentity() + " " + f.getFriends());
 	}
 }
