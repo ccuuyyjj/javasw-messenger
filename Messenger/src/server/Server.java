@@ -5,13 +5,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.ObjectInputStream;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import container.LoginInfo;
 import container.Message;
 
 public class Server {
-	
+	private List<Socket> clientList = new ArrayList<>();
 	public static void main(String[] args) throws Exception {
 		File target = new File("incomingstreamsample"); // 임시로 파일에서 받아오도록 설정
 		FileInputStream in = new FileInputStream(target);
