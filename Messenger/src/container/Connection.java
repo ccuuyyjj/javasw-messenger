@@ -31,6 +31,7 @@ public class Connection {
 		}
 		out.write(buffer, 0, buffer.length);
 		out.flush();
+		try{Thread.sleep(10);}catch(Exception e){}
 		//파일의 내용물을 전송
 		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f), 4096);
 		while(true){
@@ -40,6 +41,7 @@ public class Connection {
 			out.write(buffer, 0, size);
 			out.flush();
 		}
+		try{Thread.sleep(10);}catch(Exception e){}
 		bis.close();
 		System.out.println("sendFile End");
 	}
@@ -60,7 +62,7 @@ public class Connection {
 			bos.flush();
 			if(moved == length) break;
 		}
-		
+		try{Thread.sleep(10);}catch(Exception e){}
 		bos.close();
 		System.out.println("getFile End");
 		return tmp;
@@ -81,8 +83,10 @@ public class Connection {
 		}
 		out.write(buffer, 0, buffer.length);
 		out.flush();
+		try{Thread.sleep(10);}catch(Exception e){}
 		out.write(baos.toByteArray(), 0, length);
 		out.flush();
+		try{Thread.sleep(10);}catch(Exception e){}
 		System.out.println("sendObject End");
 	}
 	
@@ -97,6 +101,7 @@ public class Connection {
 			baos.write(buffer, 0, size);
 			if(moved == length) break;
 		}
+		try{Thread.sleep(10);}catch(Exception e){}
 		ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray())));
 		Object o = ois.readObject();
 		System.out.println("getObject End");

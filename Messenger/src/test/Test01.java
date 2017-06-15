@@ -19,14 +19,12 @@ public class Test01 {
 			System.out.println("파일 전송 시작");
 			conn.sendFile(target);
 			System.out.println("파일 전송 끝");
-			try{Thread.sleep(10);}catch(Exception e){}
 			Friends f = new Friends("sadf");
 			f.getFriends().add("asdfsadf");
 			f.getFriends().add("afdbdbgf");
 			System.out.println("오브젝트 " + f.getFriends() + " 전송 시작");
 			conn.sendObject(f);
 			System.out.println("오브젝트 전송 끝");
-			try{Thread.sleep(10);}catch(Exception e){}
 		}
 		try{Thread.sleep(10000);}catch(Exception e){}
 		server.close();
