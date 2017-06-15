@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 public class Connection {
@@ -21,6 +22,7 @@ public class Connection {
 		in = new BufferedInputStream(socket.getInputStream());
 		out = new BufferedOutputStream(socket.getOutputStream());
 	}
+	/*
 	public void sendFile(File f) throws IOException{
 		System.out.println("sendFile Start");
 		//FILE 타입이라는걸 알리고 파일명은 무엇인지 파일 크기는 얼마나 되는지 알림
@@ -113,9 +115,14 @@ public class Connection {
 			if(read == -1){
 				in.reset();
 				continue;
+			} else {
+				if(new String(buffer, 0, read).trim().equals("\\=[FINISH]=\\"))
+					break;
+				else {
+					in.reset();
+					continue;
+				}
 			}
-			else if(new String(buffer, 0, read).trim().equals("\\=[FINISH]=\\"))
-				break;
 		}
 		
 		System.out.println("sendObject End");
@@ -143,6 +150,78 @@ public class Connection {
 		out.write(buffer, 0, 4096);
 		out.flush();
 		System.out.println("getObject End");
+		return o;
+	}
+	*/
+	
+	public void sendHeader(String[] header) throws IOException{
+		StringBuilder sb = new StringBuilder();
+		sb.append("\\");
+		for(String arg : header)
+			sb.append(arg).append("\\");
+		byte[] buffer = sb.toString().trim().getBytes();
+		out.write(buffer, 0, buffer.length);
+		out.flush();
+	}
+	public void sendFile(File f) throws IOException{
+		String[] header = new String[]{"FILE", f.getName(), String.valueOf(f.length())};
+		sendHeader(header);
+		BufferedInputStream fin = new BufferedInputStream(new FileInputStream(f));
+		byte[] buffer = new byte[4096];
+		while(true){
+			int read = fin.read(buffer);
+			if(read == -1) break;
+			out.write(buffer, 0, read);
+			out.flush();
+		}
+		fin.close();
+	}
+	public void sendObject(Object o) throws IOException{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		new ObjectOutputStream(baos).writeObject(o);
+		int length = baos.size();
+		String[] header = new String[]{"OBJECT", o.getClass().getSimpleName(), String.valueOf(length)};
+		sendHeader(header);
+		ByteArrayInputStream oin = new ByteArrayInputStream(baos.toByteArray(),0,length);
+		byte[] buffer = new byte[4096];
+		while(true){
+			int read = oin.read(buffer);
+			if(read == -1) break;
+			out.write(buffer, 0, read);
+			out.flush();
+		}
+		oin.close();
+	}
+	public String[] getHeader() throws IOException{
+		byte[] buffer = new byte[4096];
+		int size = in.read(buffer, 0, buffer.length);
+		String[] header = new String(buffer, 0, size).substring(1).split("\\\\");
+		return header;
+	}
+	public File getFile(String name, long length) throws IOException{
+		File target = new File("received", name);
+		while(target.exists())
+			target = new File("received", "(new)" + target.getName());
+		BufferedOutputStream fout = new BufferedOutputStream(new FileOutputStream(target));
+		byte[] buffer = new byte[4096];
+		while(true){
+			int read = in.read(buffer);
+			if(read == -1) break;
+			fout.write(buffer, 0, read);
+			fout.flush();
+		}
+		fout.close();
+		return target;
+	}
+	public Object getObject(int length) throws IOException, ClassNotFoundException{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		byte[] buffer = new byte[4096];
+		while(true){
+			int read = in.read(buffer);
+			if(read == -1) break;
+			baos.write(buffer, 0, read);
+		}
+		Object o = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray())).readObject();
 		return o;
 	}
 	

@@ -15,7 +15,7 @@ public class Test01 {
 		Socket socket = server.accept();
 		System.out.println("연결 성공");
 		Connection conn = new Connection(socket);
-		for(int i=0; i<10; i++){
+		for(int i=0; i<5; i++){
 			System.out.println("파일 전송 시작");
 			conn.sendFile(target);
 			System.out.println("파일 전송 끝");
