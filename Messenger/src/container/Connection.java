@@ -41,8 +41,19 @@ public class Connection {
 			out.write(buffer, 0, size);
 			out.flush();
 		}
-		try{Thread.sleep(10);}catch(Exception e){}
 		bis.close();
+		while(true){
+			try{Thread.sleep(10);}catch(Exception e){}
+			buffer = new byte[4096];
+			in.mark(8192);
+			int read = in.read(buffer, 0, 4096);
+			if(read == -1){
+				in.reset();
+				continue;
+			}
+			else if(new String(buffer, 0, read).trim().equals("\\=[FINISH]=\\"))
+				break;
+		}
 		System.out.println("sendFile End");
 	}
 	
@@ -64,6 +75,13 @@ public class Connection {
 		}
 		try{Thread.sleep(10);}catch(Exception e){}
 		bos.close();
+		byte[] fin = "\\=[FINISH]=\\".getBytes();
+		byte[] buffer = new byte[4096];
+		for(int i = 0; i<fin.length; i++){
+			buffer[i] = fin[i];
+		}
+		out.write(buffer, 0, 4096);
+		out.flush();
 		System.out.println("getFile End");
 		return tmp;
 	}
@@ -86,7 +104,20 @@ public class Connection {
 		try{Thread.sleep(10);}catch(Exception e){}
 		out.write(baos.toByteArray(), 0, length);
 		out.flush();
-		try{Thread.sleep(10);}catch(Exception e){}
+		
+		while(true){
+			try{Thread.sleep(10);}catch(Exception e){}
+			buffer = new byte[4096];
+			in.mark(8192);
+			int read = in.read(buffer, 0, 4096);
+			if(read == -1){
+				in.reset();
+				continue;
+			}
+			else if(new String(buffer, 0, read).trim().equals("\\=[FINISH]=\\"))
+				break;
+		}
+		
 		System.out.println("sendObject End");
 	}
 	
@@ -104,6 +135,13 @@ public class Connection {
 		try{Thread.sleep(10);}catch(Exception e){}
 		ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray())));
 		Object o = ois.readObject();
+		byte[] fin = "\\=[FINISH]=\\".getBytes();
+		byte[] buffer = new byte[4096];
+		for(int i = 0; i<fin.length; i++){
+			buffer[i] = fin[i];
+		}
+		out.write(buffer, 0, 4096);
+		out.flush();
 		System.out.println("getObject End");
 		return o;
 	}
