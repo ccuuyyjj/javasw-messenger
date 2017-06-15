@@ -201,16 +201,11 @@ public class Connection {
 	}
 	public String[] getHeader() throws IOException{
 		byte[] buffer = new byte[4096];
-		in.mark(8192);
 		int size = in.read(buffer, 0, buffer.length);
+		if(size == -1) return null;
 		String tmp = new String(buffer, 0, size);
-		if(tmp.startsWith("\\")){
-			String[] header = tmp.substring(1).split("\\\\");
-			return header;
-		} else {
-			in.reset();
-			return null;
-		}
+		String[] header = tmp.substring(1).split("\\\\");
+		return header;
 	}
 	public File getFile(String name, long length) throws IOException{
 		File target = new File("received", name);
