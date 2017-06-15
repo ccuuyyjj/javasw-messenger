@@ -168,11 +168,15 @@ public class Connection {
 		sendHeader(header);
 		BufferedInputStream fin = new BufferedInputStream(new FileInputStream(f));
 		byte[] buffer = new byte[4096];
-		while(true){
+		long sent = 0;
+		while(sent != f.length()){
+			if((f.length() - sent) < 4096)
+				buffer = new byte[(int)(f.length() - sent)];
 			int read = fin.read(buffer);
 			if(read == -1) break;
 			out.write(buffer, 0, read);
 			out.flush();
+			sent+=read;
 		}
 		fin.close();
 	}
@@ -184,11 +188,15 @@ public class Connection {
 		sendHeader(header);
 		ByteArrayInputStream oin = new ByteArrayInputStream(baos.toByteArray(),0,length);
 		byte[] buffer = new byte[4096];
-		while(true){
+		int sent = 0;
+		while(sent != length){
+			if((length - sent) < 4096)
+				buffer = new byte[(length - sent)];
 			int read = oin.read(buffer);
 			if(read == -1) break;
 			out.write(buffer, 0, read);
 			out.flush();
+			sent+=read;
 		}
 		oin.close();
 	}

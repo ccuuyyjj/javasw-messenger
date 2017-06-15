@@ -13,9 +13,8 @@ public class Test02 {
 		InetAddress inet = InetAddress.getByName("warrock.iptime.org");
 		Socket socket = new Socket(inet, 20000);
 		Connection conn = new Connection(socket);
-		BufferedInputStream bis = conn.getIn();
 		while(!conn.getSocket().isClosed()){
-			if(bis.available() >= 4096){
+			if(conn.getIn().available() >= 4096){
 				String[] header = conn.getHeader();
 				File target = null;
 				Object o = null;
