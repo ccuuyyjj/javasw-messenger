@@ -204,9 +204,13 @@ public class Connection {
 			target = new File("received", "(new)" + target.getName());
 		BufferedOutputStream fout = new BufferedOutputStream(new FileOutputStream(target));
 		byte[] buffer = new byte[4096];
-		while(true){
+		long received = 0;
+		while(received != length){
+			if((length - received) < 4096)
+				buffer = new byte[(int)(length - received)];
 			int read = in.read(buffer);
 			if(read == -1) break;
+			received += read;
 			fout.write(buffer, 0, read);
 			fout.flush();
 		}
@@ -216,9 +220,13 @@ public class Connection {
 	public Object getObject(int length) throws IOException, ClassNotFoundException{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		byte[] buffer = new byte[4096];
-		while(true){
+		int received = 0;
+		while(received != length){
+			if((length - received) < 4096)
+				buffer = new byte[(length - received)];
 			int read = in.read(buffer);
 			if(read == -1) break;
+			received += read;
 			baos.write(buffer, 0, read);
 		}
 		Object o = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray())).readObject();
