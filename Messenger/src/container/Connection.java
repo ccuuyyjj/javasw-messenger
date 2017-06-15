@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
 public class Connection {
@@ -202,9 +201,16 @@ public class Connection {
 	}
 	public String[] getHeader() throws IOException{
 		byte[] buffer = new byte[4096];
+		in.mark(8192);
 		int size = in.read(buffer, 0, buffer.length);
-		String[] header = new String(buffer, 0, size).substring(1).split("\\\\");
-		return header;
+		String tmp = new String(buffer, 0, size);
+		if(tmp.startsWith("\\")){
+			String[] header = tmp.substring(1).split("\\\\");
+			return header;
+		} else {
+			in.reset();
+			return null;
+		}
 	}
 	public File getFile(String name, long length) throws IOException{
 		File target = new File("received", name);

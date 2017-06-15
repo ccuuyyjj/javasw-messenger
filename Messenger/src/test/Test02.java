@@ -1,6 +1,5 @@
 package test;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -14,8 +13,8 @@ public class Test02 {
 		Socket socket = new Socket(inet, 20000);
 		Connection conn = new Connection(socket);
 		while(!conn.getSocket().isClosed()){
-			if(conn.getIn().available() >= 4096){
-				String[] header = conn.getHeader();
+			String[] header = conn.getHeader();
+			if(header != null){
 				File target = null;
 				Object o = null;
 				switch(header[0]){
