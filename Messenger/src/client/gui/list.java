@@ -3,153 +3,169 @@ package client.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.GridLayout;
-import java.awt.MenuItem;
+import java.awt.Event;
 import java.awt.PopupMenu;
-import java.awt.TextField;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.Popup;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-class JFrameList extends JFrame implements MouseListener{
-	private String a="강아지\n토끼\n고양이";
-	private String id="아이디";
-	private String idname="아이디";
-	private JLabel name=new JLabel("되냐");
-	private JLabel ss = new JLabel("<html>이름 : "+id+"<br>아이디 : "+idname+"</html>");
+class JFrameList extends JFrame {
+	//내 정보창
+	private String id = "닉네임";
+	private String idname = "아이디";
+	private String ip = "192.168.0.1";
+	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>아이디 : " + idname + "<br>아이피 : " + ip + "</html>");
+	//친구 목록
+	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
+	private JTree tree = new JTree(list);
+	private DefaultMutableTreeNode online = new DefaultMutableTreeNode("접속중");
+	private DefaultMutableTreeNode offline = new DefaultMutableTreeNode("오프라인");
+	private List<String> listname = new ArrayList<>();
+	private List<String> nickname = new ArrayList<>();
+	private List<String> listip = new ArrayList<>();
+	//팝업
+	private JPopupMenu pop = new JPopupMenu();
+	private JMenuItem start = new JMenuItem("시작");
+	private JMenuItem end = new JMenuItem("종료");
 	
-	private DefaultMutableTreeNode list=new DefaultMutableTreeNode("친구 목록"); 
-	private JTree tree=new JTree(list);
-	private DefaultMutableTreeNode online=new DefaultMutableTreeNode("접속중");
-	private DefaultMutableTreeNode offline=new DefaultMutableTreeNode("오프라인");
-	private DefaultMutableTreeNode f1=new DefaultMutableTreeNode("1");
-	private DefaultMutableTreeNode f2=new DefaultMutableTreeNode("2");
-	private DefaultMutableTreeNode f3=new DefaultMutableTreeNode("3");
-	private DefaultMutableTreeNode f4=new DefaultMutableTreeNode("4");
-	private JScrollPane scroll = new JScrollPane(tree);
-	private JButton logout=new JButton("로그아웃");
-	
-	private JPopupMenu pop=new JPopupMenu();
-	private JMenuItem delete,open;
+	private JLabel sname = new JLabel("이름");
+	private JTextField snames = new JTextField();
+	private JLabel sip = new JLabel("아이피");
+	private JTextField sips = new JTextField();
 
-	private void display(){
-		//직접 창에 배치하는 것이 아니라 이미 설치되어 있는 투명한 유리를 가져와서 그곳에 배치
-		Container con=super.getContentPane();
+	private JScrollPane scroll = new JScrollPane(tree);
+
+	// private JButton start=new JButton("대회시작");
+	private JButton logout = new JButton("로그아웃");
+
+	private void display() {
+		Container con = super.getContentPane();
 		con.setLayout(null);
-		Border b1=new LineBorder(Color.black,3);
-		con.add(ss,BorderLayout.NORTH);
-		con.add(scroll,BorderLayout.CENTER);
+		con.add(ss, BorderLayout.NORTH);
+		con.add(scroll, BorderLayout.CENTER);
 		con.add(logout, BorderLayout.SOUTH);
-		
+		con.add(sname, BorderLayout.CENTER);
+		con.add(snames, BorderLayout.CENTER);
+		con.add(sip, BorderLayout.CENTER);
+		con.add(sips, BorderLayout.CENTER);
+
 		scroll.setBounds(12, 105, 370, 257);
 		scroll.setViewportView(tree);
 		list.add(online);
 		list.add(offline);
-		
-		online.add(f1);
-		online.add(f2);
-		offline.add(f3);
-		offline.add(f4);
-		
-		delete=new JMenuItem("삭제");
-		open=new JMenuItem("열기");
-		pop.add(delete);
-		pop.add(open);
+
+		sname.setBounds(12, 368, 57, 28);
+		snames.setBounds(81, 372, 116, 21);
+		sip.setBounds(12, 402, 57, 28);
+		sips.setBounds(81, 403, 116, 21);
+
+		snames.setEditable(false);
+		sips.setEditable(false);
+
+		pop.add(start);
+		pop.add(end);
 		add(pop);
+
+		System.out.println(online.getChildCount());
+		System.out.println(online.getChildAt(0));
+
 		logout.setBounds(12, 636, 370, 35);
-	//	con.setLayout(new GridLayout(8, 1));
-		Border b2=BorderFactory.createTitledBorder("로그인 정보");
+		// con.setLayout(new GridLayout(8, 1));
+		Border b2 = BorderFactory.createTitledBorder("로그인 정보");
 		ss.setBorder(b2);
 		ss.setBounds(12, 10, 370, 85);
-	
+
 	}
-	private void event(){
-		//super.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		//super.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);//종료금지
-		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		//super.setDefaultCloseOperation(HIDE_ON_CLOSE);//숨김
-		tree.addMouseListener(this);
-		tree.addTreeSelectionListener(new TreeSelectionListener() {
-			
-			@Override
-			public void valueChanged(TreeSelectionEvent e) {
-				System.out.println(e.getOldLeadSelectionPath());
-				
-				
-			}
+
+	DefaultMutableTreeNode node;
+
+	private void event() {
+		logout.addActionListener(e -> {
+			this.dispose();
 		});
-		
-	
-		
-		
+		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+		tree.addMouseListener(new MyMouseListener());
+
 	}
-	private void menu(){}
-	public JFrameList(){
+
+	private void menu() {
+	}
+
+	public JFrameList() {
 		super.setTitle("스윙예제");
-		super.setSize(400,700);
-		//운영체제의 창 배치 형식에 따라 배치
+		super.setSize(400, 700);
+		// 운영체제의 창 배치 형식에 따라 배치
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
+		save();
+		load();
 		display();
 		event();
 		menu();
 		super.setVisible(true);
-		
-	}
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		TreePath path=tree.getPathForLocation(e.getX(), e.getY());
-		Object obj=path.getLastPathComponent();
-		DefaultMutableTreeNode dmtn=(DefaultMutableTreeNode)obj;
-		String gg=dmtn.getUserObject().toString();
-		if(e.getButton()==3)
-		pop.show(tree, e.getX(), e.getY());
-			System.out.println();
-			//System.out.println(dmtn);
-		}
-		
-		
-		
-	
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		
-	}
-	@Override
-	public void mouseExited(MouseEvent e) {
-		
-		
-	}
-	@Override
-	public void mousePressed(MouseEvent e) {
-		
-		
-	}
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		
-		
+
 	}
 
-}
+	private void save() {
+		listname.add(0, "나");
+		listname.add(1, "너");
+		listname.add(2, "우리");
+		listname.add(3, "모두");
+		nickname.add(0, "닉네임1");
+		nickname.add(1, "닉네임2");
+		nickname.add(2, "닉네임3");
+		nickname.add(3, "닉네임4");
+		listip.add(0, null);
+		listip.add(1, "192.168.0.2");
+		listip.add(2, "192.168.0.3");
+		listip.add(3, "192.168.0.4");
+
+	}
+
+	private void load() {
+		for (int i = 0; i < nickname.size(); i++) {
+			String name = nickname.get(i);
+			// System.out.println(listip.get(i)!=null);
+			if (listip.get(i) != null) {
+				online.add(new DefaultMutableTreeNode(name));
+			} else {
+				offline.add(new DefaultMutableTreeNode(name));
+			}
+		}
+
+	}
+
+	private class MyMouseListener extends MouseAdapter {
+		public void mouseClicked(MouseEvent e) { // 마우스클릭이벤트발생시
+			if (e.getButton() == 3) {
+				int iRow = tree.getRowForLocation(e.getX(), e.getY()); 
+				tree.setSelectionRow(iRow);
+				pop.show(tree, e.getX(), e.getY());
+				node=(DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+				System.out.println(node);
+			}
+		}
+	}}
 public class list {
 	public static void main(String[] args) {
 		JFrameList window=new JFrameList();
