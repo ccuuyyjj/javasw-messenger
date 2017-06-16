@@ -16,7 +16,7 @@ import javax.swing.JTextField;
 
 import client.impl.LoginImpl;
 
-class LoginGUI extends JFrame {
+public class LoginGUI extends JFrame {
 
 	private ImageIcon img = new ImageIcon("projectImage.png");
 	private JLabel logo = new JLabel(img);
