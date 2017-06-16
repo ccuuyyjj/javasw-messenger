@@ -42,7 +42,7 @@ class JFrameList extends JFrame implements MouseListener{
 	private JMenuItem start=new JMenuItem("시작");
 	private JMenuItem end=new JMenuItem("종료");
 	
-	
+	//잘바뀜
 	private JLabel sname=new JLabel("이름");
 	private JTextField snames=new JTextField();
 	private JLabel sip=new JLabel("아이피");
