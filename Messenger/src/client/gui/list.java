@@ -20,7 +20,7 @@ import javax.swing.JTree;
 import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-//된거맞음?
+
 class JFrameList extends JFrame {
 	private String id;						//상단 라벨에 표시될 자기 아이디
 	private String idname;					//상단 라벨에 표시될 자기 닉네임
