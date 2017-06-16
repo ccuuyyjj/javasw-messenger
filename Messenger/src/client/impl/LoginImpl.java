@@ -10,6 +10,24 @@ import general.container.LoginInfo;
 import general.container.Message;
 
 public class LoginImpl {
+	
+	public static boolean join(String id, String pw, String addr) throws Exception {
+		boolean result = false;
+		if(Client.conn == null) {
+			Socket socket = new Socket(InetAddress.getByName(addr), 20000);
+			Client.conn = new Connection(socket);
+		}
+		LoginInfo info = new LoginInfo(id, pw, 0);
+		Message sendmsg = new Message(info);
+		Client.conn.sendObject(sendmsg);
+		String[] header = Client.conn.getHeader();
+		if(header[0].equals("OBJECT") && header[1].equals("Message")){
+			Message recvmsg = (Message) Client.conn.getObject(Integer.parseInt(header[2]));
+			if((Boolean)(recvmsg.getMsg()))
+				result = true;
+		}
+		return result;
+	}
 
 	public static boolean login(String id, String pw, String addr) throws Exception {
 		boolean result = false;
@@ -17,7 +35,7 @@ public class LoginImpl {
 			Socket socket = new Socket(InetAddress.getByName(addr), 20000);
 			Client.conn = new Connection(socket);
 		}
-		LoginInfo info = new LoginInfo(id, pw);
+		LoginInfo info = new LoginInfo(id, pw, 1);
 		Message sendmsg = new Message(info);
 		Client.conn.sendObject(sendmsg);
 		String[] header = Client.conn.getHeader();
@@ -33,24 +51,6 @@ public class LoginImpl {
 			Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
 		}
 		
-		return result;
-	}
-	
-	public static boolean join(String id, String pw, String addr) throws Exception {
-		boolean result = false;
-		if(Client.conn == null) {
-			Socket socket = new Socket(InetAddress.getByName(addr), 20000);
-			Client.conn = new Connection(socket);
-		}
-		LoginInfo info = new LoginInfo(id, pw);
-		Message sendmsg = new Message(info);
-		Client.conn.sendObject(sendmsg);
-		String[] header = Client.conn.getHeader();
-		if(header[0].equals("OBJECT") && header[1].equals("Message")){
-			Message recvmsg = (Message) Client.conn.getObject(Integer.parseInt(header[2]));
-			if((Boolean)(recvmsg.getMsg()))
-				result = true;
-		}
 		return result;
 	}
 }
