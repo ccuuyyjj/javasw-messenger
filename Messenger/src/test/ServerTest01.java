@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import general.container.Connection;
 import general.container.Friends;
-import server.impl.Server;
+import server.Server;
 
 public class ServerTest01 {
 	public static void main(String[] args) throws IOException {

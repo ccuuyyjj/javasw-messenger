@@ -1,4 +1,4 @@
-package server.impl;
+package server;
 
 import java.io.Closeable;
 import java.io.IOException;

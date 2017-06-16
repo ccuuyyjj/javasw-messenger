@@ -14,9 +14,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import client.Client;
 import client.impl.LoginImpl;
 
-class LoginGUI extends JFrame {
+public class LoginGUI extends JFrame {
 
 	private ImageIcon img = new ImageIcon("projectImage.png");
 	private JLabel logo = new JLabel(img);
@@ -31,6 +32,12 @@ class LoginGUI extends JFrame {
 	private JButton join = new JButton("회원가입");
 
 	private void display() {
+		super.setTitle("메신저");
+		super.setSize(400, 500);
+		super.setLocationByPlatform(true);
+		super.setResizable(false);
+		super.setVisible(true);
+		
 		Container con = super.getContentPane();
 		con.setLayout(null);
 		// con.setBackground(Color.lightGray);
@@ -141,13 +148,18 @@ class LoginGUI extends JFrame {
 		});
 
 		login.addActionListener(e -> {
-			Boolean check = false;//JoinNLogin.login(id.getText(), pw.getText(), address.getText());
+			try {
+				Boolean check = LoginImpl.login(id.getText(), pw.getText(), address.getText());
 
-			if (check) {
-				JOptionPane.showMessageDialog(this, "로그인에 성공했습니다");
-
-			} else
-				JOptionPane.showMessageDialog(this, "일치하는 정보가 없습니다");
+				if (check) {
+					JOptionPane.showMessageDialog(this, "로그인에 성공했습니다");
+					
+					Client.currentGUI = new JFrameList();
+				} else
+					JOptionPane.showMessageDialog(this, "일치하는 정보가 없습니다");
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		});
 	}
 
@@ -155,19 +167,9 @@ class LoginGUI extends JFrame {
 	}
 
 	public LoginGUI() {
-		super.setTitle("메신저");
-		super.setSize(400, 500);
-		super.setLocationByPlatform(true);
-		super.setResizable(false);
-		super.setVisible(true);
 		display();
 		event();
 		menu();
-		// try {
-		// test.server.main(null);
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
 	}
 
 }
