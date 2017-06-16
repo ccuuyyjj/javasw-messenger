@@ -120,7 +120,7 @@ public class Connection implements Closeable {
 		}
 		oin.close();
 	}
-	public synchronized String[] getHeader() throws IOException{
+	public synchronized String[] getHeader() throws IOException{ //String[] header = conn.getHeader();
 		byte[] buffer = new byte[4096];
 		int trial = 1;
 		for(int i=0; i < buffer.length; i++){

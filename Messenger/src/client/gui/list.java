@@ -21,6 +21,9 @@ import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import client.Client;
+import general.container.Friends;
+
 class JFrameList extends JFrame {
 	//내 정보창
 	private String id;						//상단 라벨에 표시될 자기 아이디
@@ -165,8 +168,10 @@ class JFrameList extends JFrame {
 		listip.add(3, "192.168.0.4");
 
 	}
-
+	private Friends f = null;
 	private void load() {
+		f = Client.friends;
+		f.getFriends().get(1);
 		for (int i = 0; i < nickname.size(); i++) {		//로그인시 친구 목록 불러오는 메소드
 			String name = nickname.get(i);				//접속한 친구라면(ip가 존재한다면)
 			// System.out.println(listip.get(i)!=null);		//온라인에 넣겠지만
@@ -179,11 +184,4 @@ class JFrameList extends JFrame {
 
 	}
 
-}
-
-public class list {
-	public static void main(String[] args) {
-		JFrameList window = new JFrameList();
-
-	}
 }
