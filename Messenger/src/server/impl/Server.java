@@ -35,6 +35,7 @@ public class Server implements Closeable {
 					Socket socket = server.accept();
 					Connection conn = new Connection(socket);
 					clientlist.add(conn);
+					System.out.println("접속자 수 : " + clientlist.size());
 					onConnection(conn);
 				} catch (IOException e) {
 					System.err.println(e.getMessage());
