@@ -59,12 +59,20 @@ class JFrameList extends JFrame {
 		con.add(snames, BorderLayout.CENTER);
 		con.add(sip, BorderLayout.CENTER);
 		con.add(sips, BorderLayout.CENTER);
-
+		
+		//최상단 로그인 정보창
+		Border b2 = BorderFactory.createTitledBorder("로그인 정보");
+		ss.setBorder(b2);
+		ss.setBounds(12, 10, 370, 85);
+		
 		scroll.setBounds(12, 105, 370, 257);
 		scroll.setViewportView(tree);
+		
+		//온라인과 오프라인 구별
 		list.add(online);
 		list.add(offline);
-
+		
+		//트리창에서 노드 클릭시 해당 닉네임에 포함된 이름과 아이피를 표시해주는 창
 		sname.setBounds(12, 368, 57, 28);
 		snames.setBounds(81, 372, 116, 21);
 		sip.setBounds(12, 402, 57, 28);
@@ -79,15 +87,13 @@ class JFrameList extends JFrame {
 
 	//	System.out.println(online.getChildCount());
 	//	System.out.println(online.getChildAt(0));
-
+		
+		//로그아웃 버튼
 		logout.setBounds(12, 636, 370, 35);
-		Border b2 = BorderFactory.createTitledBorder("로그인 정보");
-		ss.setBorder(b2);
-		ss.setBounds(12, 10, 370, 85);
 
 	}
 
-	DefaultMutableTreeNode node;//노드 클릭시 해당 노드가 무엇인지 알려주는 코드
+	DefaultMutableTreeNode node;//노드 클릭시 해당 노드의 이름을 알려주는 코드
 
 	private void event() {
 		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -97,29 +103,25 @@ class JFrameList extends JFrame {
 				if (e.getButton() == 1) {
 					if (node == null)
 						return;
-					System.out.println("node = " + node);
+					//System.out.println("node = " + node);
 				}
-				for (int i = 0; i < nickname.size(); i++) {
-					String nodes = node.toString();
-					if (nodes.equals(nickname.get(i))) {
-						snames.setText(listname.get(i));
-						if (listip.get(i) == null)
-							sips.setText("미접속입니다.");
-						else
-							sips.setText(listip.get(i));
+				for (int i = 0; i < nickname.size(); i++) {	//노드 클릭시
+					String nodes = node.toString();			//노드의 내용이
+					if (nodes.equals(nickname.get(i))) {		//닉네임 배열에 있는 값들과 비교하여 같은 값이 있다면
+						snames.setText(listname.get(i));		//해당 주소값에 해당하는 이름과 아이피를 출력
+						if (listip.get(i) == null)					//만약 오프라인이라면 
+							sips.setText("미접속입니다.");		//아이피 부분에는 미접속입니다.를 출력
+						else										//
+							sips.setText(listip.get(i));			//
 					}
 				}
-				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-				if (e.getButton() == 3) {
-
-					int iRow = tree.getRowForLocation(e.getX(), e.getY());
-					tree.setSelectionRow(iRow);
-					pop.show(tree, e.getX(), e.getY());
-
-					if (path != null)
-						pop.show(tree, e.getX(), e.getY());
-					if (pop == null)
-						return;
+				TreePath path = tree.getPathForLocation(e.getX(), e.getY());	//트리 경로 출력 ex) [회원 목록, 접속중, 닉네임2]
+				if (e.getButton() == 3) {												//마우스 우클릭을 하면						
+					int iRow = tree.getRowForLocation(e.getX(), e.getY());		//해당 마우스 좌표에 위치한
+					tree.setSelectionRow(iRow);										//트리 노드를 좌클릭
+					if (path != null)														//트리 경로가 널이 아니라면(값이 있다면)
+						pop.show(tree, e.getX(), e.getY());							//팝업 메뉴창 출력
+					else	return;														//근데 없다면 리턴
 				}
 			}
 		});
@@ -145,7 +147,8 @@ class JFrameList extends JFrame {
 	}
 
 	private void save() {		//친구 추가 및 변동시에 생길 저장 메소드
-									//listip는 로그인과 로그아웃 시 아이피가 바뀔 수 있으므로 스레드로 따로 돌리는게 좋겠지?
+									//listip는 로그인과 로그아웃 시 아이피가 바뀔 수 있으므로 
+									//스레드로 따로 돌리는게 좋겠지?
 		listname.add(0, "나");
 		listname.add(1, "너");
 		listname.add(2, "우리");
@@ -162,10 +165,10 @@ class JFrameList extends JFrame {
 	}
 
 	private void load() {
-		for (int i = 0; i < nickname.size(); i++) {
-			String name = nickname.get(i);
-			// System.out.println(listip.get(i)!=null);
-			if (listip.get(i) != null) {
+		for (int i = 0; i < nickname.size(); i++) {		//로그인시 친구 목록 불러오는 메소드
+			String name = nickname.get(i);				//접속한 친구라면(ip가 존재한다면)
+			// System.out.println(listip.get(i)!=null);		//온라인에 넣겠지만
+			if (listip.get(i) != null) {						//만약 그렇지 않다면(ip가 null) 오프라인에 출력시키기
 				online.add(new DefaultMutableTreeNode(name));
 			} else {
 				offline.add(new DefaultMutableTreeNode(name));
