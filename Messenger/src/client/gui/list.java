@@ -22,6 +22,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 class JFrameList extends JFrame {
+	//내 정보창
 	private String id;						//상단 라벨에 표시될 자기 아이디
 	private String idname;					//상단 라벨에 표시될 자기 닉네임
 	private String ip;	//상단 라벨에 표시될 자기 ip
@@ -31,10 +32,11 @@ class JFrameList extends JFrame {
 	private JTree tree = new JTree(list);
 	private DefaultMutableTreeNode online = new DefaultMutableTreeNode("접속중");
 	private DefaultMutableTreeNode offline = new DefaultMutableTreeNode("오프라인");
+	
 	private List<String> listname = new ArrayList<>();		//전체 회원의 이름
 	private List<String> nickname = new ArrayList<>();	//전체 회원의 닉네임
 	private List<String> listip = new ArrayList<>();			//전체 회원의 ip
-
+	//팝업
 	private JPopupMenu pop = new JPopupMenu();		//트리 노트에서 우클릭시 나타날 팝업메뉴
 	private JMenuItem start = new JMenuItem("시작");
 	private JMenuItem end = new JMenuItem("종료");
