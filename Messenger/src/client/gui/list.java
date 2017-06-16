@@ -27,7 +27,7 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
+//123
 class JFrameList extends JFrame {
 	//내 정보창
 	private String id = "닉네임";
