@@ -118,9 +118,8 @@ class JFrameList extends JFrame {
 
 					if (path != null)
 						pop.show(tree, e.getX(), e.getY());
-					if (pop == null){
+					if (pop == null)
 						return;
-					}
 				}
 			}
 		});
