@@ -19,52 +19,12 @@ public class Connection implements Closeable {
 	private Socket socket;
 	private BufferedInputStream in;
 	private BufferedOutputStream out;
-	private Receiver receiver;
+	private ServerUtil serverUtil = null;
+	private ServerReceiver receiver = null;
 	public Connection(Socket socket) throws IOException{
 		this.socket = socket;
 		in = new BufferedInputStream(socket.getInputStream());
 		out = new BufferedOutputStream(socket.getOutputStream());
-		receiver = new Receiver();
-		receiver.setDaemon(true);
-	}
-	public class Receiver extends Thread {
-		@Override
-		public void run() {
-			while(!socket.isClosed()){
-				try {
-					String[] header = getHeader();
-					if(header != null){
-						File target = null;
-						switch(header[0]){
-						case "FILE":
-							System.out.println("파일 수신 시작");
-							target = getFile(header[1], Long.parseLong(header[2]));
-							System.out.println("파일 수신 완료");
-							break;
-						case "OBJECT":
-							Object obj = getObject(Integer.parseInt(header[2]));
-							switch(header[1]){
-							case "Message":
-								Message msg = (Message) obj;
-								String name = msg.getMsg().getClass().getSimpleName();
-								switch(name){
-								case "String":
-									break;
-								case "LoginInfo":
-									LoginInfo login = (LoginInfo) msg.getMsg();
-									Boolean check = ServerUtil.checkLogin(login);
-									
-									break;
-								}
-								break;
-							}
-							break;
-						default:
-						}
-					}
-				} catch (Exception e) {}
-			}
-		}
 	}
 	public void sendHeader(String[] header) throws IOException{
 		StringBuilder sb = new StringBuilder();
@@ -180,7 +140,34 @@ public class Connection implements Closeable {
 		Object o = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray())).readObject();
 		return o;
 	}
-	
+	public class ServerReceiver extends Thread {
+		private Connection conn = null;
+		private ServerUtil util = null;
+		{
+			this.setDaemon(true);
+		}
+		public ServerReceiver(Connection conn){
+			this.conn = conn;
+			this.util = conn.getServerUtil();
+		}
+		@Override
+		public void run() {
+			while(!conn.getSocket().isClosed()){
+				try {
+					String[] header = conn.getHeader();
+					if(header != null){
+						if(header[0].equals("OBJECT") && header[1].equals("Message")){
+							Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
+							util.handleMessage(msg);
+						} else {
+							System.out.println("서버 접근방법이 잘못됨!");
+							conn.close();
+						}
+					}
+				} catch (Exception e) {}
+			}
+		}
+	}
 	public Socket getSocket() {
 		return socket;
 	}
@@ -190,8 +177,17 @@ public class Connection implements Closeable {
 	public BufferedOutputStream getOut() {
 		return out;
 	}
-	public Receiver getReceiver() {
+	public ServerUtil getServerUtil() {
+		return serverUtil;
+	}
+	public ServerReceiver getServerReceiver(){
 		return receiver;
+	}
+	public void InitServerUtil() {
+		this.serverUtil = new ServerUtil(this);
+	}
+	public void InitServerReceiver(){
+		this.receiver = new ServerReceiver(this);
 	}
 	@Override
 	public void close() throws IOException {
