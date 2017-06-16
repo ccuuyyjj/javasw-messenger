@@ -13,6 +13,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import server.impl.ServerUtil;
+
 public class Connection implements Closeable {
 	private Socket socket;
 	private BufferedInputStream in;
@@ -33,7 +35,6 @@ public class Connection implements Closeable {
 					String[] header = getHeader();
 					if(header != null){
 						File target = null;
-						Object o = null;
 						switch(header[0]){
 						case "FILE":
 							System.out.println("파일 수신 시작");
@@ -41,16 +42,25 @@ public class Connection implements Closeable {
 							System.out.println("파일 수신 완료");
 							break;
 						case "OBJECT":
-							System.out.println("오브젝트("+header[1]+") 수신 시작");
-							o = getObject(Integer.parseInt(header[2]));
-							System.out.println("오브젝트("+header[1]+") 수신 완료");
+							Object obj = getObject(Integer.parseInt(header[2]));
+							switch(header[1]){
+							case "Message":
+								Message msg = (Message) obj;
+								String name = msg.getMsg().getClass().getSimpleName();
+								switch(name){
+								case "String":
+									break;
+								case "LoginInfo":
+									LoginInfo login = (LoginInfo) msg.getMsg();
+									Boolean check = ServerUtil.checkLogin(login);
+									
+									break;
+								}
+								break;
+							}
 							break;
 						default:
 						}
-						if(target != null)
-							System.out.println("파일명 : " + target.getName() + " 파일크기: " + target.length());
-						if(o != null)
-							System.out.println("오브젝트명 : " + header[1] + " 내용: " + ((Friends)o).getFriends());
 					}
 				} catch (Exception e) {}
 			}
