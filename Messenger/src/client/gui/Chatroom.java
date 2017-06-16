@@ -3,6 +3,7 @@ package client.gui;
 import java.awt.Container;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,6 +13,9 @@ import javax.swing.JButton;
 
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+
+import client.Client;
+import general.container.Message;
 
 class JFrameChatroom extends JFrame {
 
@@ -58,8 +62,15 @@ class JFrameChatroom extends JFrame {
 			public void keyTyped(KeyEvent e) {
 
 				if (e.getKeyChar() == 10) {
+					Message msg = new Message("내 아이디", "받을사람", textfield.getText());
+					try {
+						Client.conn.sendObject(msg);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 					textfield.setText("");
 					// 텍스트 전송코드 입력 공간
+					
 				}
 			}
 
