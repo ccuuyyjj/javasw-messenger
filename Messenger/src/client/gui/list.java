@@ -24,7 +24,7 @@ import javax.swing.tree.TreePath;
 class JFrameList extends JFrame {
 	private String id;						//상단 라벨에 표시될 자기 아이디
 	private String idname;					//상단 라벨에 표시될 자기 닉네임
-	private String ip;	//상단 라벨에 표시될 자기 ip
+	private String ip;						//상단 라벨에 표시될 자기 ip
 	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>아이디 : " + idname + "<br>아이피 : " + ip + "</html>");
 
 	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
