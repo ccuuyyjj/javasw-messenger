@@ -27,18 +27,19 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-//123123
+
 class JFrameList extends JFrame {
 	//내 정보창
-	private String id = "닉네임";
-	private String idname = "아이디";
-	private String ip = "192.168.0.1";
+	private String id = "아이디";//Client.friends.getIdentity()
+	private String idname = "닉네임";
+	private String ip = "192.168.0.1";//socket.getadress
 	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>아이디 : " + idname + "<br>아이피 : " + ip + "</html>");
 	//친구 목록
 	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
 	private JTree tree = new JTree(list);
 	private DefaultMutableTreeNode online = new DefaultMutableTreeNode("접속중");
 	private DefaultMutableTreeNode offline = new DefaultMutableTreeNode("오프라인");
+	
 	private List<String> listname = new ArrayList<>();
 	private List<String> nickname = new ArrayList<>();
 	private List<String> listip = new ArrayList<>();
