@@ -4,8 +4,8 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import container.Connection;
-import container.Friends;
+import general.container.Connection;
+import general.container.Friends;
 
 public class Test02 {
 	public static void main(String[] args) throws Exception {

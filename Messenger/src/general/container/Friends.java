@@ -1,4 +1,4 @@
-package container;
+package general.container;
 
 import java.io.Serializable;
 import java.util.ArrayList;
