@@ -43,12 +43,12 @@ public class LoginImpl {
 			Message recvmsg = (Message) Client.conn.getObject(Integer.parseInt(header[2]));
 			if((Boolean)(recvmsg.getMsg()))
 				result = true;
-		}
-		
-//		친구 목록 받아오기
-		String[] fheader = Client.conn.getHeader();
-		if(fheader[0].equals("OBJECT") && fheader[1].equals("Friends")) {
-			Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
+			
+//				친구 목록 받아오기
+				String[] fheader = Client.conn.getHeader();
+				if(fheader[0].equals("OBJECT") && fheader[1].equals("Friends")) {
+					Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
+				}
 		}
 		
 		return result;

@@ -22,8 +22,11 @@ public class LoginGUI extends JFrame {
 	private ImageIcon img = new ImageIcon("projectImage.png");
 	private JLabel logo = new JLabel(img);
 
+	private JLabel lbId = new JLabel("아  이  디 : ");
 	private JTextField id = new JTextField("aaa"); // ("아이디 (전화번호)");
+	private JLabel lbPw = new JLabel("비밀번호 : ");
 	private JPasswordField pw = new JPasswordField("aaaaaa"); // ("비밀번호");
+	private JLabel lbAddr = new JLabel("서버주소 : ");
 	private JTextField address = new JTextField("192.168.0.10"); // ("서버 주소");
 
 	private JLabel info = new JLabel("아이디 : 2-10자, 비밀번호 : 6-20자 (특수문자 제외)", JLabel.RIGHT);
@@ -46,35 +49,47 @@ public class LoginGUI extends JFrame {
 		logo.setOpaque(true);
 
 		Font font = new Font("굴림", Font.PLAIN, 15);
+		
+//		아이디
+		lbId.setBounds(23, 270, 70, 30);
 
-		id.setBounds(23, 270, 350, 30);
+		id.setBounds(90, 270, 285, 30);
 		id.setFont(font);
 		id.setForeground(Color.gray);
+		
+//		비밀번호
+		lbPw.setBounds(23, 315, 70, 30);
 
-		pw.setBounds(23, 315, 350, 30);
+		pw.setBounds(90, 315, 285, 30);
 		pw.setFont(font);
 		pw.setForeground(Color.gray);
+		
+//		서버주소
+		lbAddr.setBounds(23, 360, 70, 30);
 
-		address.setBounds(23, 360, 350, 30);
+		address.setBounds(90, 360, 285, 30);
 		address.setFont(font);
 		address.setForeground(Color.gray);
 
 		info.setBounds(23, 395, 350, 20);
 		info.setOpaque(true);
 
-		login.setBounds(295, 420, 90, 30);
+		login.setBounds(285, 420, 90, 30);
 		login.setBackground(Color.gray);
 		login.setForeground(Color.white);
 		login.setFont(font);
 
-		join.setBounds(200, 420, 90, 30);
+		join.setBounds(190, 420, 90, 30);
 		join.setBackground(Color.gray);
 		join.setForeground(Color.white);
 		join.setFont(font);
 
 		con.add(logo);
+		con.add(lbId);
 		con.add(id);
+		con.add(lbPw);
 		con.add(pw);
+		con.add(lbAddr);
 		con.add(address);
 		con.add(info);
 		con.add(login);
@@ -86,57 +101,7 @@ public class LoginGUI extends JFrame {
 	private void event() {
 		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-		// placeholder 설정
-		id.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent arg0) {
-				if (id.getText().equals("아이디 (전화번호)")) {
-					id.setText("");
-					id.setForeground(Color.BLACK);
-				}
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				if (id.getText().isEmpty()) {
-					id.setForeground(Color.GRAY);
-					id.setText("아이디 (전화번호)");
-				}
-			}
-		});
-
-		pw.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent arg0) {
-				if (pw.getText().equals("비밀번호")) {
-					pw.setText("");
-					pw.setForeground(Color.BLACK);
-				}
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				if (pw.getText().isEmpty()) {
-					pw.setForeground(Color.GRAY);
-					pw.setText("비밀번호");
-				}
-			}
-		});
-
-		address.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent arg0) {
-				if (address.getText().equals("서버 주소")) {
-					address.setText("");
-					address.setForeground(Color.BLACK);
-				}
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				if (address.getText().isEmpty()) {
-					address.setForeground(Color.GRAY);
-					address.setText("서버 주소");
-				}
-			}
-		});
+		// placeholder 설정 제거
 
 		join.addActionListener(e -> {
 			boolean check = false;//LoginImpl.join(id.getText(), pw.getText(), address.getText());
@@ -155,6 +120,7 @@ public class LoginGUI extends JFrame {
 					JOptionPane.showMessageDialog(this, "로그인에 성공했습니다");
 					
 					Client.currentGUI = new JFrameList();
+					dispose();
 				} else
 					JOptionPane.showMessageDialog(this, "일치하는 정보가 없습니다");
 			} catch (Exception e1) {
