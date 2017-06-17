@@ -1,13 +1,18 @@
 package server;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -18,6 +23,8 @@ import server.impl.ServerUtil;
 public class Server {
 	private static File loginDB;	//ID/PW를 저장하는 DB파일 (한줄에 아이디와 패스워드 한쌍, 그 사이는 탭(\t)으로 구분)
 	private static File friendsDB;	//ID가 키, 그 아이디의 친구목록이 값인 HashMap이 저장된 DB파일
+	private static File filelistDB;	//아래 filelist의 내용을 저장하는 DB파일
+	private static Map<Message, File> filelist = null;	//서버에 저장된 파일들의 목록
 	private static Map<String, Connection> clientlist = new HashMap<>();	//연결된 클라이언트들이 저장되는 공간
 	private static ServerSocket server;	//서버에서 클라이언트의 접속을 대기하는 소켓
 	private static int port;	//서버가 접속을 대기할 포트
@@ -68,7 +75,7 @@ public class Server {
 			}
 		}
 	}
-	public Server(int port, int timeout) throws IOException{
+	public Server(int port, int timeout) throws IOException, ClassNotFoundException{
 		File dbdir = new File("db");
 		if(!dbdir.exists() || !dbdir.isDirectory()){
 			System.out.println("DB폴더를 생성합니다.");
@@ -78,19 +85,23 @@ public class Server {
 			System.out.println("서버 구동 실패!");
 		loginDB = new File("db", "loginDB.db");
 		friendsDB = new File("db", "friendsDB.db");
+		filelistDB = new File("db", "filelistDB.db");
+		if(!filelistDB.exists()){
+			filelist = new HashMap<>();
+		}
 		Server.port = port;
 		Server.timeout = timeout;
 		server = new ServerSocket(Server.port);
 		listener = new ServerListener();
 		System.out.println("서버 구동 준비 완료!");
 	}
-	public Server(int port) throws IOException{
+	public Server(int port) throws IOException, ClassNotFoundException{
 		this(port, 5000);
 	}
-	public Server() throws IOException{
+	public Server() throws IOException, ClassNotFoundException{
 		this(20000, 5000);
 	}
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		Server server = new Server();
 		server.start();
 		System.out.println("서버 구동 완료!");
@@ -104,6 +115,29 @@ public class Server {
 	}
 	public static File getFriendsDB(){
 		return friendsDB;
+	}
+	@SuppressWarnings("unchecked")
+	public static Map<Message, File> getFileList(){
+		if(filelist == null){
+			try {
+				ObjectInputStream oin = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filelistDB)));
+				filelist = (Map<Message, File>) oin.readObject();
+				oin.close();
+			} catch (Exception e) {}
+		}
+		return filelist;
+	}
+	public static void closeFileList(){
+		if(filelist != null){
+			try {
+				ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(filelistDB)));
+				out.writeObject(filelist);
+				out.flush();
+				out.close();
+			} catch (Exception e) {}
+		}
+		filelist.clear();
+		filelist = null;
 	}
 	public static Map<String, Connection> getClientList(){
 		return clientlist;

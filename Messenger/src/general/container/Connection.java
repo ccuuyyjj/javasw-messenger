@@ -21,6 +21,7 @@ public class Connection implements Closeable {
 	private BufferedOutputStream out;
 	private ServerUtil serverUtil = null;
 	private ServerReceiver receiver = null;
+	private String identity = null;
 	public Connection(Socket socket) throws IOException{
 		this.socket = socket;
 		in = new BufferedInputStream(socket.getInputStream());
@@ -182,6 +183,12 @@ public class Connection implements Closeable {
 	}
 	public ServerReceiver getServerReceiver(){
 		return receiver;
+	}
+	public String getIdentity() {
+		return identity;
+	}
+	public void setIdentity(String identity) {
+		this.identity = identity;
 	}
 	public void InitServerUtil() {
 		this.serverUtil = new ServerUtil(this);
