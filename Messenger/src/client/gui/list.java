@@ -21,10 +21,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-<<<<<<< HEAD
+
 import client.Client;
-=======
->>>>>>> branch 'develop' of https://github.com/ccuuyyjj/javasw-messenger.git
+
 import general.container.Friends;
 
 
