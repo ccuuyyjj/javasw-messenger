@@ -20,6 +20,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import client.Client;
 import general.container.Friends;
 
 class JFrameList extends JFrame {
@@ -161,9 +162,7 @@ class JFrameList extends JFrame {
 		});
 		logout.addActionListener(e -> {
 			
-			LoginGUI login=new LoginGUI();
-			
-			login.setVisible(true);
+			Client.currentGUI = new LoginGUI();
 			
 		});
 		end.addActionListener(e -> {
