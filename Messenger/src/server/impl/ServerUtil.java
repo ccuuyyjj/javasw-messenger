@@ -27,7 +27,7 @@ public class ServerUtil {
 			Scanner s = new Scanner(Server.getLoginDB());
 			s.useDelimiter("[\t\n]");
 			if(login.getflag() == 1){
-				while(s.hasNextLine()){
+				while(s.hasNext()){
 					String id = s.next().trim();
 					String pw = s.next().trim();
 					if(id.equals(identity.trim())){
@@ -38,7 +38,7 @@ public class ServerUtil {
 				}
 			} else {
 				result = true;
-				while(s.hasNextLine()){
+				while(s.hasNext()){
 					String id = s.next().trim();
 					String pw = s.next().trim();
 					if(id.equals(identity)){
@@ -48,6 +48,8 @@ public class ServerUtil {
 				}
 				if(result){
 					String idpw = identity + "\t" + password;
+					System.out.println("회원가입 : " + idpw);
+					s.close();
 					PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(Server.getLoginDB(), true)));
 					writer.println(idpw);
 					writer.close();
@@ -92,8 +94,27 @@ public class ServerUtil {
 			try{
 				String identity = msg.getSender();
 				Friends friends = (Friends) msg.getMsg();
-				Server.getFriends().put(identity, friends);
-				Server.closeFriends();
+				boolean result = false;
+				for(String id : friends.getListname()){
+					Scanner s = new Scanner(Server.getLoginDB());
+					while(s.hasNext()){
+						String str = s.next().trim();
+						String pw = s.next().trim();
+						if(str.equals(id)){
+							result = true;
+							break;
+						}
+					}
+					s.close();
+				}
+				if(result){
+					Server.getFriends().put(identity, friends);
+					conn.sendObject(friends);
+					Server.closeFriends();
+				} else {
+					conn.sendObject(Server.getFriends().get(identity));
+					Server.closeFriends();
+				}
 			} catch (Exception e) {}
 			break;
 		case "String":
