@@ -1,12 +1,14 @@
 package server.impl;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Map;
+import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import general.container.Connection;
@@ -20,34 +22,50 @@ public class ServerUtil {
 	public ServerUtil(Connection conn) {
 		this.conn = conn;
 	}
-	public static Boolean checkLogin(LoginInfo login) throws FileNotFoundException {
+	public static Boolean checkLogin(LoginInfo login){
+		boolean result = false;
 		String identity = login.getIdentity();
 		String password = login.getPassword();
-		Scanner s = new Scanner(Server.getLoginDB());
-		s.useDelimiter("\t");
-		boolean result = false;
-		while(s.hasNextLine()){
-			if(s.next().equals(identity)){
-				if(s.next().equals(password))
-					result = true;
-				else break;
+		try {
+			Scanner s = new Scanner(Server.getLoginDB());
+			s.useDelimiter("\t");
+			if(login.getflag() == 1){
+				while(s.hasNextLine()){
+					if(s.next().trim().equals(identity.trim())){
+						if(s.next().trim().equals(password.trim()))
+							result = true;
+						else break;
+					} else s.next();
+				}
+			} else {
+				result = true;
+				while(s.hasNextLine()){
+					if(s.next().equals(identity)){
+						result = false;
+						break;
+					} else s.next();
+				}
+				if(result){
+					String idpw = identity + "\t" + password;
+					PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(Server.getLoginDB())));
+					writer.println(idpw);
+					writer.close();
+				}
 			}
-		}
-		s.close();
+			s.close();
+		} catch (IOException e) {}
 		return result;
 	}
-	@SuppressWarnings("unchecked")
 	public Friends getFriends(LoginInfo login) {
+		System.out.println("ServerUtil.getFriends Ω√¿€");
 		Friends result = null;
-		try{
-			File db = Server.getFriendsDB();
-			ObjectInputStream oin = new ObjectInputStream(
-								new BufferedInputStream(
-									new FileInputStream(db)));
-			Map<String, Friends> friendsDB = (Map<String, Friends>) oin.readObject();
-			result = friendsDB.get(login.getIdentity());
-			oin.close();
-		}catch(Exception e){}
+		HashMap<String, Friends> friends = Server.getFriends();
+		result = friends.get(login.getIdentity());
+		if(result == null){
+			friends.put(login.getIdentity(), new Friends());
+			result = friends.get(login.getIdentity());
+		}
+		System.out.println("ServerUtil.getFriends ≥°");
 		return result;
 	}
 	public void handleMessage(Message msg){
@@ -58,10 +76,20 @@ public class ServerUtil {
 				LoginInfo login = (LoginInfo) msg.getMsg();
 				Boolean check = checkLogin(login); 
 				conn.sendObject(check);
+				System.out.println(check);
 				if(check){
 					conn.setIdentity(login.getIdentity());
-					conn.sendObject(getFriends(login));
+					if(login.getflag() == 1){
+						getFriends(login).setListname("asdf");
+						getFriends(login).setNickname("asdf");
+						conn.sendObject(getFriends(login));
+					}
 					Server.getClientList().put(login.getIdentity(), conn);
+					conn.InitServerReceiver();
+					conn.getServerReceiver().start();
+				} else {
+					try{ Thread.sleep(Server.getTimeout());}catch(Exception e){}
+					conn.close();
 				}
 			} catch (Exception e) {}
 			break;

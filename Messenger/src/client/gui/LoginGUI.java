@@ -3,8 +3,6 @@ package client.gui;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,11 +21,11 @@ public class LoginGUI extends JFrame {
 	private JLabel logo = new JLabel(img);
 
 	private JLabel lbId = new JLabel("아  이  디 : ");
-	private JTextField id = new JTextField("aaa"); // ("아이디 (전화번호)");
+	private JTextField id = new JTextField("aaa"); // 아이디 (전화번호)
 	private JLabel lbPw = new JLabel("비밀번호 : ");
-	private JPasswordField pw = new JPasswordField("aaaaaa"); // ("비밀번호");
+	private JPasswordField pw = new JPasswordField("aaaaaa"); // 비밀번호
 	private JLabel lbAddr = new JLabel("서버주소 : ");
-	private JTextField address = new JTextField("192.168.0.10"); // ("서버 주소");
+	private JTextField address = new JTextField("warrock.iptime.org"); // 서버 주소
 
 	private JLabel info = new JLabel("아이디 : 2-10자, 비밀번호 : 6-20자 (특수문자 제외)", JLabel.RIGHT);
 
@@ -55,21 +53,18 @@ public class LoginGUI extends JFrame {
 
 		id.setBounds(90, 270, 285, 30);
 		id.setFont(font);
-		id.setForeground(Color.gray);
 		
 //		비밀번호
 		lbPw.setBounds(23, 315, 70, 30);
 
 		pw.setBounds(90, 315, 285, 30);
 		pw.setFont(font);
-		pw.setForeground(Color.gray);
 		
 //		서버주소
 		lbAddr.setBounds(23, 360, 70, 30);
-
+		
 		address.setBounds(90, 360, 285, 30);
 		address.setFont(font);
-		address.setForeground(Color.gray);
 
 		info.setBounds(23, 395, 350, 20);
 		info.setOpaque(true);
@@ -101,15 +96,24 @@ public class LoginGUI extends JFrame {
 	private void event() {
 		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-		// placeholder 설정 제거
+		// placeholder 설정 제거, 그냥 라벨로 앞에 써줌
 
 		join.addActionListener(e -> {
-			boolean check = false;//LoginImpl.join(id.getText(), pw.getText(), address.getText());
+			try {
+				boolean check = LoginImpl.join(id.getText(), pw.getText(), address.getText());
 
-			if (check)
-				JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
-			else
-				JOptionPane.showMessageDialog(this, "이미 존재하는 아이디이거나 형식에 맞지 않습니다");
+				if (check) {
+					JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
+					pw.setText("");
+				}
+				else {
+					JOptionPane.showMessageDialog(this, "이미 존재하는 아이디이거나 형식에 맞지 않습니다");
+					pw.setText("");
+					Client.conn.close();
+				}
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		});
 
 		login.addActionListener(e -> {
@@ -123,7 +127,10 @@ public class LoginGUI extends JFrame {
 					dispose();
 				} else
 					JOptionPane.showMessageDialog(this, "일치하는 정보가 없습니다");
-			} catch (Exception e1) {
+					pw.setText("");
+					Client.conn.close();
+				}
+			catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		});
@@ -133,6 +140,7 @@ public class LoginGUI extends JFrame {
 	}
 
 	public LoginGUI() {
+		
 		display();
 		event();
 		menu();
