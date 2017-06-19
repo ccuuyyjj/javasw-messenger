@@ -85,6 +85,7 @@ public class ServerUtil {
 						conn.sendObject(getFriends(login));
 					}
 					Server.getClientList().put(login.getIdentity(), conn);
+					try{ Thread.sleep(Server.getTimeout());}catch(Exception e){}
 					conn.InitServerReceiver();
 					conn.getServerReceiver().start();
 				} else {
