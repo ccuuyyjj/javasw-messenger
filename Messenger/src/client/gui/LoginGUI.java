@@ -109,6 +109,15 @@ public class LoginGUI extends JFrame {
 	
 					if (check) {
 						JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
+						
+						File target = new File("files", "info.prop");
+						FileOutputStream out = new FileOutputStream(target);
+						Properties prop = new Properties();
+						prop.setProperty("id", id.getText());
+						prop.setProperty("pw", pw.getText());
+						prop.setProperty("addr", address.getText());
+						prop.store(out, "information");
+						
 						Client.identity = id.getText();
 						this.dispose();
 						Client.currentGUI = new JFrameList();
@@ -130,7 +139,7 @@ public class LoginGUI extends JFrame {
 
 		login.addActionListener(e -> {
 			try {
-				Boolean check = ClientUtil.joinNlogin(id.getText(), pw.getText(), address.getText(), ClientUtil.LOGIN);
+				boolean check = ClientUtil.joinNlogin(id.getText(), pw.getText(), address.getText(), ClientUtil.LOGIN);
 
 				if (check) {
 					JOptionPane.showMessageDialog(this, "로그인에 성공했습니다");
@@ -167,7 +176,7 @@ public class LoginGUI extends JFrame {
 		String idRegex = "^[a-zA-Z0-9-_]{2,10}$";
 		String pwRegex = "^[a-zA-Z0-9-_]{6,20}$";
 
-		if (!Pattern.matches(idRegex, id) || !(Pattern.matches(pwRegex, pw))) return false;
+		if (!Pattern.matches(idRegex, id) || !Pattern.matches(pwRegex, pw)) return false;
 		else return true;
 	}
 	

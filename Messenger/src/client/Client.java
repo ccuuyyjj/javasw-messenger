@@ -19,4 +19,5 @@ public class Client {
 		
 	}
 	//메세지 수신
+	
 }
