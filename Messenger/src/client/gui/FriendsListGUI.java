@@ -22,14 +22,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-
-
 import client.Client;
 import client.impl.ClientUtil;
 import general.container.Friends;
 import general.container.Message;
-
-
 
 class JFrameList extends JFrame {
 	// 내 정보창
@@ -40,7 +36,7 @@ class JFrameList extends JFrame {
 
 	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
 	private JTree tree = new JTree(list);
-	private DefaultTreeModel model=(DefaultTreeModel)tree.getModel();
+	private DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 	private DefaultMutableTreeNode online = new DefaultMutableTreeNode("접속중");
 	private DefaultMutableTreeNode offline = new DefaultMutableTreeNode("오프라인");
 
@@ -57,10 +53,8 @@ class JFrameList extends JFrame {
 	private JScrollPane scroll = new JScrollPane(tree); // 트리 노드 스크롤
 
 	private JButton logout = new JButton("로그아웃"); // 로그아웃 버튼
-	private JButton addfriend=new JButton("친구 추가");
+	private JButton addfriend = new JButton("친구 추가");
 	private String resultStr = null;
-	
-	
 
 	private void display() {
 		Container con = super.getContentPane();
@@ -100,10 +94,9 @@ class JFrameList extends JFrame {
 		add(pop);
 		// 로그아웃 버튼
 		logout.setBounds(12, 636, 370, 35);
-		//친구 추가 버튼
+		// 친구 추가 버튼
 		addfriend.setBounds(224, 372, 158, 52);
-		
-		
+
 	}
 
 	DefaultMutableTreeNode node;// 노드 클릭시 해당 노드의 이름을 알려주는 코드
@@ -119,38 +112,45 @@ class JFrameList extends JFrame {
 					// System.out.println("node = " + node);
 				}
 				for (int i = 0; i < Client.friends.getListname().size(); i++) { // 노드
-																		// 클릭시
+															// 클릭시
 					String nodes = node.toString(); // 노드의 내용이
-					if (nodes.equals(Client.friends.getNickname().get(i))) { // 닉네임 배열에
-					// 있는 값들과 비교하여 같은 값이 있다면 해당 주소값에 해당하는 이름과 아이디를 출력
+					if (nodes.equals(Client.friends.getNickname().get(i))) { // 닉네임
+															// 배열에
+						// 있는 값들과 비교하여 같은 값이 있다면 해당 주소값에 해당하는 이름과
+						// 아이디를 출력
 						snames.setText(Client.friends.getListname().get(i));
 						snicks.setText(Client.friends.getNickname().get(i));
 					}
 				}
 
-				TreePath path = tree.getPathForLocation(e.getX(), e.getY()); 
-				//트리 경로 출력ex)[회원,목록,접속중,닉네임2]																	
+				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+				// 트리 경로 출력ex)[회원,목록,접속중,닉네임2]
 				if (e.getButton() == 3) { // 마우스 우클릭을 하면
-					int iRow = tree.getRowForLocation(e.getX(), e.getY()); // 해당 마우스 좌표 위치 
+					int iRow = tree.getRowForLocation(e.getX(), e.getY()); // 해당
+															// 마우스
+															// 좌표
+															// 위치
 					tree.setSelectionRow(iRow); // 트리 노드를 좌클릭
 					if (path != null) // 트리 경로가 널이 아니라면(값이 있다면)
 						if (Client.friends.getNickname().contains(node.toString())) {
-							pop.show(tree, e.getX(), e.getY()); // 팝업 메뉴창 출력
+							pop.show(tree, e.getX(), e.getY()); // 팝업
+													// 메뉴창
+													// 출력
 						} else
 							return; // 근데 없다면 리턴
 				}
 			}
 		});
-		addfriend.addActionListener(e->{
+		addfriend.addActionListener(e -> {
 
 			resultStr = JOptionPane.showInputDialog("친구의 아이디를 입력하세요.");
-			if(Client.identity.equals(resultStr)){
+			if (Client.identity.equals(resultStr)) {
 				JOptionPane.showConfirmDialog(null, "자기자신은 추가할 수 없습니다.");
-			
-			}else{	
-				System.out.println("들어온거"+resultStr);
+
+			} else {
+				System.out.println("들어온거" + resultStr);
 				Client.friends.setListname(resultStr);
-				String addname=JOptionPane.showInputDialog("친구의 이름을 설정하세요");
+				String addname = JOptionPane.showInputDialog("친구의 이름을 설정하세요");
 				Client.friends.setNickname(addname);
 				System.out.println(Client.friends.getListname().toString());
 				System.out.println(Client.friends.getNickname().toString());
@@ -160,14 +160,14 @@ class JFrameList extends JFrame {
 				model.reload();
 			}
 		});
-		start.addActionListener(e -> {//채팅방
+		start.addActionListener(e -> {// 채팅방
 			JFrameChatroom room = new JFrameChatroom();
 			room.setVisible(true);
 			dispose();
 
 		});
-		logout.addActionListener(e -> {//로그아웃
-			if(Client.conn != null && !Client.conn.getSocket().isClosed()){
+		logout.addActionListener(e -> {// 로그아웃
+			if (Client.conn != null && !Client.conn.getSocket().isClosed()) {
 				try {
 					Client.conn.close();
 					Client.conn = null;
@@ -176,17 +176,17 @@ class JFrameList extends JFrame {
 					e1.printStackTrace();
 				}
 			}
-			Client.currentGUI=new LoginGUI();
+			Client.currentGUI = new LoginGUI();
 			dispose();
 		});
-		end.addActionListener(e -> {//친구삭제
-			
+		end.addActionListener(e -> {// 친구삭제
+
 			for (int i = 0; i < Client.friends.getListname().size(); i++) {
 				if (node.toString().equals(Client.friends.getNickname().get(i))) {
-												
-						Client.friends.getNickname().remove(i);
-						Client.friends.getListname().remove(i);
-						
+
+					Client.friends.getNickname().remove(i);
+					Client.friends.getListname().remove(i);
+
 				}
 				save();
 				load();
@@ -205,7 +205,7 @@ class JFrameList extends JFrame {
 		// 운영체제의 창 배치 형식에 따라 배치
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
-		//save();
+		// save();
 		load();
 		display();
 		event();
@@ -213,17 +213,18 @@ class JFrameList extends JFrame {
 		super.setVisible(true);
 
 	}
-	private void save() { 
+
+	private void save() {
 		try {
 			Message msg = new Message(Client.identity, "=[SERVER]=", Client.friends);
 			Client.conn.sendObject(msg);
-			while(true){
+			while (true) {
 				String[] header = Client.conn.getHeader();
-				if(header != null){
+				if (header != null) {
 					Friends newFriends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
-					if(!Client.friends.equals(newFriends)){
+					if (!Client.friends.equals(newFriends)) {
 						Client.friends = newFriends;
-						
+
 					}
 				}
 			}
@@ -234,9 +235,14 @@ class JFrameList extends JFrame {
 
 	private void load() {
 		online.removeAllChildren();
-		for (int i = 0; i < Client.friends.getListname().size(); i++) { // 로그인시 친구 목록
-																// 불러오는 메소드
-			String name = Client.friends.getNickname().get(i); // 접속한 친구라면(ip가 존재한다면)
+		for (int i = 0; i < Client.friends.getListname().size(); i++) { // 로그인시
+													// 친구
+													// 목록
+													// 불러오는
+													// 메소드
+			String name = Client.friends.getNickname().get(i); // 접속한
+												// 친구라면(ip가
+												// 존재한다면)
 			online.add(new DefaultMutableTreeNode(name));
 		}
 	}

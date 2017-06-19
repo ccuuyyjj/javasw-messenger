@@ -23,20 +23,22 @@ public class Connection implements Closeable {
 	private ServerUtil serverUtil = null;
 	private ServerReceiver receiver = null;
 	private String identity = null;
-	public Connection(Socket socket) throws IOException{
+
+	public Connection(Socket socket) throws IOException {
 		this.socket = socket;
 		in = new BufferedInputStream(socket.getInputStream());
 		out = new BufferedOutputStream(socket.getOutputStream());
 	}
-	public void sendHeader(String[] header) throws IOException{
+
+	public void sendHeader(String[] header) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\\");
-		for(String arg : header)
+		for (String arg : header)
 			sb.append(arg).append("\\");
 		byte[] tmp = sb.toString().getBytes();
 		byte[] buffer = new byte[4096];
-		for(int i=0; i<buffer.length; i++){
-			if(i < tmp.length)
+		for (int i = 0; i < buffer.length; i++) {
+			if (i < tmp.length)
 				buffer[i] = tmp[i];
 			else
 				buffer[i] = ' ';
@@ -44,57 +46,66 @@ public class Connection implements Closeable {
 		out.write(buffer, 0, buffer.length);
 		out.flush();
 	}
-	public void sendFile(File f) throws IOException{
-		String[] header = new String[]{"FILE", f.getName(), String.valueOf(f.length())};
+
+	public void sendFile(File f) throws IOException {
+		String[] header = new String[] { "FILE", f.getName(), String.valueOf(f.length()) };
 		sendHeader(header);
 		BufferedInputStream fin = new BufferedInputStream(new FileInputStream(f));
 		byte[] buffer = new byte[4096];
 		long sent = 0;
-		while(sent != f.length()){
-			if((f.length() - sent) < 4096)
-				buffer = new byte[(int)(f.length() - sent)];
+		while (sent != f.length()) {
+			if ((f.length() - sent) < 4096)
+				buffer = new byte[(int) (f.length() - sent)];
 			int read = fin.read(buffer);
-			if(read == -1) break;
+			if (read == -1)
+				break;
 			out.write(buffer, 0, read);
 			out.flush();
-			sent+=read;
+			sent += read;
 		}
 		fin.close();
 	}
-	public void sendObject(Object o) throws IOException{
+
+	public void sendObject(Object o) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		new ObjectOutputStream(baos).writeObject(o);
 		int length = baos.size();
-		String[] header = new String[]{"OBJECT", o.getClass().getSimpleName(), String.valueOf(length)};
+		String[] header = new String[] { "OBJECT", o.getClass().getSimpleName(), String.valueOf(length) };
 		sendHeader(header);
-		ByteArrayInputStream oin = new ByteArrayInputStream(baos.toByteArray(),0,length);
-		for(int i=0; i<length; i++){
+		ByteArrayInputStream oin = new ByteArrayInputStream(baos.toByteArray(), 0, length);
+		for (int i = 0; i < length; i++) {
 			out.write(baos.toByteArray()[i]);
 			out.flush();
 		}
-//		byte[] buffer = new byte[4096];
-//		int sent = 0;
-//		while(sent != length){
-//			if((length - sent) < 4096)
-//				buffer = new byte[(length - sent)];
-//			int read = oin.read(buffer);
-//			if(read == -1) break;
-//			out.write(buffer, 0, read);
-//			out.flush();
-//			sent+=read;
-//		}
+		// byte[] buffer = new byte[4096];
+		// int sent = 0;
+		// while(sent != length){
+		// if((length - sent) < 4096)
+		// buffer = new byte[(length - sent)];
+		// int read = oin.read(buffer);
+		// if(read == -1) break;
+		// out.write(buffer, 0, read);
+		// out.flush();
+		// sent+=read;
+		// }
 		oin.close();
 	}
-	public String[] getHeader() throws IOException{ //String[] header = conn.getHeader();
+
+	public String[] getHeader() throws IOException { // String[] header =
+										// conn.getHeader();
 		byte[] buffer = new byte[4096];
 		int trial = 1;
-		for(int i=0; i < buffer.length; i++){
+		for (int i = 0; i < buffer.length; i++) {
 			int read = in.read();
-			if(read == -1){
-				if(trial <= 10){
+			if (read == -1) {
+				if (trial <= 10) {
 					System.out.println("reached the end of stream (trial : " + trial + " )");
-					try{Thread.sleep(100);}catch(Exception e){}
-					i--; trial++;
+					try {
+						Thread.sleep(100);
+					} catch (Exception e) {
+					}
+					i--;
+					trial++;
 				} else {
 					System.out.println("stream seems to be closed");
 					this.close();
@@ -109,18 +120,20 @@ public class Connection implements Closeable {
 		String[] header = tmp.trim().substring(1).split("\\\\");
 		return header;
 	}
-	public File getFile(String name, long length) throws IOException{
+
+	public File getFile(String name, long length) throws IOException {
 		File target = new File("received", name);
-		while(target.exists())
+		while (target.exists())
 			target = new File("received", "(new)" + target.getName());
 		BufferedOutputStream fout = new BufferedOutputStream(new FileOutputStream(target));
 		byte[] buffer = new byte[4096];
 		long received = 0;
-		while(received != length){
-			if((length - received) < 4096)
-				buffer = new byte[(int)(length - received)];
+		while (received != length) {
+			if ((length - received) < 4096)
+				buffer = new byte[(int) (length - received)];
 			int read = in.read(buffer);
-			if(read == -1) continue;
+			if (read == -1)
+				continue;
 			received += read;
 			fout.write(buffer, 0, read);
 			fout.flush();
@@ -128,26 +141,28 @@ public class Connection implements Closeable {
 		fout.close();
 		return target;
 	}
-	public Object getObject(int length) throws IOException, ClassNotFoundException{
+
+	public Object getObject(int length) throws IOException, ClassNotFoundException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//		byte[] buffer = new byte[4096];
-//		int received = 0;
-//		while(received != length){
-//			if((length - received) < 4096)
-//				buffer = new byte[(length - received)];
-//			int read = in.read(buffer);
-//			if(read == -1) continue;
-//			received += read;
-//			baos.write(buffer, 0, read);
-//			baos.flush();
-//		}
-		for(int i=0; i<length; i++){
+		// byte[] buffer = new byte[4096];
+		// int received = 0;
+		// while(received != length){
+		// if((length - received) < 4096)
+		// buffer = new byte[(length - received)];
+		// int read = in.read(buffer);
+		// if(read == -1) continue;
+		// received += read;
+		// baos.write(buffer, 0, read);
+		// baos.flush();
+		// }
+		for (int i = 0; i < length; i++) {
 			baos.write(in.read());
 			baos.flush();
 		}
 		Object o = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray())).readObject();
 		return o;
 	}
+
 	public class ServerReceiver extends Thread {
 		private Connection conn = null;
 		private ServerUtil util = null;
@@ -155,22 +170,24 @@ public class Connection implements Closeable {
 		{
 			this.setDaemon(true);
 		}
-		public ServerReceiver(Connection conn){
+
+		public ServerReceiver(Connection conn) {
 			this.conn = conn;
 			this.util = conn.getServerUtil();
 			System.out.println(conn.identity + "에 대한 Receiver 설정 완료");
 		}
+
 		@Override
 		public void run() {
-			while(running){
+			while (running) {
 				try {
 					String[] header = conn.getHeader();
-					if(header != null){
+					if (header != null) {
 						System.out.println("header[0] : " + header[0]);
-						if(header[0].equals("OBJECT") && header[1].equals("Message")){
+						if (header[0].equals("OBJECT") && header[1].equals("Message")) {
 							Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
 							util.handleMessage(msg);
-						} else if(header[0].equals("CLOSE")) {
+						} else if (header[0].equals("CLOSE")) {
 							System.out.println("연결 종료 헤더 수신");
 							conn.close();
 						} else {
@@ -178,51 +195,64 @@ public class Connection implements Closeable {
 							conn.close();
 						}
 					}
-				} catch (Exception e) {}
+				} catch (Exception e) {
+				}
 			}
 		}
+
 		public boolean isRunning() {
 			return running;
 		}
+
 		public void setRunning(boolean running) {
 			this.running = running;
 		}
 	}
+
 	public Socket getSocket() {
 		return socket;
 	}
+
 	public BufferedInputStream getIn() {
 		return in;
 	}
+
 	public BufferedOutputStream getOut() {
 		return out;
 	}
+
 	public ServerUtil getServerUtil() {
 		return serverUtil;
 	}
-	public ServerReceiver getServerReceiver(){
+
+	public ServerReceiver getServerReceiver() {
 		return receiver;
 	}
+
 	public String getIdentity() {
 		return identity;
 	}
+
 	public void setIdentity(String identity) {
 		this.identity = identity;
 	}
+
 	public void InitServerUtil() {
 		this.serverUtil = new ServerUtil(this);
 	}
-	public void InitServerReceiver(){
+
+	public void InitServerReceiver() {
 		this.receiver = new ServerReceiver(this);
 		this.receiver.setRunning(true);
 	}
+
 	@Override
 	public void close() throws IOException {
-		if(receiver != null){
-			if(Server.getClientList().remove(identity) != null)
+		if (receiver != null) {
+			if (Server.getClientList().remove(identity) != null)
 				receiver.setRunning(false);
 		} else
-			sendHeader(new String[]{"CLOSE"});
+			sendHeader(new String[] { "CLOSE" });
 		socket.close();
 	}
 }

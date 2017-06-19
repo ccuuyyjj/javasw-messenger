@@ -20,7 +20,7 @@ public class LoginInfo implements Serializable {
 	public String getPassword() {
 		return password;
 	}
-	
+
 	public int getflag() {
 		return flag;
 	}
@@ -36,5 +36,5 @@ public class LoginInfo implements Serializable {
 	public void setFlag(int flag) {
 		this.flag = flag;
 	}
-	
+
 }

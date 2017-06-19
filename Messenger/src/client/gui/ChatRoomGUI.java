@@ -136,10 +136,10 @@ class Receiver extends Thread {
 		while (true) {
 			try {
 				String[] header = conn.getHeader();
-				if(header != null){
-					if(header[1].equals("Message")){
+				if (header != null) {
+					if (header[1].equals("Message")) {
 						String yourmsg = null;
-						Message msg = (Message) conn.getObject(Integer.parseInt(header[2])); 
+						Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
 						if (msg.getMsg() != null)
 							yourmsg = (String) msg.getMsg();
 						System.out.println(yourmsg);
