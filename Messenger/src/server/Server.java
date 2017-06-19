@@ -13,10 +13,10 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 import general.container.Connection;
+import general.container.Friends;
 import general.container.Message;
 import server.impl.ServerUtil;
 
@@ -24,8 +24,9 @@ public class Server {
 	private static File loginDB;	//ID/PW를 저장하는 DB파일 (한줄에 아이디와 패스워드 한쌍, 그 사이는 탭(\t)으로 구분)
 	private static File friendsDB;	//ID가 키, 그 아이디의 친구목록이 값인 HashMap이 저장된 DB파일
 	private static File filelistDB;	//아래 filelist의 내용을 저장하는 DB파일
-	private static Map<Message, File> filelist = null;	//서버에 저장된 파일들의 목록
-	private static Map<String, Connection> clientlist = new HashMap<>();	//연결된 클라이언트들이 저장되는 공간
+	private static HashMap<String, Friends> friends = null;
+	private static HashMap<Message, File> filelist = null;	//서버에 저장된 파일들의 목록
+	private static HashMap<String, Connection> clientlist = new HashMap<>();	//연결된 클라이언트들이 저장되는 공간
 	private static ServerSocket server;	//서버에서 클라이언트의 접속을 대기하는 소켓
 	private static int port;	//서버가 접속을 대기할 포트
 	private static int timeout;	//접속 대기 시간
@@ -48,8 +49,10 @@ public class Server {
 				try {
 					server.setSoTimeout(timeout);
 					Socket socket = server.accept();
+					System.out.println(socket.getInetAddress() + "에서 들어오는 연결");
 					Connection conn = new Connection(socket);
-					ServerUtil util = new ServerUtil(conn);
+					conn.InitServerUtil();
+					ServerUtil util = conn.getServerUtil();
 					//로그인 정보 확인 (로그인 정보가 안오면 접속 종료)
 					String[] header = conn.getHeader();
 					if(header[0].equals("OBJECT") && header[1].equals("Message")){
@@ -87,8 +90,11 @@ public class Server {
 		if(!loginDB.exists())
 			loginDB.createNewFile();
 		friendsDB = new File("db", "friendsDB.db");
-		if(!friendsDB.exists())
+		if(!friendsDB.exists()){
 			friendsDB.createNewFile();
+			friends = new HashMap<>();
+			closeFriends();
+		}
 		filelistDB = new File("db", "filelistDB.db");
 		if(!filelistDB.exists()){
 			friendsDB.createNewFile();
@@ -123,15 +129,26 @@ public class Server {
 		return friendsDB;
 	}
 	@SuppressWarnings("unchecked")
-	public static Map<Message, File> getFileList(){
+	public static HashMap<Message, File> getFileList(){
 		if(filelist == null){
 			try {
 				ObjectInputStream oin = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filelistDB)));
-				filelist = (Map<Message, File>) oin.readObject();
+				filelist = (HashMap<Message, File>) oin.readObject();
 				oin.close();
 			} catch (Exception e) {}
 		}
 		return filelist;
+	}
+	@SuppressWarnings("unchecked")
+	public static HashMap<String, Friends> getFriends(){
+		if(friends == null){
+			try {
+				ObjectInputStream oin = new ObjectInputStream(new BufferedInputStream(new FileInputStream(friendsDB)));
+				friends = (HashMap<String, Friends>) oin.readObject();
+				oin.close();
+			} catch (Exception e) {e.printStackTrace();}
+		}
+		return friends;
 	}
 	public static void closeFileList(){
 		if(filelist != null){
@@ -145,7 +162,19 @@ public class Server {
 		filelist.clear();
 		filelist = null;
 	}
-	public static Map<String, Connection> getClientList(){
+	public static void closeFriends(){
+		if(friends != null){
+			try {
+				ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(friendsDB)));
+				out.writeObject(friends);
+				out.flush();
+				out.close();
+			} catch (Exception e) {}
+		}
+		friends.clear();
+		friends = null;
+	}
+	public static HashMap<String, Connection> getClientList(){
 		return clientlist;
 	}
 	public static int getTimeout() {

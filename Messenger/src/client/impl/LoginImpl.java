@@ -24,10 +24,10 @@ public class LoginImpl {
 		Message sendmsg = new Message(info);
 		Client.conn.sendObject(sendmsg);
 		String[] header = Client.conn.getHeader();
-		if(header[0].equals("OBJECT") && header[1].equals("Message")){
-			Message recvmsg = (Message) Client.conn.getObject(Integer.parseInt(header[2]));
-			if((Boolean)(recvmsg.getMsg()))
-				result = true;
+		System.out.println(header);
+		if(header[0].equals("OBJECT") && header[1].equals("Boolean")){
+			Boolean recvmsg = (Boolean) Client.conn.getObject(Integer.parseInt(header[2]));
+			if(recvmsg) result = true;
 		}
 		return result;
 	} // 회원가입 버튼을 누르면 Message형태로 LoginInfo(id, pw, 회원가입flag)를 서버에 보내고 결과값(t/f)을 받아옴
@@ -42,16 +42,24 @@ public class LoginImpl {
 		Message sendmsg = new Message(info);
 		Client.conn.sendObject(sendmsg);
 		String[] header = Client.conn.getHeader();
-		if(header[0].equals("OBJECT") && header[1].equals("Message")){
-			Message recvmsg = (Message) Client.conn.getObject(Integer.parseInt(header[2]));
-			if((Boolean)(recvmsg.getMsg()))
+		System.out.println(header);
+		if(header[0].equals("OBJECT") && header[1].equals("Boolean")){
+			Boolean recvmsg = (Boolean) Client.conn.getObject(Integer.parseInt(header[2]));
+			if(recvmsg){
+				System.out.println(recvmsg);
 				result = true;
-
 //				로그인 결과값이 true일 경우 친구 목록 받아오기
-				String[] fheader = Client.conn.getHeader();
-				if(fheader[0].equals("OBJECT") && fheader[1].equals("Friends")) {
-					Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
+				while(true){
+					String[] fheader = Client.conn.getHeader();
+					System.out.println(fheader);
+					if(fheader != null){
+						if(fheader[0].equals("OBJECT") && fheader[1].equals("Friends"))
+							Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(fheader[2]));
+						System.out.println(Client.friends.getListname().toString());
+						break;
+					}
 				}
+			}
 		}
 		
 		return result;
