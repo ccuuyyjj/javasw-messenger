@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import client.impl.ClientUtil;
+
 public class Friends implements Serializable{
 	private static final long serialVersionUID = -3117451285694131816L;
 	private List<String> listname=new ArrayList<String>();		//사람 이름

@@ -25,7 +25,9 @@ import javax.swing.tree.TreePath;
 
 
 import client.Client;
+import client.impl.ClientUtil;
 import general.container.Friends;
+import general.container.Message;
 
 
 
@@ -143,7 +145,7 @@ class JFrameList extends JFrame {
 
 			resultStr = JOptionPane.showInputDialog("친구의 아이디를 입력하세요.");
 			if(Client.identity.equals(resultStr)){
-				JOptionPane.showConfirmDialog(pop, "아니에여");
+				JOptionPane.showConfirmDialog(null, "자기자신은 추가할 수 없습니다.");
 			
 			}else{	
 				System.out.println("들어온거"+resultStr);
@@ -153,6 +155,7 @@ class JFrameList extends JFrame {
 				System.out.println(Client.friends.getListname().toString());
 				System.out.println(Client.friends.getNickname().toString());
 				System.out.println(Client.friends.getListname().size());
+				save();
 				load();
 				model.reload();
 			}
@@ -177,16 +180,18 @@ class JFrameList extends JFrame {
 			dispose();
 		});
 		end.addActionListener(e -> {//친구삭제
-			int num = 0;
+			
 			for (int i = 0; i < Client.friends.getListname().size(); i++) {
 				if (node.toString().equals(Client.friends.getNickname().get(i))) {
-						num = i;						
-						Client.friends.getNickname().remove(num);
-						Client.friends.getListname().remove(num);
-						online.remove(num);				
-						model.reload();
-						break;
+												
+						Client.friends.getNickname().remove(i);
+						Client.friends.getListname().remove(i);
+						
 				}
+				save();
+				load();
+				model.reload();
+				break;
 			}
 		});
 	}
@@ -209,10 +214,24 @@ class JFrameList extends JFrame {
 
 	}
 	private void save() { 
-		
-		
+		try {
+			Message msg = new Message(Client.identity, "=[SERVER]=", Client.friends);
+			Client.conn.sendObject(msg);
+			while(true){
+				String[] header = Client.conn.getHeader();
+				if(header != null){
+					Friends newFriends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
+					if(!Client.friends.equals(newFriends)){
+						Client.friends = newFriends;
+						
+					}
+				}
+			}
+		} catch (IOException | NumberFormatException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
-	private Friends f = Client.friends;
+
 	private void load() {
 		online.removeAllChildren();
 		for (int i = 0; i < Client.friends.getListname().size(); i++) { // 로그인시 친구 목록
