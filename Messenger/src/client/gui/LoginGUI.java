@@ -109,6 +109,15 @@ public class LoginGUI extends JFrame {
 	
 					if (check) {
 						JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
+						
+						File target = new File("files", "info.prop");
+						FileOutputStream out = new FileOutputStream(target);
+						Properties prop = new Properties();
+						prop.setProperty("id", id.getText());
+						prop.setProperty("pw", pw.getText());
+						prop.setProperty("addr", address.getText());
+						prop.store(out, "information");
+						
 						Client.identity = id.getText();
 						this.dispose();
 						Client.currentGUI = new JFrameList();
