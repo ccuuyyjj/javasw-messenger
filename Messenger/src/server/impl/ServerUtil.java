@@ -54,12 +54,10 @@ public class ServerUtil {
 		return result;
 	}
 	public Friends getFriends(LoginInfo login) {
-		Friends result = null;
-		HashMap<String, Friends> friends = Server.getFriends();
-		result = friends.get(login.getIdentity());
+		Friends result = Server.getFriends().get(login.getIdentity());
 		if(result == null){
-			friends.put(login.getIdentity(), new Friends());
-			result = friends.get(login.getIdentity());
+			Server.getFriends().put(login.getIdentity(), new Friends());
+			result = Server.getFriends().get(login.getIdentity());
 		}
 		return result;
 	}
@@ -75,6 +73,7 @@ public class ServerUtil {
 					conn.setIdentity(login.getIdentity());
 					if(login.getflag() == 1){
 						conn.sendObject(getFriends(login));
+						Server.closeFriends();
 					}
 					Server.getClientList().put(login.getIdentity(), conn);
 					try{ Thread.sleep(Server.getTimeout());}catch(Exception e){}
@@ -83,6 +82,14 @@ public class ServerUtil {
 				} else {
 					conn.close();
 				}
+			} catch (Exception e) {}
+			break;
+		case "Friends":
+			try{
+				String identity = msg.getSender();
+				Friends friends = (Friends) msg.getMsg();
+				Server.getFriends().put(identity, friends);
+				Server.closeFriends();
 			} catch (Exception e) {}
 			break;
 		case "String":
