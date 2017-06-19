@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -24,9 +25,9 @@ import javax.swing.tree.TreePath;
 
 
 import client.Client;
-
-
+import general.container.Connection;
 import general.container.Friends;
+import server.Server;
 
 
 class JFrameList extends JFrame {
@@ -57,6 +58,7 @@ class JFrameList extends JFrame {
 	private JButton logout = new JButton("로그아웃"); // 로그아웃 버튼
 	private JButton addfriend=new JButton("친구 추가");
 	private String resultStr = null;
+	private int count=0;
 	
 	
 
@@ -139,14 +141,25 @@ class JFrameList extends JFrame {
 			}
 		});
 		addfriend.addActionListener(e->{
-			
-			
+
 			resultStr = JOptionPane.showInputDialog("친구의 아이디를 입력하세요.");
-			if(Client.friends.getNickname().contains(resultStr)){
-				
+			if(Client.conn.getIdentity().equals(resultStr)){
+			System.out.println("들어온거"+resultStr);
+				Client.friends.setListname(resultStr);
+				String addname=JOptionPane.showInputDialog("친구의 이름을 설정하세요");
+				Client.friends.setNickname(addname);
+				System.out.println(Client.friends.getListname().toString());
+				System.out.println(Client.friends.getNickname().toString());
+				System.out.println(Client.friends.getListname().size());
+				load();
+				model.reload();
+			
+			}else{
+				JOptionPane.showConfirmDialog(pop, "아니에여");
 			}
-			
-			
+					
+					
+
 		});
 		start.addActionListener(e -> {//채팅방
 			JFrameChatroom room = new JFrameChatroom();
@@ -155,6 +168,15 @@ class JFrameList extends JFrame {
 
 		});
 		logout.addActionListener(e -> {//로그아웃
+			if(Client.conn != null && !Client.conn.getSocket().isClosed()){
+				try {
+					Client.conn.close();
+					Client.conn = null;
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 			Client.currentGUI=new LoginGUI();
 			dispose();
 		});
@@ -182,7 +204,7 @@ class JFrameList extends JFrame {
 		// 운영체제의 창 배치 형식에 따라 배치
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
-		save();
+		//save();
 		load();
 		display();
 		event();
@@ -191,15 +213,16 @@ class JFrameList extends JFrame {
 
 	}
 	private void save() { 
-		Client.friends=new Friends();	
+		
+		
 	}
-	private Friends f = null;
+	private Friends f = Client.friends;
 	private void load() {
-		Client.friends=new Friends();
+		online.removeAllChildren();
 		for (int i = 0; i < Client.friends.getListname().size(); i++) { // 로그인시 친구 목록
 																// 불러오는 메소드
 			String name = Client.friends.getNickname().get(i); // 접속한 친구라면(ip가 존재한다면)
-			online.add(new DefaultMutableTreeNode(Client.friends.getNickname().get(i)));
+			online.add(new DefaultMutableTreeNode(name));
 		}
 	}
 }

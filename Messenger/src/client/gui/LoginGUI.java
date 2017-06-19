@@ -3,8 +3,10 @@ package client.gui;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Properties;
+import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -101,42 +103,58 @@ public class LoginGUI extends JFrame {
 		// placeholder 설정 제거, 그냥 라벨로 앞에 써줌
 
 		join.addActionListener(e -> {
-			try {
-				boolean check = ClientUtil.join(id.getText(), pw.getText(), address.getText());
-
-				if (check) {
-					JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
-					Client.currentGUI = new JFrameList();
-					dispose();
+			if (regex(id.getText(), pw.getText())) {
+				try {
+					boolean check = ClientUtil.joinNlogin(id.getText(), pw.getText(), address.getText(), ClientUtil.JOIN);
+	
+					if (check) {
+						JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
+						Client.identity = id.getText();
+						this.dispose();
+						Client.currentGUI = new JFrameList();
+					}
+					else {
+						JOptionPane.showMessageDialog(this, "이미 존재하는 아이디입니다");
+						pw.setText("");
+						if(Client.conn != null && !Client.conn.getSocket().isClosed()){
+							Client.conn.close();
+							Client.conn = null;
+						}
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
 				}
-				else {
-					JOptionPane.showMessageDialog(this, "이미 존재하는 아이디이거나 형식에 맞지 않습니다");
-					pw.setText("");
-					Client.conn.close();
-					Client.conn = null;
-				}
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
+			} else
+				JOptionPane.showMessageDialog(this, "형식에 맞지 않습니다");
 		});
 
 		login.addActionListener(e -> {
-			System.out.println("conn : " + Client.conn);
 			try {
-				Boolean check = ClientUtil.login(id.getText(), pw.getText(), address.getText());
+				boolean check = ClientUtil.joinNlogin(id.getText(), pw.getText(), address.getText(), ClientUtil.LOGIN);
 
 				if (check) {
 					JOptionPane.showMessageDialog(this, "로그인에 성공했습니다");
 					
+					File target = new File("files", "info.prop");
+					FileOutputStream out = new FileOutputStream(target);
+					Properties prop = new Properties();
+					prop.setProperty("id", id.getText());
+					prop.setProperty("pw", pw.getText());
+					prop.setProperty("addr", address.getText());
+					prop.store(out, "information");
+					
+					Client.identity = id.getText();
+					this.dispose();
 					Client.currentGUI = new JFrameList();
-					dispose();
-				} else
+				} else {
 					JOptionPane.showMessageDialog(this, "일치하는 정보가 없습니다");
 					pw.setText("");
-					Client.conn.close();
-					Client.conn = null;
+					if(Client.conn != null && !Client.conn.getSocket().isClosed()){
+						Client.conn.close();
+						Client.conn = null;
+					}
 				}
-			catch (Exception e1) {
+			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		});
@@ -144,7 +162,15 @@ public class LoginGUI extends JFrame {
 
 	private void menu() {
 	}
+	
+	private boolean regex(String id, String pw) {
+		String idRegex = "^[a-zA-Z0-9-_]{2,10}$";
+		String pwRegex = "^[a-zA-Z0-9-_]{6,20}$";
 
+		if (!Pattern.matches(idRegex, id) || !Pattern.matches(pwRegex, pw)) return false;
+		else return true;
+	}
+	
 	public LoginGUI() {
 		
 		display();
