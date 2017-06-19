@@ -2,9 +2,7 @@ package general.container;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Friends implements Serializable{
 	private static final long serialVersionUID = -3117451285694131816L;
@@ -23,7 +21,6 @@ public class Friends implements Serializable{
 		this.listname.add(namecount, name);
 		this.namecount=this.namecount+1;
 		System.out.println("name"+namecount);
-		
 	}
 	
 
@@ -34,7 +31,6 @@ public class Friends implements Serializable{
 		this.nickname.add(nickcount,nickname);
 		this.nickcount=nickcount+1;
 		System.out.println("nick"+nickcount);
-
 	}
 	
 

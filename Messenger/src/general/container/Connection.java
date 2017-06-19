@@ -65,7 +65,7 @@ public class Connection implements Closeable {
 		new ObjectOutputStream(baos).writeObject(o);
 		int length = baos.size();
 		String[] header = new String[]{"OBJECT", o.getClass().getSimpleName(), String.valueOf(length)};
-		System.out.println(header);
+		System.out.println(header[0] + " " + header[1] + " " + header[2]);
 		sendHeader(header);
 		ByteArrayInputStream oin = new ByteArrayInputStream(baos.toByteArray(),0,length);
 		byte[] buffer = new byte[4096];
@@ -81,7 +81,7 @@ public class Connection implements Closeable {
 		}
 		oin.close();
 	}
-	public synchronized String[] getHeader() throws IOException{
+	public String[] getHeader() throws IOException{
 		byte[] buffer = new byte[4096];
 		int trial = 1;
 		for(int i=0; i < buffer.length; i++){

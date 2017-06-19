@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import general.container.Connection;
@@ -31,8 +31,8 @@ public class ServerUtil {
 			s.useDelimiter("\t");
 			if(login.getflag() == 1){
 				while(s.hasNextLine()){
-					if(s.next().equals(identity)){
-						if(s.next().equals(password))
+					if(s.next().trim().equals(identity.trim())){
+						if(s.next().trim().equals(password.trim()))
 							result = true;
 						else break;
 					} else s.next();
@@ -56,7 +56,6 @@ public class ServerUtil {
 		} catch (IOException e) {}
 		return result;
 	}
-	@SuppressWarnings("unchecked")
 	public Friends getFriends(LoginInfo login) {
 		Friends result = null;
 		try{
@@ -64,8 +63,13 @@ public class ServerUtil {
 			ObjectInputStream oin = new ObjectInputStream(
 								new BufferedInputStream(
 									new FileInputStream(db)));
-			Map<String, Friends> friendsDB = (Map<String, Friends>) oin.readObject();
+			HashMap<String, Friends> friendsDB = (HashMap<String, Friends>) oin.readObject();
 			result = friendsDB.get(login.getIdentity());
+			if(result == null){
+				friendsDB.put(login.getIdentity(), new Friends());
+				result = friendsDB.get(login.getIdentity());
+			}
+			System.out.println();
 			oin.close();
 		}catch(Exception e){}
 		return result;
@@ -78,10 +82,17 @@ public class ServerUtil {
 				LoginInfo login = (LoginInfo) msg.getMsg();
 				Boolean check = checkLogin(login); 
 				conn.sendObject(check);
+				System.out.println(check);
 				if(check){
 					conn.setIdentity(login.getIdentity());
-					conn.sendObject(getFriends(login));
+					if(login.getflag() == 1){
+						getFriends(login).setListname("asdf");
+						getFriends(login).setNickname("asdf");
+						conn.sendObject(getFriends(login));
+					}
 					Server.getClientList().put(login.getIdentity(), conn);
+					conn.InitServerReceiver();
+					conn.getServerReceiver().start();
 				}
 			} catch (Exception e) {}
 			break;
