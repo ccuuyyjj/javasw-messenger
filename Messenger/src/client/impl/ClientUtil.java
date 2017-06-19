@@ -9,7 +9,7 @@ import general.container.Friends;
 import general.container.LoginInfo;
 import general.container.Message;
 
-public class LoginImpl {
+public class ClientUtil {
 	
 	final static int JOIN = 0;
 	final static int LOGIN = 1;

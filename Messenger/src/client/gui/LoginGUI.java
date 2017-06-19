@@ -13,7 +13,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import client.Client;
-import client.impl.LoginImpl;
+import client.impl.ClientUtil;
 
 public class LoginGUI extends JFrame {
 
@@ -100,7 +100,7 @@ public class LoginGUI extends JFrame {
 
 		join.addActionListener(e -> {
 			try {
-				boolean check = LoginImpl.join(id.getText(), pw.getText(), address.getText());
+				boolean check = ClientUtil.join(id.getText(), pw.getText(), address.getText());
 
 				if (check) {
 					JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
@@ -120,7 +120,7 @@ public class LoginGUI extends JFrame {
 		login.addActionListener(e -> {
 			System.out.println("conn : " + Client.conn);
 			try {
-				Boolean check = LoginImpl.login(id.getText(), pw.getText(), address.getText());
+				Boolean check = ClientUtil.login(id.getText(), pw.getText(), address.getText());
 
 				if (check) {
 					JOptionPane.showMessageDialog(this, "로그인에 성공했습니다");
