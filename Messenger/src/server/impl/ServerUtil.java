@@ -89,7 +89,6 @@ public class ServerUtil {
 					conn.InitServerReceiver();
 					conn.getServerReceiver().start();
 				} else {
-					try{ Thread.sleep(Server.getTimeout());}catch(Exception e){}
 					conn.close();
 				}
 			} catch (Exception e) {}

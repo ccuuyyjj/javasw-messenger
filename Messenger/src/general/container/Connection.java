@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import server.Server;
 import server.impl.ServerUtil;
 
 public class Connection implements Closeable {
@@ -152,6 +153,7 @@ public class Connection implements Closeable {
 	public class ServerReceiver extends Thread {
 		private Connection conn = null;
 		private ServerUtil util = null;
+		private boolean running;
 		{
 			this.setDaemon(true);
 		}
@@ -161,7 +163,7 @@ public class Connection implements Closeable {
 		}
 		@Override
 		public void run() {
-			while(!conn.getSocket().isClosed()){
+			while(running){
 				try {
 					String[] header = conn.getHeader();
 					if(header != null){
@@ -175,6 +177,12 @@ public class Connection implements Closeable {
 					}
 				} catch (Exception e) {}
 			}
+		}
+		public boolean isRunning() {
+			return running;
+		}
+		public void setRunning(boolean running) {
+			this.running = running;
 		}
 	}
 	public Socket getSocket() {
@@ -206,8 +214,8 @@ public class Connection implements Closeable {
 	}
 	@Override
 	public void close() throws IOException {
-		in.close();
-		out.close();
+		if(Server.getClientList().remove(identity) != null)
+			receiver.setRunning(false);
 		socket.close();
 	}
 }
