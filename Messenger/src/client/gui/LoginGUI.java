@@ -29,7 +29,7 @@ public class LoginGUI extends JFrame {
 	private JLabel lbPw = new JLabel("비밀번호 : ");
 	private JPasswordField pw = new JPasswordField("aaaaaa"); // 비밀번호
 	private JLabel lbAddr = new JLabel("서버주소 : ");
-	private JTextField address = new JTextField("192.168.0.10"); // 서버 주소
+	private JTextField address = new JTextField("warrock.iptime.org"); // 서버 주소
 
 	private JLabel info = new JLabel("아이디 : 2-10자, 비밀번호 : 6-20자 (특수문자 제외)", JLabel.RIGHT);
 
@@ -135,13 +135,13 @@ public class LoginGUI extends JFrame {
 				if (check) {
 					JOptionPane.showMessageDialog(this, "로그인에 성공했습니다");
 					
-//					File target = new File("files", "info.prop");
-//					FileOutputStream out = new FileOutputStream(target);
-//					Properties prop = new Properties();
-//					prop.setProperty("id", id.getText());
-//					prop.setProperty("pw", pw.getText());
-//					prop.setProperty("addr", address.getText());
-//					prop.store(out, "information");;
+					File target = new File("files", "info.prop");
+					FileOutputStream out = new FileOutputStream(target);
+					Properties prop = new Properties();
+					prop.setProperty("id", id.getText());
+					prop.setProperty("pw", pw.getText());
+					prop.setProperty("addr", address.getText());
+					prop.store(out, "information");
 					
 					Client.identity = id.getText();
 					this.dispose();
