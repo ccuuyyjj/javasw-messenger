@@ -30,7 +30,6 @@ public class Friends implements Serializable{
 		
 		this.nickname.add(nickname);
 		
-		
 
 	}
 	
