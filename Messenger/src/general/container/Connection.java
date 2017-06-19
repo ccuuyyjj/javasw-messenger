@@ -158,6 +158,7 @@ public class Connection implements Closeable {
 		public ServerReceiver(Connection conn){
 			this.conn = conn;
 			this.util = conn.getServerUtil();
+			System.out.println(conn.identity + "에 대한 Receiver 설정 완료");
 		}
 		@Override
 		public void run() {
@@ -165,6 +166,7 @@ public class Connection implements Closeable {
 				try {
 					String[] header = conn.getHeader();
 					if(header != null){
+						System.out.println("header[0] : " + header[0]);
 						if(header[0].equals("OBJECT") && header[1].equals("Message")){
 							Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
 							util.handleMessage(msg);
@@ -212,6 +214,7 @@ public class Connection implements Closeable {
 	}
 	public void InitServerReceiver(){
 		this.receiver = new ServerReceiver(this);
+		this.receiver.setRunning(true);
 	}
 	@Override
 	public void close() throws IOException {
