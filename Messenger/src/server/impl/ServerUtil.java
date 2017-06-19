@@ -57,21 +57,15 @@ public class ServerUtil {
 		return result;
 	}
 	public Friends getFriends(LoginInfo login) {
+		System.out.println("ServerUtil.getFriends Ω√¿€");
 		Friends result = null;
-		try{
-			File db = Server.getFriendsDB();
-			ObjectInputStream oin = new ObjectInputStream(
-								new BufferedInputStream(
-									new FileInputStream(db)));
-			HashMap<String, Friends> friendsDB = (HashMap<String, Friends>) oin.readObject();
-			result = friendsDB.get(login.getIdentity());
-			if(result == null){
-				friendsDB.put(login.getIdentity(), new Friends());
-				result = friendsDB.get(login.getIdentity());
-			}
-			System.out.println();
-			oin.close();
-		}catch(Exception e){}
+		HashMap<String, Friends> friends = Server.getFriends();
+		result = friends.get(login.getIdentity());
+		if(result == null){
+			friends.put(login.getIdentity(), new Friends());
+			result = friends.get(login.getIdentity());
+		}
+		System.out.println("ServerUtil.getFriends ≥°");
 		return result;
 	}
 	public void handleMessage(Message msg){
@@ -93,6 +87,9 @@ public class ServerUtil {
 					Server.getClientList().put(login.getIdentity(), conn);
 					conn.InitServerReceiver();
 					conn.getServerReceiver().start();
+				} else {
+					try{ Thread.sleep(Server.getTimeout());}catch(Exception e){}
+					conn.close();
 				}
 			} catch (Exception e) {}
 			break;

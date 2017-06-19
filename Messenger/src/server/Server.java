@@ -90,8 +90,11 @@ public class Server {
 		if(!loginDB.exists())
 			loginDB.createNewFile();
 		friendsDB = new File("db", "friendsDB.db");
-		if(!friendsDB.exists())
+		if(!friendsDB.exists()){
 			friendsDB.createNewFile();
+			friends = new HashMap<>();
+			closeFriends();
+		}
 		filelistDB = new File("db", "filelistDB.db");
 		if(!filelistDB.exists()){
 			friendsDB.createNewFile();
@@ -143,7 +146,7 @@ public class Server {
 				ObjectInputStream oin = new ObjectInputStream(new BufferedInputStream(new FileInputStream(friendsDB)));
 				friends = (HashMap<String, Friends>) oin.readObject();
 				oin.close();
-			} catch (Exception e) {}
+			} catch (Exception e) {e.printStackTrace();}
 		}
 		return friends;
 	}
@@ -158,6 +161,18 @@ public class Server {
 		}
 		filelist.clear();
 		filelist = null;
+	}
+	public static void closeFriends(){
+		if(friends != null){
+			try {
+				ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(friendsDB)));
+				out.writeObject(friends);
+				out.flush();
+				out.close();
+			} catch (Exception e) {}
+		}
+		friends.clear();
+		friends = null;
 	}
 	public static HashMap<String, Connection> getClientList(){
 		return clientlist;
