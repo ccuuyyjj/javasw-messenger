@@ -25,22 +25,26 @@ public class ServerUtil {
 		String password = login.getPassword();
 		try {
 			Scanner s = new Scanner(Server.getLoginDB());
-			s.useDelimiter("\t");
+			s.useDelimiter("[\t\n]");
 			if(login.getflag() == 1){
 				while(s.hasNextLine()){
-					if(s.next().trim().equals(identity.trim())){
-						if(s.next().trim().equals(password.trim()))
+					String id = s.next().trim();
+					String pw = s.next().trim();
+					if(id.equals(identity.trim())){
+						if(pw.equals(password.trim()))
 							result = true;
-						else break;
-					} else s.next();
+						break;
+					}
 				}
 			} else {
 				result = true;
 				while(s.hasNextLine()){
-					if(s.next().equals(identity)){
+					String id = s.next().trim();
+					String pw = s.next().trim();
+					if(id.equals(identity)){
 						result = false;
 						break;
-					} else s.next();
+					}
 				}
 				if(result){
 					String idpw = identity + "\t" + password;
