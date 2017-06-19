@@ -44,7 +44,7 @@ public class ServerUtil {
 				}
 				if(result){
 					String idpw = identity + "\t" + password;
-					PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(Server.getLoginDB())));
+					PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(Server.getLoginDB(), true)));
 					writer.println(idpw);
 					writer.close();
 				}
@@ -71,12 +71,12 @@ public class ServerUtil {
 				conn.sendObject(check);
 				if(check){
 					conn.setIdentity(login.getIdentity());
-					if(login.getflag() == 1){
-						conn.sendObject(getFriends(login));
-						Server.closeFriends();
-					}
+//					getFriends(login).getListname().add("asdf");
+//					getFriends(login).getNickname().add("asdf");
+					conn.sendObject(getFriends(login));
+					Server.closeFriends();
 					Server.getClientList().put(login.getIdentity(), conn);
-					try{ Thread.sleep(Server.getTimeout());}catch(Exception e){}
+					System.out.println("현재 접속자 수 : " + Server.getClientList().size());
 					conn.InitServerReceiver();
 					conn.getServerReceiver().start();
 				} else {
