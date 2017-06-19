@@ -68,17 +68,21 @@ public class Connection implements Closeable {
 		System.out.println(header[0] + " " + header[1] + " " + header[2]);
 		sendHeader(header);
 		ByteArrayInputStream oin = new ByteArrayInputStream(baos.toByteArray(),0,length);
-		byte[] buffer = new byte[4096];
-		int sent = 0;
-		while(sent != length){
-			if((length - sent) < 4096)
-				buffer = new byte[(length - sent)];
-			int read = oin.read(buffer);
-			if(read == -1) break;
-			out.write(buffer, 0, read);
+		for(int i=0; i<length; i++){
+			out.write(baos.toByteArray()[i]);
 			out.flush();
-			sent+=read;
 		}
+//		byte[] buffer = new byte[4096];
+//		int sent = 0;
+//		while(sent != length){
+//			if((length - sent) < 4096)
+//				buffer = new byte[(length - sent)];
+//			int read = oin.read(buffer);
+//			if(read == -1) break;
+//			out.write(buffer, 0, read);
+//			out.flush();
+//			sent+=read;
+//		}
 		oin.close();
 	}
 	public String[] getHeader() throws IOException{
