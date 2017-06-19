@@ -66,7 +66,6 @@ public class Connection implements Closeable {
 		new ObjectOutputStream(baos).writeObject(o);
 		int length = baos.size();
 		String[] header = new String[]{"OBJECT", o.getClass().getSimpleName(), String.valueOf(length)};
-		System.out.println(header[0] + " " + header[1] + " " + header[2]);
 		sendHeader(header);
 		ByteArrayInputStream oin = new ByteArrayInputStream(baos.toByteArray(),0,length);
 		for(int i=0; i<length; i++){
@@ -108,7 +107,6 @@ public class Connection implements Closeable {
 		}
 		String tmp = new String(buffer, 0, buffer.length);
 		String[] header = tmp.trim().substring(1).split("\\\\");
-		System.out.println(tmp);
 		return header;
 	}
 	public File getFile(String name, long length) throws IOException{
