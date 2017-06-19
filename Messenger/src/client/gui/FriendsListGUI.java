@@ -25,14 +25,15 @@ import javax.swing.tree.TreePath;
 
 
 import client.Client;
-import general.container.Connection;
+import client.impl.ClientUtil;
 import general.container.Friends;
-import server.Server;
+import general.container.Message;
+
 
 
 class JFrameList extends JFrame {
 	// 내 정보창
-	private String id; // 상단 라벨에 표시될 자기 아이디
+	private String id;// 상단 라벨에 표시될 자기 아이디
 	private String idname; // 상단 라벨에 표시될 자기 닉네임
 	private String ip; // 상단 라벨에 표시될 자기 ip
 	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>아이디 : " + idname + "<br>아이피 : " + ip + "</html>");
@@ -58,7 +59,6 @@ class JFrameList extends JFrame {
 	private JButton logout = new JButton("로그아웃"); // 로그아웃 버튼
 	private JButton addfriend=new JButton("친구 추가");
 	private String resultStr = null;
-	private int count=0;
 	
 	
 
@@ -102,7 +102,8 @@ class JFrameList extends JFrame {
 		logout.setBounds(12, 636, 370, 35);
 		//친구 추가 버튼
 		addfriend.setBounds(224, 372, 158, 52);
-
+		
+		
 	}
 
 	DefaultMutableTreeNode node;// 노드 클릭시 해당 노드의 이름을 알려주는 코드
@@ -143,23 +144,21 @@ class JFrameList extends JFrame {
 		addfriend.addActionListener(e->{
 
 			resultStr = JOptionPane.showInputDialog("친구의 아이디를 입력하세요.");
-			if(Client.conn.getIdentity().equals(resultStr)){
-			System.out.println("들어온거"+resultStr);
+			if(Client.identity.equals(resultStr)){
+				JOptionPane.showConfirmDialog(null, "자기자신은 추가할 수 없습니다.");
+			
+			}else{	
+				System.out.println("들어온거"+resultStr);
 				Client.friends.setListname(resultStr);
 				String addname=JOptionPane.showInputDialog("친구의 이름을 설정하세요");
 				Client.friends.setNickname(addname);
 				System.out.println(Client.friends.getListname().toString());
 				System.out.println(Client.friends.getNickname().toString());
 				System.out.println(Client.friends.getListname().size());
+				save();
 				load();
 				model.reload();
-			
-			}else{
-				JOptionPane.showConfirmDialog(pop, "아니에여");
 			}
-					
-					
-
 		});
 		start.addActionListener(e -> {//채팅방
 			JFrameChatroom room = new JFrameChatroom();
@@ -181,16 +180,18 @@ class JFrameList extends JFrame {
 			dispose();
 		});
 		end.addActionListener(e -> {//친구삭제
-			int num = 0;
+			
 			for (int i = 0; i < Client.friends.getListname().size(); i++) {
 				if (node.toString().equals(Client.friends.getNickname().get(i))) {
-						num = i;						
-						Client.friends.getNickname().remove(num);
-						Client.friends.getListname().remove(num);
-						online.remove(num);				
-						model.reload();
-						break;
+												
+						Client.friends.getNickname().remove(i);
+						Client.friends.getListname().remove(i);
+						
 				}
+				save();
+				load();
+				model.reload();
+				break;
 			}
 		});
 	}
@@ -213,10 +214,24 @@ class JFrameList extends JFrame {
 
 	}
 	private void save() { 
-		
-		
+		try {
+			Message msg = new Message(Client.identity, "=[SERVER]=", Client.friends);
+			Client.conn.sendObject(msg);
+			while(true){
+				String[] header = Client.conn.getHeader();
+				if(header != null){
+					Friends newFriends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
+					if(!Client.friends.equals(newFriends)){
+						Client.friends = newFriends;
+						
+					}
+				}
+			}
+		} catch (IOException | NumberFormatException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
-	private Friends f = Client.friends;
+
 	private void load() {
 		online.removeAllChildren();
 		for (int i = 0; i < Client.friends.getListname().size(); i++) { // 로그인시 친구 목록
