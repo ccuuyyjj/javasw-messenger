@@ -2,23 +2,46 @@ package general.container;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Friends implements Serializable{
 	private static final long serialVersionUID = -3117451285694131816L;
-	private String identity;
-	private List<String> friends;
+	private List<String> listname=new ArrayList<>();
+	private List<String> nickname=new ArrayList<>();
+	private int namecount=0;
+	private int nickcount=0;
 	
-	public Friends(String identity) {
-		this.identity = identity;
-		this.friends = new ArrayList<>();
+	public Friends() {
+		
 	}
+	public List<String> getListname() {
+		return listname;
+	}
+	public void setListname(String name) {
+		this.listname.add(namecount, name);
+		this.namecount=this.namecount+1;
+		System.out.println("name"+namecount);
+		
+	}
+	
 
-	public String getIdentity() {
-		return identity;
+	public List<String> getNickname() {
+		return nickname;
 	}
+	public void setNickname(String nickname) {
+		this.nickname.add(nickcount,nickname);
+		this.nickcount=nickcount+1;
+		System.out.println("nick"+nickcount);
 
-	public List<String> getFriends() {
-		return friends;
 	}
+	
+
+
+	
+
+	
+
+
 }
