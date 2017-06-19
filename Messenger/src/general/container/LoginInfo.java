@@ -10,6 +10,7 @@ public class LoginInfo implements Serializable {
 	public LoginInfo(String identity, String password, int flag) {
 		this.identity = identity;
 		this.password = password;
+		this.flag = flag;
 	}
 
 	public String getIdentity() {
@@ -31,4 +32,9 @@ public class LoginInfo implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public void setFlag(int flag) {
+		this.flag = flag;
+	}
+	
 }
