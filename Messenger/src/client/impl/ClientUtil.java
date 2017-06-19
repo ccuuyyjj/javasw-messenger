@@ -18,10 +18,11 @@ public class ClientUtil {
 	
 	public static boolean joinNlogin(String id, String pw, String addr, int flag) {
 		boolean result = false;
-		if(Client.conn == null){
 			try {
-				Socket socket = new Socket(InetAddress.getByName(addr), 20000);
-				Client.conn = new Connection(socket);
+				if(Client.conn == null){
+					Socket socket = new Socket(InetAddress.getByName(addr), 20000);
+					Client.conn = new Connection(socket);
+				}
 				LoginInfo info = new LoginInfo(id, pw, flag);
 				Message sendmsg = new Message(info);
 				Client.conn.sendObject(sendmsg);
@@ -45,7 +46,6 @@ public class ClientUtil {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
 		return result;
 	} // 회원가입/로그인 버튼을 누르면 Message형태로 LoginInfo(id, pw, flag)를 서버에 보내고 결과값(t/f)을 받아옴
 }
