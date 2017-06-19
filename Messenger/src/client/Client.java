@@ -1,5 +1,7 @@
 package client;
 
+import java.io.IOException;
+
 import javax.swing.JFrame;
 
 import client.gui.LoginGUI;
@@ -11,8 +13,9 @@ public class Client {
 	public static JFrame currentGUI = null;
 	public static Friends friends = null;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		currentGUI = new LoginGUI();
+		conn.close();
 	}
 	//메세지 수신
 }

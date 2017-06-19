@@ -3,6 +3,8 @@ package client.gui;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -104,7 +106,8 @@ public class LoginGUI extends JFrame {
 
 				if (check) {
 					JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
-					pw.setText("");
+					Client.currentGUI = new JFrameList();
+					dispose();
 				}
 				else {
 					JOptionPane.showMessageDialog(this, "이미 존재하는 아이디이거나 형식에 맞지 않습니다");
