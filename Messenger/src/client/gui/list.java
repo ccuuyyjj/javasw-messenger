@@ -22,7 +22,9 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 
+
 import client.Client;
+
 
 import general.container.Friends;
 
@@ -152,10 +154,17 @@ class JFrameList extends JFrame {
 			dispose();
 
 		});
+<<<<<<< HEAD
 		logout.addActionListener(e -> {//로그아웃
 			Client.currentGUI=new LoginGUI();
 			dispose();
 	
+=======
+		logout.addActionListener(e -> {
+			
+			Client.currentGUI = new LoginGUI();
+			
+>>>>>>> branch 'develop' of https://github.com/ccuuyyjj/javasw-messenger.git
 		});
 		end.addActionListener(e -> {//친구삭제
 			int num = 0;
