@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import server.Server;
 import server.impl.ServerUtil;
 
 public class Connection implements Closeable {
@@ -65,23 +66,26 @@ public class Connection implements Closeable {
 		new ObjectOutputStream(baos).writeObject(o);
 		int length = baos.size();
 		String[] header = new String[]{"OBJECT", o.getClass().getSimpleName(), String.valueOf(length)};
-		System.out.println(header[0] + " " + header[1] + " " + header[2]);
 		sendHeader(header);
 		ByteArrayInputStream oin = new ByteArrayInputStream(baos.toByteArray(),0,length);
-		byte[] buffer = new byte[4096];
-		int sent = 0;
-		while(sent != length){
-			if((length - sent) < 4096)
-				buffer = new byte[(length - sent)];
-			int read = oin.read(buffer);
-			if(read == -1) break;
-			out.write(buffer, 0, read);
+		for(int i=0; i<length; i++){
+			out.write(baos.toByteArray()[i]);
 			out.flush();
-			sent+=read;
 		}
+//		byte[] buffer = new byte[4096];
+//		int sent = 0;
+//		while(sent != length){
+//			if((length - sent) < 4096)
+//				buffer = new byte[(length - sent)];
+//			int read = oin.read(buffer);
+//			if(read == -1) break;
+//			out.write(buffer, 0, read);
+//			out.flush();
+//			sent+=read;
+//		}
 		oin.close();
 	}
-	public String[] getHeader() throws IOException{
+	public String[] getHeader() throws IOException{ //String[] header = conn.getHeader();
 		byte[] buffer = new byte[4096];
 		int trial = 1;
 		for(int i=0; i < buffer.length; i++){
@@ -103,7 +107,6 @@ public class Connection implements Closeable {
 		}
 		String tmp = new String(buffer, 0, buffer.length);
 		String[] header = tmp.trim().substring(1).split("\\\\");
-		System.out.println(tmp);
 		return header;
 	}
 	public File getFile(String name, long length) throws IOException{
@@ -148,6 +151,7 @@ public class Connection implements Closeable {
 	public class ServerReceiver extends Thread {
 		private Connection conn = null;
 		private ServerUtil util = null;
+		private boolean running;
 		{
 			this.setDaemon(true);
 		}
@@ -157,7 +161,7 @@ public class Connection implements Closeable {
 		}
 		@Override
 		public void run() {
-			while(!conn.getSocket().isClosed()){
+			while(running){
 				try {
 					String[] header = conn.getHeader();
 					if(header != null){
@@ -171,6 +175,12 @@ public class Connection implements Closeable {
 					}
 				} catch (Exception e) {}
 			}
+		}
+		public boolean isRunning() {
+			return running;
+		}
+		public void setRunning(boolean running) {
+			this.running = running;
 		}
 	}
 	public Socket getSocket() {
@@ -202,8 +212,8 @@ public class Connection implements Closeable {
 	}
 	@Override
 	public void close() throws IOException {
-		in.close();
-		out.close();
+		if(Server.getClientList().remove(identity) != null)
+			receiver.setRunning(false);
 		socket.close();
 	}
 }

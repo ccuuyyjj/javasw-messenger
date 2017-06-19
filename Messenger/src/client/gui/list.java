@@ -21,7 +21,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+<<<<<<< HEAD
 import client.Client;
+=======
+>>>>>>> branch 'develop' of https://github.com/ccuuyyjj/javasw-messenger.git
 import general.container.Friends;
 
 
@@ -194,7 +197,7 @@ class JFrameList extends JFrame {
 		
 		
 	}
-
+	private Friends f = null;
 	private void load() {
 		Client.friends=new Friends();
 		for (int i = 0; i < Client.friends.getListname().size(); i++) { // 로그인시 친구 목록
@@ -208,11 +211,4 @@ class JFrameList extends JFrame {
 
 	}
 
-}
-
-public class list {
-	public static void main(String[] args) {
-		JFrameList window = new JFrameList();
-
-	}
 }

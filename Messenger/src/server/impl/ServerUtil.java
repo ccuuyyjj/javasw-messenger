@@ -1,12 +1,9 @@
 package server.impl;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -57,15 +54,11 @@ public class ServerUtil {
 		return result;
 	}
 	public Friends getFriends(LoginInfo login) {
-		System.out.println("ServerUtil.getFriends Ω√¿€");
-		Friends result = null;
-		HashMap<String, Friends> friends = Server.getFriends();
-		result = friends.get(login.getIdentity());
+		Friends result = Server.getFriends().get(login.getIdentity());
 		if(result == null){
-			friends.put(login.getIdentity(), new Friends());
-			result = friends.get(login.getIdentity());
+			Server.getFriends().put(login.getIdentity(), new Friends());
+			result = Server.getFriends().get(login.getIdentity());
 		}
-		System.out.println("ServerUtil.getFriends ≥°");
 		return result;
 	}
 	public void handleMessage(Message msg){
@@ -76,21 +69,27 @@ public class ServerUtil {
 				LoginInfo login = (LoginInfo) msg.getMsg();
 				Boolean check = checkLogin(login); 
 				conn.sendObject(check);
-				System.out.println(check);
 				if(check){
 					conn.setIdentity(login.getIdentity());
 					if(login.getflag() == 1){
-						getFriends(login).setListname("asdf");
-						getFriends(login).setNickname("asdf");
 						conn.sendObject(getFriends(login));
+						Server.closeFriends();
 					}
 					Server.getClientList().put(login.getIdentity(), conn);
+					try{ Thread.sleep(Server.getTimeout());}catch(Exception e){}
 					conn.InitServerReceiver();
 					conn.getServerReceiver().start();
 				} else {
-					try{ Thread.sleep(Server.getTimeout());}catch(Exception e){}
 					conn.close();
 				}
+			} catch (Exception e) {}
+			break;
+		case "Friends":
+			try{
+				String identity = msg.getSender();
+				Friends friends = (Friends) msg.getMsg();
+				Server.getFriends().put(identity, friends);
+				Server.closeFriends();
 			} catch (Exception e) {}
 			break;
 		case "String":
