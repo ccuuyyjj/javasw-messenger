@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -155,6 +155,15 @@ class JFrameList extends JFrame {
 
 		});
 		logout.addActionListener(e -> {//로그아웃
+			if(Client.conn != null && !Client.conn.getSocket().isClosed()){
+				try {
+					Client.conn.close();
+					Client.conn = null;
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 			Client.currentGUI=new LoginGUI();
 			dispose();
 		});
@@ -182,7 +191,7 @@ class JFrameList extends JFrame {
 		// 운영체제의 창 배치 형식에 따라 배치
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
-		save();
+		//save();
 		load();
 		display();
 		event();
@@ -195,7 +204,7 @@ class JFrameList extends JFrame {
 	}
 	private Friends f = null;
 	private void load() {
-		Client.friends=new Friends();
+		//Client.friends=new Friends();
 		for (int i = 0; i < Client.friends.getListname().size(); i++) { // 로그인시 친구 목록
 																// 불러오는 메소드
 			String name = Client.friends.getNickname().get(i); // 접속한 친구라면(ip가 존재한다면)
