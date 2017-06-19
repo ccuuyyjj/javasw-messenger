@@ -29,7 +29,7 @@ public class LoginGUI extends JFrame {
 	private JLabel lbPw = new JLabel("비밀번호 : ");
 	private JPasswordField pw = new JPasswordField("aaaaaa"); // 비밀번호
 	private JLabel lbAddr = new JLabel("서버주소 : ");
-	private JTextField address = new JTextField("warrock.iptime.org"); // 서버 주소
+	private JTextField address = new JTextField("192.168.0.10"); // 서버 주소
 
 	private JLabel info = new JLabel("아이디 : 2-10자, 비밀번호 : 6-20자 (특수문자 제외)", JLabel.RIGHT);
 
