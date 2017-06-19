@@ -154,16 +154,9 @@ class JFrameList extends JFrame {
 			dispose();
 
 		});
-
 		logout.addActionListener(e -> {//로그아웃
 			Client.currentGUI=new LoginGUI();
 			dispose();
-	
-		});
-		logout.addActionListener(e -> {
-			Client.currentGUI = new LoginGUI();
-			
-
 		});
 		end.addActionListener(e -> {//친구삭제
 			int num = 0;

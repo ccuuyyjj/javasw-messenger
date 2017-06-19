@@ -14,4 +14,5 @@ public class Client {
 	public static void main(String[] args) {
 		currentGUI = new LoginGUI();
 	}
+	//메세지 수신
 }
