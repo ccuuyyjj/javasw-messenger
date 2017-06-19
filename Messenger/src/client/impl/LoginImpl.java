@@ -54,8 +54,8 @@ public class LoginImpl {
 					System.out.println(fheader);
 					if(fheader != null){
 						if(fheader[0].equals("OBJECT") && fheader[1].equals("Friends"))
-							Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
-						System.out.println(Client.friends.getFriends().toString());
+							Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(fheader[2]));
+						System.out.println(Client.friends.getListname().toString());
 						break;
 					}
 				}

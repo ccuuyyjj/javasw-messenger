@@ -127,15 +127,19 @@ public class Connection implements Closeable {
 	}
 	public Object getObject(int length) throws IOException, ClassNotFoundException{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		byte[] buffer = new byte[4096];
-		int received = 0;
-		while(received != length){
-			if((length - received) < 4096)
-				buffer = new byte[(length - received)];
-			int read = in.read(buffer);
-			if(read == -1) continue;
-			received += read;
-			baos.write(buffer, 0, read);
+//		byte[] buffer = new byte[4096];
+//		int received = 0;
+//		while(received != length){
+//			if((length - received) < 4096)
+//				buffer = new byte[(length - received)];
+//			int read = in.read(buffer);
+//			if(read == -1) continue;
+//			received += read;
+//			baos.write(buffer, 0, read);
+//			baos.flush();
+//		}
+		for(int i=0; i<length; i++){
+			baos.write(in.read());
 			baos.flush();
 		}
 		Object o = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray())).readObject();
