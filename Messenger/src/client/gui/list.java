@@ -154,17 +154,16 @@ class JFrameList extends JFrame {
 			dispose();
 
 		});
-<<<<<<< HEAD
+
 		logout.addActionListener(e -> {//로그아웃
 			Client.currentGUI=new LoginGUI();
 			dispose();
 	
-=======
+		});
 		logout.addActionListener(e -> {
-			
 			Client.currentGUI = new LoginGUI();
 			
->>>>>>> branch 'develop' of https://github.com/ccuuyyjj/javasw-messenger.git
+
 		});
 		end.addActionListener(e -> {//친구삭제
 			int num = 0;
@@ -198,25 +197,16 @@ class JFrameList extends JFrame {
 		super.setVisible(true);
 
 	}
-
-
 	private void save() { 
-		Client.friends=new Friends();
-		
-		
+		Client.friends=new Friends();	
 	}
 	private Friends f = null;
 	private void load() {
 		Client.friends=new Friends();
 		for (int i = 0; i < Client.friends.getListname().size(); i++) { // 로그인시 친구 목록
 																// 불러오는 메소드
-
 			String name = Client.friends.getNickname().get(i); // 접속한 친구라면(ip가 존재한다면)
-
 			online.add(new DefaultMutableTreeNode(Client.friends.getNickname().get(i)));
 		}
-
-
 	}
-
 }
