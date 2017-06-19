@@ -3,8 +3,6 @@ package client.gui;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -50,24 +48,21 @@ public class LoginGUI extends JFrame {
 
 		Font font = new Font("굴림", Font.PLAIN, 15);
 		
-		// 아이디
-		lbId.setOpaque(true);
-		lbId.setBounds(20, 270, 70, 30);
-		
+//		아이디
+		lbId.setBounds(23, 270, 70, 30);
+
 		id.setBounds(90, 270, 285, 30);
 		id.setFont(font);
 		
-		// 비밀번호
-		lbPw.setOpaque(true);
-		lbPw.setBounds(20, 315, 70, 30);
+//		비밀번호
+		lbPw.setBounds(23, 315, 70, 30);
 
 		pw.setBounds(90, 315, 285, 30);
 		pw.setFont(font);
-
-		// 서버주소
-		lbAddr.setOpaque(true);
-		lbAddr.setBounds(20, 360, 70, 30);
-
+		
+//		서버주소
+		lbAddr.setBounds(23, 360, 70, 30);
+		
 		address.setBounds(90, 360, 285, 30);
 		address.setFont(font);
 
@@ -125,11 +120,11 @@ public class LoginGUI extends JFrame {
 					
 					Client.currentGUI = new JFrameList();
 					dispose();
-				} else {
+				} else
 					JOptionPane.showMessageDialog(this, "일치하는 정보가 없습니다");
 					pw.setText("");
 				}
-			} catch (Exception e1) {
+			catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		});
