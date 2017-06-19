@@ -86,7 +86,7 @@ public class Connection implements Closeable {
 //		}
 		oin.close();
 	}
-	public String[] getHeader() throws IOException{
+	public String[] getHeader() throws IOException{ //String[] header = conn.getHeader();
 		byte[] buffer = new byte[4096];
 		int trial = 1;
 		for(int i=0; i < buffer.length; i++){
