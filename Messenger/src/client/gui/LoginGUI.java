@@ -138,6 +138,7 @@ public class LoginGUI extends JFrame {
 	}
 
 	public LoginGUI() {
+		
 		display();
 		event();
 		menu();
