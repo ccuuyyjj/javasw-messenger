@@ -84,10 +84,16 @@ public class Server {
 		if(!dbdir.exists())
 			System.out.println("서버 구동 실패!");
 		loginDB = new File("db", "loginDB.db");
+		if(!loginDB.exists())
+			loginDB.createNewFile();
 		friendsDB = new File("db", "friendsDB.db");
+		if(!friendsDB.exists())
+			friendsDB.createNewFile();
 		filelistDB = new File("db", "filelistDB.db");
 		if(!filelistDB.exists()){
+			friendsDB.createNewFile();
 			filelist = new HashMap<>();
+			closeFileList();
 		}
 		Server.port = port;
 		Server.timeout = timeout;

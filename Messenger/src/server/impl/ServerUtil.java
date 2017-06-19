@@ -1,11 +1,13 @@
 package server.impl;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -20,20 +22,38 @@ public class ServerUtil {
 	public ServerUtil(Connection conn) {
 		this.conn = conn;
 	}
-	public static Boolean checkLogin(LoginInfo login) throws FileNotFoundException {
+	public static Boolean checkLogin(LoginInfo login){
+		boolean result = false;
 		String identity = login.getIdentity();
 		String password = login.getPassword();
-		Scanner s = new Scanner(Server.getLoginDB());
-		s.useDelimiter("\t");
-		boolean result = false;
-		while(s.hasNextLine()){
-			if(s.next().equals(identity)){
-				if(s.next().equals(password))
-					result = true;
-				else break;
+		try {
+			Scanner s = new Scanner(Server.getLoginDB());
+			s.useDelimiter("\t");
+			if(login.getflag() == 1){
+				while(s.hasNextLine()){
+					if(s.next().equals(identity)){
+						if(s.next().equals(password))
+							result = true;
+						else break;
+					} else s.next();
+				}
+			} else {
+				result = true;
+				while(s.hasNextLine()){
+					if(s.next().equals(identity)){
+						result = false;
+						break;
+					} else s.next();
+				}
+				if(result){
+					String idpw = identity + "\t" + password;
+					PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(Server.getLoginDB())));
+					writer.println(idpw);
+					writer.close();
+				}
 			}
-		}
-		s.close();
+			s.close();
+		} catch (IOException e) {}
 		return result;
 	}
 	@SuppressWarnings("unchecked")
