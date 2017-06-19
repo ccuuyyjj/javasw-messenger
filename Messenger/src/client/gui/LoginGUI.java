@@ -110,6 +110,7 @@ public class LoginGUI extends JFrame {
 					JOptionPane.showMessageDialog(this, "이미 존재하는 아이디이거나 형식에 맞지 않습니다");
 					pw.setText("");
 					Client.conn.close();
+					Client.conn = null;
 				}
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -117,6 +118,7 @@ public class LoginGUI extends JFrame {
 		});
 
 		login.addActionListener(e -> {
+			System.out.println("conn : " + Client.conn);
 			try {
 				Boolean check = LoginImpl.login(id.getText(), pw.getText(), address.getText());
 
@@ -129,6 +131,7 @@ public class LoginGUI extends JFrame {
 					JOptionPane.showMessageDialog(this, "일치하는 정보가 없습니다");
 					pw.setText("");
 					Client.conn.close();
+					Client.conn = null;
 				}
 			catch (Exception e1) {
 				e1.printStackTrace();

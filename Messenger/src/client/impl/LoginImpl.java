@@ -45,8 +45,8 @@ public class LoginImpl {
 		System.out.println(header);
 		if(header[0].equals("OBJECT") && header[1].equals("Boolean")){
 			Boolean recvmsg = (Boolean) Client.conn.getObject(Integer.parseInt(header[2]));
+			System.out.println(recvmsg);
 			if(recvmsg){
-				System.out.println(recvmsg);
 				result = true;
 //				로그인 결과값이 true일 경우 친구 목록 받아오기
 				while(true){
