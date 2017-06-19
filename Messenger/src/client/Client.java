@@ -15,4 +15,5 @@ public class Client {
 		currentGUI = new LoginGUI();
 	}
 	//메세지 수신
+	
 }

@@ -8,14 +8,14 @@ import java.util.Map;
 
 public class Friends implements Serializable{
 	private static final long serialVersionUID = -3117451285694131816L;
-	private Map<String,String> list=new HashMap<>();
+	
 	private List<String> listname=new ArrayList<>();		//사람 이름
 	private List<String> nickname=new ArrayList<>();		//ID
 	private int namecount=0;
 	private int nickcount=0;
 	
 	public Friends() {
-		
+		listname.lastIndexOf(listname);
 	}
 	public List<String> getListname() {
 		return listname;
