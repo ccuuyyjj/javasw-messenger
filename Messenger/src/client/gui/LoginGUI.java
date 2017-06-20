@@ -126,7 +126,7 @@ public class LoginGUI extends JFrame {
 
 						Client.identity = id.getText();
 						this.dispose();
-						Client.currentGUI = new JFrameList();
+						Client.currentMainGUI = new JFrameList();
 					} else {
 						JOptionPane.showMessageDialog(this, "이미 존재하는 아이디입니다");
 						pw.setText("");
@@ -164,7 +164,7 @@ public class LoginGUI extends JFrame {
 
 					Client.identity = id.getText();
 					this.dispose();
-					Client.currentGUI = new JFrameList();
+					Client.currentMainGUI = new JFrameList();
 				} else {
 					JOptionPane.showMessageDialog(this, "일치하는 정보가 없습니다");
 					pw.setText("");

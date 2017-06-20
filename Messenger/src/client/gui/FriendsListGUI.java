@@ -164,11 +164,16 @@ class JFrameList extends JFrame {
 
 			
 		start.addActionListener(e -> {// 채팅방
-			JFrameChatroom room = new JFrameChatroom();
-			room.setVisible(true);
 			
-			Client.friends.setTarget(node.toString());
-			chat();
+			ChatRoomGUI room = Client.chatList.get(node.toString());
+			if(room == null){
+				room = new ChatRoomGUI(node.toString());
+				Client.chatList.put(node.toString(), room);
+			}
+//			room.setVisible(true);
+//			
+//			Client.friends.setTarget(node.toString());
+//			chat();
 
 		});
 		logout.addActionListener(e -> {// 로그아웃
@@ -178,7 +183,7 @@ class JFrameList extends JFrame {
 				Client.friends = null;
 				Client.identity = null;
 			}
-			Client.currentGUI = new LoginGUI();
+			Client.currentMainGUI = new LoginGUI();
 			dispose();
 		});
 		end.addActionListener(e -> {// 친구삭제
@@ -204,7 +209,7 @@ class JFrameList extends JFrame {
 			int i=JOptionPane.showConfirmDialog(null,Client.friends.getTarget()+
 				"님이 당신과 대화하기를 원합니다. 하시겠습니까?",null, JOptionPane.YES_NO_OPTION);
 			if(i==0){
-				JFrameChatroom room = new JFrameChatroom();
+				ChatRoomGUI room = new ChatRoomGUI(Client.friends.getTarget());
 				room.setVisible(true);
 			}else return;
 		}
