@@ -247,12 +247,16 @@ public class Connection implements Closeable {
 	}
 
 	@Override
-	public void close() throws IOException {
-		if (receiver != null) {
-			if (Server.getClientList().remove(identity) != null)
-				receiver.setRunning(false);
-		} else
-			sendHeader(new String[] { "CLOSE" });
-		socket.close();
+	public void close() {
+		try{
+			if (receiver != null) {
+				if (Server.getClientList().remove(identity) != null)
+					receiver.setRunning(false);
+			} else
+				sendHeader(new String[] { "CLOSE" });
+			socket.close();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 }

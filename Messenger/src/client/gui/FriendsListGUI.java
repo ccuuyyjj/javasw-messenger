@@ -166,13 +166,10 @@ class JFrameList extends JFrame {
 		});
 		logout.addActionListener(e -> {// ·Î±×¾Æ¿ô
 			if (Client.conn != null && !Client.conn.getSocket().isClosed()) {
-				try {
-					Client.conn.close();
-					Client.conn = null;
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				Client.conn.close();
+				Client.conn = null;
+				Client.friends = null;
+				Client.identity = null;
 			}
 			Client.currentGUI = new LoginGUI();
 			dispose();
