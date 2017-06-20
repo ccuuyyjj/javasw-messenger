@@ -33,8 +33,8 @@ class JFrameChatroom extends JFrame {
 
 	private Message msg;
 
-	private String myid = Client.conn.getIdentity(); // 내 아이디
-	private String[] youid = { "너" }; // 접속중인 아이디
+	private String myid = Client.identity; // 내 아이디
+	private String youid = null; // 접속중인 아이디
 	private FileDialog FD;
 
 	private void display() {
@@ -76,16 +76,16 @@ class JFrameChatroom extends JFrame {
 			public void keyTyped(KeyEvent e) {
 				// 텍스트 전송코드
 				if (e.getKeyChar() == 10) {
-					for (String id : youid) {
-						msg = new Message(myid, id, textfield.getText());
-						textarea.append("보낸사람: " + myid + "\n 내용: " + textfield.getText());
+					//for (String id : youid) {
+						msg = new Message(myid, youid, textfield.getText());
+						textarea.append("보낸사람: " + myid + "\n받는사람: " + youid + "\n 내용: " + textfield.getText());
 						textfield.setText("");
 						try {
 							Client.conn.sendObject(msg);
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
-					}
+					//}
 
 				}
 			}
@@ -126,27 +126,33 @@ class JFrameChatroom extends JFrame {
 		receiver.setDaemon(true);
 		receiver.start();
 	}
-}
 
-class Receiver extends Thread {
-	private Connection conn = Client.conn;
+	public JFrameChatroom(String string) {
+		// TODO Auto-generated constructor stub
+		this();
+		youid = string;
+	}
+	class Receiver extends Thread {
+		private Connection conn = Client.conn;
 
-	@Override
-	public void run() {
-		while (true) {
-			try {
-				String[] header = conn.getHeader();
-				if (header != null) {
-					if (header[1].equals("Message")) {
-						String yourmsg = null;
-						Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
-						if (msg.getMsg() != null)
-							yourmsg = (String) msg.getMsg();
-						System.out.println(yourmsg);
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					String[] header = conn.getHeader();
+					if(header != null){
+						if(header[1].equals("Message")){
+							String yourmsg = null;
+							Message msg = (Message) conn.getObject(Integer.parseInt(header[2])); 
+							if (msg.getMsg() != null)
+								yourmsg = (String) msg.getMsg();
+							System.out.println(yourmsg);
+							textarea.append("보낸사람: " + youid + "\n받는사람: " + myid + "\n 내용: " + yourmsg + "\n");
+						}
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 	}

@@ -160,8 +160,8 @@ class JFrameList extends JFrame {
 				model.reload();
 			}
 		});
-		start.addActionListener(e -> {// 채팅방
-			JFrameChatroom room = new JFrameChatroom();
+		start.addActionListener(e -> {//채팅방
+			JFrameChatroom room = new JFrameChatroom(node.toString());
 			room.setVisible(true);
 			dispose();
 
@@ -226,6 +226,7 @@ class JFrameList extends JFrame {
 						Client.friends = newFriends;
 
 					}
+					break;
 				}
 			}
 		} catch (IOException | NumberFormatException | ClassNotFoundException e) {
