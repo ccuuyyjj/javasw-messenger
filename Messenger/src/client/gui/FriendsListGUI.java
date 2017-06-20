@@ -143,7 +143,7 @@ class JFrameList extends JFrame {
 
 			resultStr = JOptionPane.showInputDialog("친구의 아이디를 입력하세요.");
 			if (Client.identity.equals(resultStr)) {
-				JOptionPane.showConfirmDialog(null, "자기자신은 추가할 수 없습니다.");
+				JOptionPane.showMessageDialog(null, "자기자신은 추가할 수 없습니다.");
 
 			} else {
 				System.out.println("들어온거" + resultStr);
