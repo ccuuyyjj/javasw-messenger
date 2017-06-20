@@ -6,14 +6,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JButton;
-
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 
 import client.Client;
 import general.container.Connection;

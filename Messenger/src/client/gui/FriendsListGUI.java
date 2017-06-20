@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
@@ -23,7 +22,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import client.Client;
-import client.impl.ClientUtil;
 import general.container.Friends;
 import general.container.Message;
 
