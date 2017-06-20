@@ -197,11 +197,11 @@ class JFrameList extends JFrame {
 					Client.friends.getNickname().remove(i);
 					Client.friends.getListname().remove(i);
 
+					save();
+					load();
+					model.reload();
+					break;
 				}
-				save();
-				load();
-				model.reload();
-				break;
 			}
 		});
 	}
