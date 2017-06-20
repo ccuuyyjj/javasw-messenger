@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
@@ -175,12 +174,10 @@ class JFrameList extends JFrame {
 		});
 		logout.addActionListener(e -> {// ·Î±×¾Æ¿ô
 			if (Client.conn != null && !Client.conn.getSocket().isClosed()) {
-				try {
-					Client.conn.close();
-					Client.conn = null;
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+				Client.conn.close();
+				Client.conn = null;
+				Client.friends = null;
+				Client.identity = null;
 			}
 			Client.currentGUI = new LoginGUI();
 			dispose();

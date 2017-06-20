@@ -39,7 +39,7 @@ public class Server {
 	private class ServerListener extends Thread {
 		private boolean running; // 접속 대기 스레드가 계속 돌아가야하는지
 		{
-			this.setDaemon(true);
+			//this.setDaemon(true);
 		}
 
 		@SuppressWarnings("unused")
@@ -78,13 +78,9 @@ public class Server {
 				}
 			}
 			for (String identity : clientlist.keySet()) {
-				try {
-					Connection conn = clientlist.get(identity);
-					System.out.println("사용자 " + identity + "의 접속 종료중...");
-					conn.close();
-				} catch (IOException e) {
-					System.err.println(e.getMessage());
-				}
+				Connection conn = clientlist.get(identity);
+				System.out.println("사용자 " + identity + "의 접속 종료중...");
+				conn.close();
 			}
 		}
 	}
@@ -108,7 +104,7 @@ public class Server {
 		}
 		filelistDB = new File("db", "filelistDB.db");
 		if (!filelistDB.exists()) {
-			friendsDB.createNewFile();
+			filelistDB.createNewFile();
 			filelist = new HashMap<>();
 			closeFileList();
 		}
@@ -133,8 +129,10 @@ public class Server {
 		System.out.println("서버 구동 완료!");
 		Scanner s = new Scanner(System.in);
 		while (true)
-			if (s.nextLine().equalsIgnoreCase("EXIT"))
+			if (s.nextLine().equalsIgnoreCase("EXIT")){
+				Server.listener.setRunning(false);
 				break;
+			}
 		s.close();
 	}
 
@@ -148,13 +146,19 @@ public class Server {
 
 	@SuppressWarnings("unchecked")
 	public static HashMap<Message, File> getFileList() {
-		if (filelist == null) {
+		while(filelist == null){
 			try {
 				ObjectInputStream oin = new ObjectInputStream(
 						new BufferedInputStream(new FileInputStream(filelistDB)));
 				filelist = (HashMap<Message, File>) oin.readObject();
 				oin.close();
-			} catch (Exception e) {
+				if(filelist == null){
+					filelistDB.delete();
+					filelistDB.createNewFile();
+					filelist = new HashMap<>();
+					closeFileList();
+				}
+			} catch (IOException|ClassNotFoundException e) {
 			}
 		}
 		return filelist;
@@ -162,14 +166,19 @@ public class Server {
 
 	@SuppressWarnings("unchecked")
 	public static HashMap<String, Friends> getFriends() {
-		if (friends == null) {
+		while(friends == null){
 			try {
 				ObjectInputStream oin = new ObjectInputStream(
 						new BufferedInputStream(new FileInputStream(friendsDB)));
 				friends = (HashMap<String, Friends>) oin.readObject();
 				oin.close();
-			} catch (Exception e) {
-				e.printStackTrace();
+				if(friends == null){
+					friendsDB.delete();
+					friendsDB.createNewFile();
+					friends = new HashMap<>();
+					closeFriends();
+				}
+			} catch (IOException|ClassNotFoundException e) {
 			}
 		}
 		return friends;
