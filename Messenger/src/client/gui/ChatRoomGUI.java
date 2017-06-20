@@ -14,7 +14,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import client.Client;
-import general.container.Connection;
 import general.container.Message;
 
 public class ChatRoomGUI extends JFrame {
