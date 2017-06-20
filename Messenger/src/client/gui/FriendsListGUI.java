@@ -191,12 +191,9 @@ class JFrameList extends JFrame {
 		end.addActionListener(e -> {// 친구삭제
 
 			for (int i = 0; i < Client.friends.getListname().size(); i++) {
-
 				if (node.toString().equals(Client.friends.getNickname().get(i))) {
-
 					Client.friends.getNickname().remove(i);
 					Client.friends.getListname().remove(i);
-
 					save();
 					load();
 					model.reload();
@@ -245,7 +242,6 @@ class JFrameList extends JFrame {
 					Friends newFriends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
 					if (!Client.friends.equals(newFriends)) {
 						Client.friends = newFriends;
-
 					}
 					break;
 				}

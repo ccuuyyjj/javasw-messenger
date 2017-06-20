@@ -102,6 +102,7 @@ public class ServerUtil {
 				boolean result = false;
 				for (String id : friends.getListname()) {
 					Scanner s = new Scanner(Server.getLoginDB());
+					s.useDelimiter("[\t\n]");
 					while (s.hasNext()) {
 						String str = s.next().trim(); s.next();
 						if (str.equals(id)) {
