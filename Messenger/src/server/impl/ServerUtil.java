@@ -100,7 +100,7 @@ public class ServerUtil {
 				String identity = msg.getSender();
 				Friends friends = (Friends) msg.getMsg();
 				boolean result = true;
-				for (String id : friends.getListname()) {
+				for (String id : friends.getFriendsList().keySet()) {
 					Scanner s = new Scanner(Server.getLoginDB());
 					s.useDelimiter("[\t\n]");
 					while (s.hasNext()) {

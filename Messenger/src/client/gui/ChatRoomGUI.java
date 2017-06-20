@@ -14,7 +14,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import client.Client;
-import general.container.Connection;
 import general.container.Message;
 
 public class ChatRoomGUI extends JFrame {
@@ -31,7 +30,7 @@ public class ChatRoomGUI extends JFrame {
 	
 	private String myid = Client.identity; // 내 아이디
 	private String youid = null; // 상대방 아이디
-	private FileDialog FD;
+	private FileDialog fd;
 
 	private void display() {
 		Container con = super.getContentPane();
@@ -95,8 +94,14 @@ public class ChatRoomGUI extends JFrame {
 			}
 		});
 		upload.addActionListener(e -> {
-			FD = new FileDialog(this, "업로드 파일", FileDialog.LOAD);
-			FD.setVisible(true);
+			fd = new FileDialog(this, "업로드 파일", FileDialog.LOAD);
+			fd.setVisible(true);
+			Message msg = new Message(myid, youid,fd.getFiles());
+			try {
+				Client.conn.sendObject(msg);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		});
 
 	}
@@ -113,20 +118,22 @@ public class ChatRoomGUI extends JFrame {
 
 	public ChatRoomGUI(String youid) {
 		this.youid = youid;
-		super.setTitle(youid + "님과의 채팅");
+		String younick = Client.friends.getFriendsList().get(youid);
+		super.setTitle(younick + "님과의 채팅");
 		super.setSize(450, 700);
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
 		display();
 		event();
 		menu();
-		super.setVisible(true);
+		super.setVisible(false);
 
 		//receiver.setDaemon(true);
 		//receiver.start();
 	}
 
 	public void messageHandler(Message msg) {
+		System.out.println(Client.identity + "가 받음 : " + msg.getMsg().getClass().getSimpleName());
 		switch(msg.getMsg().getClass().getSimpleName()){
 		case "String":
 			textarea.append("보낸사람: " + msg.getSender() + "\n 내용: " + (String) msg.getMsg());
@@ -135,6 +142,8 @@ public class ChatRoomGUI extends JFrame {
 			File received = (File) msg.getMsg(); 
 			textarea.append("보낸사람: " + msg.getSender() + "\n 받은 파일: " + received.getName());
 			break;
+		default:
+			System.out.println("default");
 		}
 	}
 }
