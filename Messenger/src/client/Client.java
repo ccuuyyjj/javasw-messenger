@@ -41,6 +41,7 @@ public class Client {
 							if(gui == null){
 								gui = new ChatRoomGUI(msg.getSender());
 								chatList.put(sender, gui);
+								gui.setVisible(false);
 							}
 							gui.messageHandler(msg);
 						} else if(header[1].equals("Friends")){

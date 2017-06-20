@@ -30,7 +30,7 @@ public class ChatRoomGUI extends JFrame {
 	
 	private String myid = Client.identity; // 내 아이디
 	private String youid = null; // 상대방 아이디
-	private FileDialog FD;
+	private FileDialog fd;
 
 	private void display() {
 		Container con = super.getContentPane();
@@ -94,8 +94,14 @@ public class ChatRoomGUI extends JFrame {
 			}
 		});
 		upload.addActionListener(e -> {
-			FD = new FileDialog(this, "업로드 파일", FileDialog.LOAD);
-			FD.setVisible(true);
+			fd = new FileDialog(this, "업로드 파일", FileDialog.LOAD);
+			fd.setVisible(true);
+			Message msg = new Message(myid, youid,fd.getFiles());
+			try {
+				Client.conn.sendObject(msg);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		});
 
 	}
@@ -119,7 +125,7 @@ public class ChatRoomGUI extends JFrame {
 		display();
 		event();
 		menu();
-		super.setVisible(true);
+		super.setVisible(false);
 
 		//receiver.setDaemon(true);
 		//receiver.start();
