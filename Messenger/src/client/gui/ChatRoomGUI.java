@@ -118,7 +118,8 @@ public class ChatRoomGUI extends JFrame {
 
 	public ChatRoomGUI(String youid) {
 		this.youid = youid;
-		super.setTitle(youid + "님과의 채팅");
+		String younick = Client.friends.getFriendsList().get(youid);
+		super.setTitle(younick + "님과의 채팅");
 		super.setSize(450, 700);
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
@@ -132,6 +133,7 @@ public class ChatRoomGUI extends JFrame {
 	}
 
 	public void messageHandler(Message msg) {
+		System.out.println(Client.identity + "가 받음 : " + msg.getMsg().getClass().getSimpleName());
 		switch(msg.getMsg().getClass().getSimpleName()){
 		case "String":
 			textarea.append("보낸사람: " + msg.getSender() + "\n 내용: " + (String) msg.getMsg());
@@ -140,6 +142,8 @@ public class ChatRoomGUI extends JFrame {
 			File received = (File) msg.getMsg(); 
 			textarea.append("보낸사람: " + msg.getSender() + "\n 받은 파일: " + received.getName());
 			break;
+		default:
+			System.out.println("default");
 		}
 	}
 }
