@@ -113,6 +113,10 @@ public class LoginGUI extends JFrame {
 						JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
 
 						File target = new File("files", "info.prop");
+						if (!target.exists()) {
+							target.getParentFile().mkdirs();
+							target.createNewFile();
+						}
 						FileOutputStream out = new FileOutputStream(target);
 						Properties prop = new Properties();
 						prop.setProperty("id", id.getText());
@@ -147,6 +151,10 @@ public class LoginGUI extends JFrame {
 					JOptionPane.showMessageDialog(this, "로그인에 성공했습니다");
 
 					File target = new File("files", "info.prop");
+					if (!target.exists()) {
+						target.getParentFile().mkdirs();
+						target.createNewFile();
+					}
 					FileOutputStream out = new FileOutputStream(target);
 					Properties prop = new Properties();
 					prop.setProperty("id", id.getText());
