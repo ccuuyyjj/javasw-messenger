@@ -33,7 +33,14 @@ public class FriendsListGUI extends JFrame {
 
 	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
 	private JTree tree = new JTree(list){
-		
+		@Override
+		public String convertValueToText(Object value, boolean selected, boolean expanded, boolean leaf, int row,
+				boolean hasFocus) {
+			String id = Client.friends.getFriendsList().get(((DefaultMutableTreeNode)value).toString());
+			if(id == null)
+				return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
+			return super.convertValueToText(id, selected, expanded, leaf, row, hasFocus);
+		}
 	};
 	private DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 	private DefaultMutableTreeNode online = new DefaultMutableTreeNode("접속중");
@@ -117,6 +124,7 @@ public class FriendsListGUI extends JFrame {
 						// 아이디를 출력
 						snames.setText(id);
 						snicks.setText(Client.friends.getFriendsList().get(id));
+						break;
 					}
 				}
 
@@ -151,7 +159,7 @@ public class FriendsListGUI extends JFrame {
 			} else if (Client.identity.equals(listname)) {
 				JOptionPane.showMessageDialog(null, "자기자신은 추가할 수 없습니다.");
 			} else {
-				System.out.println("들어온거" + listname);
+				//System.out.println("들어온거" + listname);
 				String nickname = JOptionPane.showInputDialog("친구의 이름을 설정하세요");
 				if(nickname == null | nickname.isEmpty()){
 					nickname = listname;
@@ -165,29 +173,16 @@ public class FriendsListGUI extends JFrame {
 			ChatRoomGUI room = Client.chatList.get(node.toString());
 			if(room == null){
 				room = new ChatRoomGUI(node.toString());
-				//Client.chatList.put(node.toString(), room);
-				
 			}
-			
-//			room.setVisible(true);
-//			
-//			Client.friends.setTarget(node.toString());
-//			chat();
+			room.setVisible(true);
 		});
 		logout.addActionListener(e -> {// 로그아웃
 			Client.currentMainGUI = new LoginGUI();
 			dispose();
 		});
 		end.addActionListener(e -> {// 친구삭제
-//			System.out.println(Client.friends.getListname().get(node.toString()));
-//			if (node.toString().equals(Client.friends.getListname().get(node.toString()))) {
-//			Client.friends.getListname().remove(node.toString());
-//			
-//				save();
-//				load();
-//
-//				model.reload();
-//			}
+			Client.friends.getFriendsList().remove(node.toString());
+			save();
 		});
 	}
 
@@ -198,6 +193,7 @@ public class FriendsListGUI extends JFrame {
 	public void dispose() {
 		if (Client.conn != null && !Client.conn.getSocket().isClosed()) {
 			Client.receiver.setRunning(false);
+			Client.friends.getFriendsList().clear();
 			Client.friends = null;
 			Client.identity = null;
 			for(ChatRoomGUI gui : Client.chatList.values()){
