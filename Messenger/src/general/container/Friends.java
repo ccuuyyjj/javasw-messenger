@@ -10,7 +10,7 @@ public class Friends implements Serializable {
 	private List<String> listname = new ArrayList<String>(); // 사람 이름
 	private List<String> nickname = new ArrayList<String>(); // ID
 	private String target;//FriendsList에서 채팅 시작시 받아올 상대방의 이름
-
+	
 	public Friends() {
 		listname.lastIndexOf(listname);
 	}
