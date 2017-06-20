@@ -29,7 +29,8 @@ public class LoginGUI extends JFrame {
 	private JLabel lbPw = new JLabel("비밀번호 : ");
 	private JPasswordField pw = new JPasswordField("aaaaaa"); // 비밀번호
 	private JLabel lbAddr = new JLabel("서버주소 : ");
-	private JTextField address = new JTextField("warrock.iptime.org"); // 서버 주소
+	private JTextField address = new JTextField("warrock.iptime.org"); // 서버
+													// 주소
 
 	private JLabel info = new JLabel("아이디 : 2-10자, 비밀번호 : 6-20자 (특수문자 제외)", JLabel.RIGHT);
 
@@ -42,7 +43,7 @@ public class LoginGUI extends JFrame {
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
 		super.setVisible(true);
-		
+
 		Container con = super.getContentPane();
 		con.setLayout(null);
 		// con.setBackground(Color.lightGray);
@@ -51,22 +52,22 @@ public class LoginGUI extends JFrame {
 		logo.setOpaque(true);
 
 		Font font = new Font("굴림", Font.PLAIN, 15);
-		
-//		아이디
+
+		// 아이디
 		lbId.setBounds(23, 270, 70, 30);
 
 		id.setBounds(90, 270, 285, 30);
 		id.setFont(font);
-		
-//		비밀번호
+
+		// 비밀번호
 		lbPw.setBounds(23, 315, 70, 30);
 
 		pw.setBounds(90, 315, 285, 30);
 		pw.setFont(font);
-		
-//		서버주소
+
+		// 서버주소
 		lbAddr.setBounds(23, 360, 70, 30);
-		
+
 		address.setBounds(90, 360, 285, 30);
 		address.setFont(font);
 
@@ -105,11 +106,12 @@ public class LoginGUI extends JFrame {
 		join.addActionListener(e -> {
 			if (regex(id.getText(), pw.getText())) {
 				try {
-					boolean check = ClientUtil.joinNlogin(id.getText(), pw.getText(), address.getText(), ClientUtil.JOIN);
-	
+					boolean check = ClientUtil.joinNlogin(id.getText(), pw.getText(), address.getText(),
+							ClientUtil.JOIN);
+
 					if (check) {
 						JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
-						
+
 						File target = new File("files", "info.prop");
 						FileOutputStream out = new FileOutputStream(target);
 						Properties prop = new Properties();
@@ -117,15 +119,14 @@ public class LoginGUI extends JFrame {
 						prop.setProperty("pw", pw.getText());
 						prop.setProperty("addr", address.getText());
 						prop.store(out, "information");
-						
+
 						Client.identity = id.getText();
 						this.dispose();
 						Client.currentGUI = new JFrameList();
-					}
-					else {
+					} else {
 						JOptionPane.showMessageDialog(this, "이미 존재하는 아이디입니다");
 						pw.setText("");
-						if(Client.conn != null && !Client.conn.getSocket().isClosed()){
+						if (Client.conn != null && !Client.conn.getSocket().isClosed()) {
 							Client.conn.close();
 							Client.conn = null;
 						}
@@ -139,11 +140,12 @@ public class LoginGUI extends JFrame {
 
 		login.addActionListener(e -> {
 			try {
-				boolean check = ClientUtil.joinNlogin(id.getText(), pw.getText(), address.getText(), ClientUtil.LOGIN);
+				boolean check = ClientUtil.joinNlogin(id.getText(), pw.getText(), address.getText(),
+						ClientUtil.LOGIN);
 
 				if (check) {
 					JOptionPane.showMessageDialog(this, "로그인에 성공했습니다");
-					
+
 					File target = new File("files", "info.prop");
 					FileOutputStream out = new FileOutputStream(target);
 					Properties prop = new Properties();
@@ -151,14 +153,14 @@ public class LoginGUI extends JFrame {
 					prop.setProperty("pw", pw.getText());
 					prop.setProperty("addr", address.getText());
 					prop.store(out, "information");
-					
+
 					Client.identity = id.getText();
 					this.dispose();
 					Client.currentGUI = new JFrameList();
 				} else {
 					JOptionPane.showMessageDialog(this, "일치하는 정보가 없습니다");
 					pw.setText("");
-					if(Client.conn != null && !Client.conn.getSocket().isClosed()){
+					if (Client.conn != null && !Client.conn.getSocket().isClosed()) {
 						Client.conn.close();
 						Client.conn = null;
 					}
@@ -171,17 +173,19 @@ public class LoginGUI extends JFrame {
 
 	private void menu() {
 	}
-	
+
 	private boolean regex(String id, String pw) {
 		String idRegex = "^[a-zA-Z0-9-_]{2,10}$";
 		String pwRegex = "^[a-zA-Z0-9-_]{6,20}$";
 
-		if (!Pattern.matches(idRegex, id) || !Pattern.matches(pwRegex, pw)) return false;
-		else return true;
+		if (!Pattern.matches(idRegex, id) || !Pattern.matches(pwRegex, pw))
+			return false;
+		else
+			return true;
 	}
-	
+
 	public LoginGUI() {
-		
+
 		display();
 		event();
 		menu();

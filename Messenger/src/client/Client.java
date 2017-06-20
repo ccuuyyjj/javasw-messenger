@@ -16,8 +16,8 @@ public class Client {
 
 	public static void main(String[] args) throws IOException {
 		currentGUI = new LoginGUI();
-		
+
 	}
-	//메세지 수신
-	
+	// 메세지 수신
+
 }
