@@ -165,7 +165,7 @@ public class FriendsListGUI extends JFrame {
 			ChatRoomGUI room = Client.chatList.get(node.toString());
 			if(room == null){
 				room = new ChatRoomGUI(node.toString());
-				//Client.chatList.put(node.toString(), room);
+//				Client.chatList.put(node.toString(), room);
 				
 			}
 			
