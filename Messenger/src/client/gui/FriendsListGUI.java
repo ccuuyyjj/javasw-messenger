@@ -182,6 +182,11 @@ class JFrameList extends JFrame {
 				Client.conn = null;
 				Client.friends = null;
 				Client.identity = null;
+				for(ChatRoomGUI gui : Client.chatList.values()){
+					gui.dispose();
+				}
+				Client.chatList = null;
+				Client.receiver.setRunning(false);
 			}
 			Client.currentMainGUI = new LoginGUI();
 			dispose();
@@ -231,7 +236,7 @@ class JFrameList extends JFrame {
 		event();
 		menu();
 		super.setVisible(true);
-
+		Client.receiver.start();
 	}
 	private void save() {
 		try {

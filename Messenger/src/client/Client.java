@@ -17,16 +17,18 @@ public class Client {
 	public static Friends friends = null;
 	public static String identity = null;
 	public static HashMap<String, ChatRoomGUI> chatList = new HashMap<>();
-	public static ClientReceiver receiver;
+	public static ClientReceiver receiver = new ClientReceiver();
 
 	public static void main(String[] args) throws IOException {
 		currentMainGUI = new LoginGUI();
 	}
 	// 메세지 수신
-	class ClientReceiver extends Thread {
+	public static class ClientReceiver extends Thread {
+		private boolean running = true;
+		
 		@Override
 		public void run() {
-			while (true) {
+			while (running) {
 				try {
 					String[] header = conn.getHeader();
 					if (header != null) {
@@ -45,6 +47,10 @@ public class Client {
 					e.printStackTrace();
 				}
 			}
+		}
+
+		public void setRunning(boolean running) {
+			this.running = running;
 		}
 	}
 }
