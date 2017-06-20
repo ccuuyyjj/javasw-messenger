@@ -99,17 +99,19 @@ public class ServerUtil {
 			try {
 				String identity = msg.getSender();
 				Friends friends = (Friends) msg.getMsg();
-				boolean result = false;
+				boolean result = true;
 				for (String id : friends.getFriendsList().keySet()) {
 					Scanner s = new Scanner(Server.getLoginDB());
+					s.useDelimiter("[\t\n]");
 					while (s.hasNext()) {
 						String str = s.next().trim(); s.next();
 						if (str.equals(id)) {
 							result = true;
 							break;
-						}
+						} else result = false;
 					}
 					s.close();
+					if(!result) break;
 				}
 				if (result) {
 					Server.getFriends().put(identity, friends);
@@ -126,7 +128,10 @@ public class ServerUtil {
 			try {
 				String receiver = msg.getReceiver();
 				Connection conn = Server.getClientList().get(receiver);
-				conn.sendObject(msg);
+				if(conn != null)
+					conn.sendObject(msg);
+				else
+					System.out.println(receiver + "는 접속중이 아님.");
 			} catch (IOException e) {
 			}
 			break;
