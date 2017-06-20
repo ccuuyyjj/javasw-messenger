@@ -32,6 +32,7 @@ public class Client {
 				try {
 					String[] header = conn.getHeader();
 					if (header != null) {
+						System.out.println("header="+header.toString());
 						if (header[1].equals("Message")) {
 							Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
 							String sender = msg.getSender();
