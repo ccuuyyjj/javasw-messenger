@@ -277,7 +277,7 @@ class JFrameList extends JFrame {
 		}
 	}
 	private void msgcheck(){
-		msgpop.show(invoker, 10, 10);
+		msgpop.show(, 10, 10);
 	}
 	
 	
