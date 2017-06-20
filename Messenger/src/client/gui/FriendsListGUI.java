@@ -36,10 +36,15 @@ public class FriendsListGUI extends JFrame {
 		@Override
 		public String convertValueToText(Object value, boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
-			String id = Client.friends.getFriendsList().get(((DefaultMutableTreeNode)value).toString());
-			if(id == null)
-				return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
-			return super.convertValueToText(id, selected, expanded, leaf, row, hasFocus);
+			String id = null;
+			String nick = null;
+			if(value != null && value.getClass().getSimpleName().equals("DefaultMutableTreeNode"))
+				id = ((DefaultMutableTreeNode)value).toString();
+			if(id != null)
+				nick = Client.friends.getFriendsList().get(id);
+			if(nick != null)
+				return nick;
+			return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
 		}
 	};
 	private DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
@@ -183,6 +188,7 @@ public class FriendsListGUI extends JFrame {
 			ChatRoomGUI room = Client.chatList.get(node.toString());
 			if(room == null){
 				room = new ChatRoomGUI(node.toString());
+				Client.chatList.put(node.toString(), room);
 			}
 			room.setVisible(true);
 		});
@@ -228,7 +234,7 @@ public class FriendsListGUI extends JFrame {
 		menu();
 		super.setVisible(true);
 		Client.receiver.start();
-		msgcheck();
+		//msgcheck();
 	}
 	private void save() {
 		try {
@@ -250,7 +256,7 @@ public class FriendsListGUI extends JFrame {
 		return model;
 	}
 	private void msgcheck(){
-		//msgpop.show(, 10, 10);
+		msgpop.show(this, 10, 10);
 	}
 	
 	
