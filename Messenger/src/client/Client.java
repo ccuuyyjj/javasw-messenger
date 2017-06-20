@@ -33,7 +33,7 @@ public class Client {
 				try {
 					String[] header = conn.getHeader();
 					if (header != null) {
-						System.out.println("Client에서 받은 header : " + header[1]);
+						System.out.println("Client가 받은 header : " + header[1]);
 						if (header[1].equals("Message")) {
 							Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
 							String sender = msg.getSender();
