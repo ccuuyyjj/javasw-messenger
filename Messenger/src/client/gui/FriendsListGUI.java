@@ -43,6 +43,11 @@ class JFrameList extends JFrame {
 	private JMenuItem start = new JMenuItem("대화시작");
 	private JMenuItem end = new JMenuItem("친구삭제");
 
+	//메세지 수신확인 팝업
+	private JPopupMenu msgpop = new JPopupMenu();
+	private JMenuItem yes = new JMenuItem("대화시작");
+	private JMenuItem no = new JMenuItem("취소");
+	
 	private JLabel sname = new JLabel("이름"); // 트리 노드 클릭시 아래에 대화할 상대의 정보
 	private JTextField snames = new JTextField();
 	private JLabel snick = new JLabel("닉네임");
@@ -90,6 +95,11 @@ class JFrameList extends JFrame {
 		pop.add(start); // 팝업메뉴
 		pop.add(end);
 		add(pop);
+		
+		msgpop.add(yes);
+		msgpop.add(no);
+		add(msgpop);
+		
 		// 로그아웃 버튼
 		logout.setBounds(12, 636, 370, 35);
 		// 친구 추가 버튼
@@ -168,6 +178,7 @@ class JFrameList extends JFrame {
 				room = new ChatRoomGUI(node.toString());
 				Client.chatList.put(node.toString(), room);
 			}
+			room.setVisible(true);
 //			room.setVisible(true);
 //			
 //			Client.friends.setTarget(node.toString());
@@ -231,6 +242,7 @@ class JFrameList extends JFrame {
 		menu();
 		super.setVisible(true);
 		Client.receiver.start();
+		msgcheck();
 	}
 	private void save() {
 		try {
@@ -264,5 +276,9 @@ class JFrameList extends JFrame {
 			online.add(new DefaultMutableTreeNode(name));
 		}
 	}
+	private void msgcheck(){
+		msgpop.show(invoker, 10, 10);
+	}
+	
 	
 }
