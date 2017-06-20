@@ -6,6 +6,7 @@ import java.util.HashMap;
 import javax.swing.JFrame;
 
 import client.gui.ChatRoomGUI;
+import client.gui.FriendsListGUI;
 import client.gui.LoginGUI;
 import general.container.Connection;
 import general.container.Friends;
@@ -32,6 +33,7 @@ public class Client {
 				try {
 					String[] header = conn.getHeader();
 					if (header != null) {
+						System.out.println("Client에서 받은 header : " + header[1]);
 						if (header[1].equals("Message")) {
 							Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
 							String sender = msg.getSender();
@@ -41,11 +43,15 @@ public class Client {
 								chatList.put(sender, gui);
 							}
 							gui.messageHandler(msg);
+						} else if(header[1].equals("Friends")){
+							Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
+							((FriendsListGUI) currentMainGUI).load();
+							((FriendsListGUI) currentMainGUI).getModel().reload();
 						}
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				} catch (IOException e) {
+					System.out.println("접속 종료");
+				} catch (ClassNotFoundException e) {}
 			}
 		}
 
