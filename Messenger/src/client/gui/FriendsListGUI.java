@@ -25,11 +25,8 @@ import javax.swing.tree.TreePath;
 
 
 import client.Client;
-import client.impl.ClientUtil;
 import general.container.Friends;
 import general.container.Message;
-
-
 
 class JFrameList extends JFrame {
 	// 내 정보창
@@ -145,7 +142,7 @@ class JFrameList extends JFrame {
 
 			resultStr = JOptionPane.showInputDialog("친구의 아이디를 입력하세요.");
 			if(Client.identity.equals(resultStr)){
-				JOptionPane.showConfirmDialog(null, "자기자신은 추가할 수 없습니다.");
+				JOptionPane.showConfirmDialog(this, "자기자신은 추가할 수 없습니다.");
 			
 			}else{	
 				System.out.println("들어온거"+resultStr);
@@ -161,6 +158,7 @@ class JFrameList extends JFrame {
 			}
 		});
 		start.addActionListener(e -> {//채팅방
+			String target=node.toString();
 			JFrameChatroom room = new JFrameChatroom();
 			room.setVisible(true);
 			dispose();
@@ -172,7 +170,6 @@ class JFrameList extends JFrame {
 					Client.conn.close();
 					Client.conn = null;
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -182,11 +179,9 @@ class JFrameList extends JFrame {
 		end.addActionListener(e -> {//친구삭제
 			
 			for (int i = 0; i < Client.friends.getListname().size(); i++) {
-				if (node.toString().equals(Client.friends.getNickname().get(i))) {
-												
+				if (node.toString().equals(Client.friends.getNickname().get(i))) {												
 						Client.friends.getNickname().remove(i);
-						Client.friends.getListname().remove(i);
-						
+						Client.friends.getListname().remove(i);		
 				}
 				save();
 				load();
@@ -205,7 +200,7 @@ class JFrameList extends JFrame {
 		// 운영체제의 창 배치 형식에 따라 배치
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
-		//save();
+		
 		load();
 		display();
 		event();
