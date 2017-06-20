@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Scanner;
 
 import general.container.Connection;
@@ -41,8 +40,7 @@ public class ServerUtil {
 			} else {
 				result = true;
 				while (s.hasNext()) {
-					String id = s.next().trim();
-					String pw = s.next().trim();
+					String id = s.next().trim(); s.next();
 					if (id.equals(identity)) {
 						result = false;
 						break;
@@ -105,8 +103,7 @@ public class ServerUtil {
 				for (String id : friends.getListname()) {
 					Scanner s = new Scanner(Server.getLoginDB());
 					while (s.hasNext()) {
-						String str = s.next().trim();
-						String pw = s.next().trim();
+						String str = s.next().trim(); s.next();
 						if (str.equals(id)) {
 							result = true;
 							break;

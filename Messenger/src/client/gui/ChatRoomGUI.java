@@ -4,22 +4,20 @@ import java.awt.Container;
 import java.awt.FileDialog;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JButton;
-
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 
 import client.Client;
 import general.container.Connection;
 import general.container.Message;
 
-class JFrameChatroom extends JFrame {
+public class ChatRoomGUI extends JFrame {
 
 	private JTextArea textarea = new JTextArea();
 	private JTextArea textfield = new JTextArea();
@@ -28,13 +26,11 @@ class JFrameChatroom extends JFrame {
 	private JButton chatexit = new JButton("대화 종료");
 	private JPanel panel = new JPanel();
 	private JScrollPane scroll = new JScrollPane();
-	private Receiver receiver = new Receiver();
+	//private Receiver receiver = new Receiver();
 	// list -> 내아이피값 가져오기
-
-	private Message msg;
-
+	
 	private String myid = Client.identity; // 내 아이디
-	private String youid = null; // 접속중인 아이디
+	private String youid = null; // 상대방 아이디
 	private FileDialog FD;
 
 	private void display() {
@@ -69,24 +65,21 @@ class JFrameChatroom extends JFrame {
 		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		chatexit.addActionListener(e -> {
 			this.dispose();
-			receiver.destroy();
+			//receiver.destroy();
 		});
 		textfield.addKeyListener(new KeyListener() {
 			// Enter 입력시 전송실행
 			public void keyTyped(KeyEvent e) {
 				// 텍스트 전송코드
 				if (e.getKeyChar() == 10) {
-					//for (String id : youid) {
-						msg = new Message(myid, youid, textfield.getText());
-						textarea.append("보낸사람: " + myid + "\n받는사람: " + youid + "\n 내용: " + textfield.getText());
-						textfield.setText("");
-						try {
-							Client.conn.sendObject(msg);
-						} catch (IOException e1) {
-							e1.printStackTrace();
-						}
-					//}
-
+					Message msg = new Message(myid, youid, textfield.getText());
+					textarea.append("보낸사람: " + myid + "\n 내용: " + textfield.getText());
+					textfield.setText("");
+					try {
+						Client.conn.sendObject(msg);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 
@@ -96,7 +89,6 @@ class JFrameChatroom extends JFrame {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				String keyCode = Integer.toString(e.getKeyChar());
 				if (e.getKeyChar() == 65535) {
 					textfield.append("\n");
 				}
@@ -112,9 +104,16 @@ class JFrameChatroom extends JFrame {
 	private void menu() {
 
 	}
+	
+	@Override
+	public void dispose() {
+		Client.chatList.remove(youid);
+		super.dispose();
+	}
 
-	public JFrameChatroom() {
-		super.setTitle("Chatingroom");
+	public ChatRoomGUI(String youid) {
+		this.youid = youid;
+		super.setTitle(youid + "님과의 채팅");
 		super.setSize(450, 700);
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
@@ -123,37 +122,19 @@ class JFrameChatroom extends JFrame {
 		menu();
 		super.setVisible(true);
 
-		receiver.setDaemon(true);
-		receiver.start();
+		//receiver.setDaemon(true);
+		//receiver.start();
 	}
 
-	public JFrameChatroom(String string) {
-		// TODO Auto-generated constructor stub
-		this();
-		youid = string;
-	}
-	class Receiver extends Thread {
-		private Connection conn = Client.conn;
-
-		@Override
-		public void run() {
-			while (true) {
-				try {
-					String[] header = conn.getHeader();
-					if(header != null){
-						if(header[1].equals("Message")){
-							String yourmsg = null;
-							Message msg = (Message) conn.getObject(Integer.parseInt(header[2])); 
-							if (msg.getMsg() != null)
-								yourmsg = (String) msg.getMsg();
-							System.out.println(yourmsg);
-							textarea.append("보낸사람: " + youid + "\n받는사람: " + myid + "\n 내용: " + yourmsg + "\n");
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+	public void messageHandler(Message msg) {
+		switch(msg.getMsg().getClass().getSimpleName()){
+		case "String":
+			textarea.append("보낸사람: " + msg.getSender() + "\n 내용: " + (String) msg.getMsg());
+			break;
+		case "File":
+			File received = (File) msg.getMsg(); 
+			textarea.append("보낸사람: " + msg.getSender() + "\n 받은 파일: " + received.getName());
+			break;
 		}
 	}
 }

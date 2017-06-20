@@ -4,16 +4,23 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import client.impl.ClientUtil;
-
 public class Friends implements Serializable {
 	private static final long serialVersionUID = -3117451285694131816L;
 
 	private List<String> listname = new ArrayList<String>(); // 사람 이름
 	private List<String> nickname = new ArrayList<String>(); // ID
-
+	private String target;//FriendsList에서 채팅 시작시 받아올 상대방의 이름
+	
 	public Friends() {
 		listname.lastIndexOf(listname);
+	}
+
+	public String getTarget() {
+		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
 	}
 
 	public List<String> getListname() {
