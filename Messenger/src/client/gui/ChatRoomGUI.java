@@ -25,9 +25,9 @@ public class ChatRoomGUI extends JFrame {
 	private JButton chatexit = new JButton("대화 종료");
 	private JPanel panel = new JPanel();
 	private JScrollPane scroll = new JScrollPane();
-	//private Receiver receiver = new Receiver();
+	// private Receiver receiver = new Receiver();
 	// list -> 내아이피값 가져오기
-	
+
 	private String myid = Client.identity; // 내 아이디
 	private String youid = null; // 상대방 아이디
 	private FileDialog fd;
@@ -64,7 +64,7 @@ public class ChatRoomGUI extends JFrame {
 		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		chatexit.addActionListener(e -> {
 			this.dispose();
-			//receiver.destroy();
+			// receiver.destroy();
 		});
 		textfield.addKeyListener(new KeyListener() {
 			// Enter 입력시 전송실행
@@ -96,20 +96,26 @@ public class ChatRoomGUI extends JFrame {
 		upload.addActionListener(e -> {
 			fd = new FileDialog(this, "업로드 파일", FileDialog.LOAD);
 			fd.setVisible(true);
-			Message msg = new Message(myid, youid,fd.getFiles());
+			File upfile = new File(fd.getDirectory(), fd.getFile());
+			
+			Message msg = new Message(myid, youid, upfile);
+//			Message msg2 = new Message(myid, youid, "파일을 받으시겠습니까? 예/아니요");
 			try {
 				Client.conn.sendObject(msg);
+				Client.conn.sendFile(upfile);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		});
+		//임시폴더에 파일 저장 , 파일 저장 위치 지정
+		
 
 	}
 
 	private void menu() {
 
 	}
-	
+
 	@Override
 	public void dispose() {
 		Client.chatList.remove(youid);
@@ -128,18 +134,18 @@ public class ChatRoomGUI extends JFrame {
 		menu();
 		super.setVisible(false);
 
-		//receiver.setDaemon(true);
-		//receiver.start();
+		// receiver.setDaemon(true);
+		// receiver.start();
 	}
 
 	public void messageHandler(Message msg) {
 		System.out.println(Client.identity + "가 받음 : " + msg.getMsg().getClass().getSimpleName());
-		switch(msg.getMsg().getClass().getSimpleName()){
+		switch (msg.getMsg().getClass().getSimpleName()) {
 		case "String":
 			textarea.append("보낸사람: " + msg.getSender() + "\n 내용: " + (String) msg.getMsg());
 			break;
 		case "File":
-			File received = (File) msg.getMsg(); 
+			File received = (File) msg.getMsg();
 			textarea.append("보낸사람: " + msg.getSender() + "\n 받은 파일: " + received.getName());
 			break;
 		default:
