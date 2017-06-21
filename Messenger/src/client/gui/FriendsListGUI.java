@@ -30,7 +30,7 @@ public class FriendsListGUI extends JFrame {
 	private int allfriend; // 오프라인+온라인 친구
 	private int connecting; // 온라인친구
 	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + allfriend +"명"+ "<br>접속중인 친구 : " + connecting +"명" +"</html>");
-
+	
 	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
 	private JTree tree = new JTree(list){
 		@Override
@@ -247,6 +247,7 @@ public class FriendsListGUI extends JFrame {
 
 	public void load() {
 		online.removeAllChildren();
+		offline.removeAllChildren();
 	    for(String id : Client.friends.getFriendsList().keySet()){
 	        online.add(new DefaultMutableTreeNode(id));
 	    }
@@ -255,7 +256,7 @@ public class FriendsListGUI extends JFrame {
 	public DefaultTreeModel getModel() {
 		return model;
 	}
-	private void msgcheck(){
+	public void msgcheck(){
 		msgpop.show(this, 10, 10);
 	}
 	
