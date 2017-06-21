@@ -234,7 +234,6 @@ public class FriendsListGUI extends JFrame {
 		menu();
 		super.setVisible(true);
 		Client.receiver.start();
-		//msgcheck();
 	}
 	private void save() {
 		try {
