@@ -3,6 +3,10 @@ package client.gui;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.RenderingHints.Key;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
@@ -15,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 import client.Client;
 import client.impl.ClientUtil;
@@ -59,6 +64,8 @@ public class LoginGUI extends JFrame {
 
 		id.setBounds(105, 260, 270, 30);
 		id.setFont(font);
+
+		출처: http://luvstudy.tistory.com/37 [파란하늘의 지식창고]
 
 		// 비밀번호
 		lbPw.setBounds(20, 305, 90, 30);
