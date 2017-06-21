@@ -3,6 +3,10 @@ package client.gui;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.RenderingHints.Key;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
@@ -15,30 +19,30 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 import client.Client;
 import client.impl.ClientUtil;
 
 public class LoginGUI extends JFrame {
 
-	private ImageIcon img = new ImageIcon("projectImage.png");
+	private ImageIcon img = new ImageIcon("normcore.png");
 	private JLabel logo = new JLabel(img);
 
-	private JLabel lbId = new JLabel("아  이  디 : ");
+	private JLabel lbId = new JLabel("IDENTITY　   : ");
 	private JTextField id = new JTextField("aaa"); // 아이디 (전화번호)
-	private JLabel lbPw = new JLabel("비밀번호 : ");
+	private JLabel lbPw = new JLabel("PASSWORD : ");
 	private JPasswordField pw = new JPasswordField("aaaaaa"); // 비밀번호
-	private JLabel lbAddr = new JLabel("서버주소 : ");
-	private JTextField address = new JTextField("warrock.iptime.org"); // 서버
-													// 주소
+	private JLabel lbAddr = new JLabel("ADDRESS : ");
+	private JTextField address = new JTextField("warrock.iptime.org"); // 서버 주소
 
-	private JLabel info = new JLabel("아이디 : 2-10자, 비밀번호 : 6-20자 (특수문자 제외)", JLabel.RIGHT);
+	private JLabel info = new JLabel("ID : 2-10자 PASSWORD : 6-20자 (특수문자 제외)", JLabel.RIGHT);
 
-	private JButton login = new JButton("로그인");
-	private JButton join = new JButton("회원가입");
+	private JButton login = new JButton("LOGIN");
+	private JButton join = new JButton("JOIN");
 
 	private void display() {
-		super.setTitle("메신저");
+		super.setTitle("NORMCORE TALK");
 		super.setSize(400, 500);
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
@@ -46,43 +50,47 @@ public class LoginGUI extends JFrame {
 
 		Container con = super.getContentPane();
 		con.setLayout(null);
-		// con.setBackground(Color.lightGray);
+		con.setBackground(Color.white);
 
 		logo.setBounds(20, 20, 355, 230);
 		logo.setOpaque(true);
 
-		Font font = new Font("굴림", Font.PLAIN, 15);
+		Font font = new Font("", Font.PLAIN, 15);
+		Font font2 = new Font("", Font.BOLD, 15);
 
 		// 아이디
-		lbId.setBounds(23, 270, 70, 30);
+		lbId.setBounds(20, 260, 90, 30);
 
-		id.setBounds(90, 270, 285, 30);
+		id.setBounds(105, 260, 270, 30);
 		id.setFont(font);
 
-		// 비밀번호
-		lbPw.setBounds(23, 315, 70, 30);
+		출처: http://luvstudy.tistory.com/37 [파란하늘의 지식창고]
 
-		pw.setBounds(90, 315, 285, 30);
+		// 비밀번호
+		lbPw.setBounds(20, 305, 90, 30);
+
+		pw.setBounds(105, 305, 270, 30);
 		pw.setFont(font);
 
 		// 서버주소
-		lbAddr.setBounds(23, 360, 70, 30);
+		lbAddr.setBounds(20, 350, 90, 30);
 
-		address.setBounds(90, 360, 285, 30);
+		address.setBounds(105, 350, 270, 30);
 		address.setFont(font);
 
-		info.setBounds(23, 395, 350, 20);
+		info.setBounds(23, 390, 350, 20);
 		info.setOpaque(true);
+		info.setBackground(Color.white);
+
+		join.setBounds(180, 420, 100, 30);
+		join.setBackground(Color.black);
+		join.setForeground(Color.white);
+		join.setFont(font2);
 
 		login.setBounds(285, 420, 90, 30);
-		login.setBackground(Color.gray);
+		login.setBackground(Color.black);
 		login.setForeground(Color.white);
-		login.setFont(font);
-
-		join.setBounds(190, 420, 90, 30);
-		join.setBackground(Color.gray);
-		join.setForeground(Color.white);
-		join.setFont(font);
+		login.setFont(font2);
 
 		con.add(logo);
 		con.add(lbId);
@@ -94,8 +102,6 @@ public class LoginGUI extends JFrame {
 		con.add(info);
 		con.add(login);
 		con.add(join);
-
-		login.requestFocusInWindow(); // 초기 포커스 로그인 버튼으로 설정
 	}
 
 	private void event() {
