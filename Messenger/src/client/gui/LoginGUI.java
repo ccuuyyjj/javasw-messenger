@@ -21,7 +21,7 @@ import client.impl.ClientUtil;
 
 public class LoginGUI extends JFrame {
 
-	private ImageIcon img = new ImageIcon("projectImage.png");
+	private ImageIcon img = new ImageIcon("normcore.jpg");
 	private JLabel logo = new JLabel(img);
 
 	private JLabel lbId = new JLabel("¾Æ  ÀÌ  µð : ");
@@ -46,7 +46,7 @@ public class LoginGUI extends JFrame {
 
 		Container con = super.getContentPane();
 		con.setLayout(null);
-		// con.setBackground(Color.lightGray);
+		con.setBackground(Color.lightGray);
 
 		logo.setBounds(20, 20, 355, 230);
 		logo.setOpaque(true);
@@ -73,6 +73,7 @@ public class LoginGUI extends JFrame {
 
 		info.setBounds(23, 395, 350, 20);
 		info.setOpaque(true);
+		info.setBackground(Color.lightGray);
 
 		login.setBounds(285, 420, 90, 30);
 		login.setBackground(Color.gray);
