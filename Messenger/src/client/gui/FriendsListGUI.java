@@ -234,7 +234,6 @@ public class FriendsListGUI extends JFrame {
 		menu();
 		super.setVisible(true);
 		Client.receiver.start();
-		//msgcheck();
 	}
 	private void save() {
 		try {
@@ -255,7 +254,7 @@ public class FriendsListGUI extends JFrame {
 	public DefaultTreeModel getModel() {
 		return model;
 	}
-	private void msgcheck(){
+	public void msgcheck(){
 		msgpop.show(this, 10, 10);
 	}
 	
