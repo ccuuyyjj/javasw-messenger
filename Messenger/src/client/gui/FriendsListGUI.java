@@ -27,10 +27,10 @@ import general.container.Message;
 public class FriendsListGUI extends JFrame {
 	// 내 정보창
 	private String id=Client.identity;// 상단 라벨에 표시될 자기 아이디
-	private String idname; // 상단 라벨에 표시될 자기 닉네임
-	private String ip; // 상단 라벨에 표시될 자기 ip
-	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>아이디 : " + idname + "<br>아이피 : " + ip + "</html>");
-
+	private int allfriend; // 오프라인+온라인 친구
+	private int connecting; // 온라인친구
+	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + allfriend +"명"+ "<br>접속중인 친구 : " + connecting +"명" +"</html>");
+	
 	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
 	private JTree tree = new JTree(list){
 		@Override
@@ -246,6 +246,7 @@ public class FriendsListGUI extends JFrame {
 
 	public void load() {
 		online.removeAllChildren();
+		offline.removeAllChildren();
 	    for(String id : Client.friends.getFriendsList().keySet()){
 	        online.add(new DefaultMutableTreeNode(id));
 	    }
