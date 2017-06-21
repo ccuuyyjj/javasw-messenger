@@ -268,7 +268,6 @@ public class FriendsListGUI extends JFrame {
 		count();
 		super.setVisible(true);
 		Client.receiver.start();
-		//msgcheck();
 	}
 	
 

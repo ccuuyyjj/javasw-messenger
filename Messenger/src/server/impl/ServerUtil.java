@@ -150,8 +150,15 @@ public class ServerUtil {
 							File tmp = conn.getFile(header[1], Long.parseLong(header[2]));
 							Server.getFileList().put(msg, tmp);
 							Server.closeFileList();
+							break;
 						}
 					}
+					String receiver = msg.getReceiver();
+					Connection conn = Server.getClientList().get(receiver);
+					if(conn != null)
+						conn.sendObject(msg);
+					else
+						System.out.println(receiver + "는 접속중이 아님.");
 				} else { // 메세지의 보낸이 != 현재 연결이면 파일을 보내줘야함
 					File tmp = Server.getFileList().get(msg);
 					conn.sendFile(tmp);
