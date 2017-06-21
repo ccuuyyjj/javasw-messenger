@@ -73,6 +73,7 @@ public class ServerUtil {
 
 	public void handleMessage(Message msg) {
 		String name = msg.getMsg().getClass().getSimpleName();
+		System.out.println("getMsg() classname : " + name);
 		switch (name) {
 		case "LoginInfo":
 			try {
@@ -136,6 +137,7 @@ public class ServerUtil {
 			}
 			break;
 		case "File":
+			System.out.println("여기까진 넘어옴");
 			try {
 				if (msg.getSender().equals(conn.getIdentity())) { // 메세지의
 													// 보낸이
@@ -147,12 +149,14 @@ public class ServerUtil {
 					String[] header = conn.getHeader();
 					while (true) {
 						if (header != null) {
+							System.out.println("header[0] : " + header[0] + " header[1] : " + header[1]);
 							File tmp = conn.getFile(header[1], Long.parseLong(header[2]));
-							Server.getFileList().put(msg, tmp);
+							Server.getFileList().put(msg.getTime_created(), tmp);
 							Server.closeFileList();
 							break;
 						}
 					}
+					System.out.println("파일 수신 완료");
 					String receiver = msg.getReceiver();
 					Connection conn = Server.getClientList().get(receiver);
 					if(conn != null)
@@ -160,12 +164,14 @@ public class ServerUtil {
 					else
 						System.out.println(receiver + "는 접속중이 아님.");
 				} else { // 메세지의 보낸이 != 현재 연결이면 파일을 보내줘야함
-					File tmp = Server.getFileList().get(msg);
+					System.out.println("msg = " + msg.toString());
+					File tmp = Server.getFileList().remove(msg.getTime_created());
+					System.out.println(tmp.getAbsolutePath() + " 전송 시작");
 					conn.sendFile(tmp);
 					Server.closeFileList();
 				}
-				break;
 			} catch (IOException e) {
+				e.printStackTrace();
 			}
 			break;
 		}

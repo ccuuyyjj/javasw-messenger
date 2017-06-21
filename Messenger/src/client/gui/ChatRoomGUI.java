@@ -1,13 +1,32 @@
 package client.gui;
 
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.FileDialog;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.TreeSet;
 
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -15,101 +34,147 @@ import javax.swing.JTextArea;
 
 import client.Client;
 import general.container.Message;
+import java.awt.FlowLayout;
+import javax.swing.JTextPane;
+import javax.swing.JTree;
+import javax.swing.ListModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkEvent.EventType;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.ListDataListener;
+import javax.swing.BoxLayout;
+import java.awt.Component;
+import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.JList;
+import javax.swing.AbstractListModel;
+import java.awt.GridLayout;
+import javax.swing.border.LineBorder;
+import java.awt.BorderLayout;
 
 public class ChatRoomGUI extends JFrame {
-
-	private JTextArea textarea = new JTextArea();
+	private File chatDB = null;
+	private TreeSet<Message> msgset = null;
+	private JEditorPane msgview = new JEditorPane();
+	private StringBuilder msgviewhtml = null;
+	private JPanel panel = new JPanel();
+	private JScrollPane scrollPane = new JScrollPane(panel);
 	private JTextArea textfield = new JTextArea();
 	private JButton upload = new JButton("파일 올리기");
-	// private JButton insert = new JButton("대화 입력"); //Enter로 전송 교체
-	private JButton chatexit = new JButton("대화 종료");
-	private JPanel panel = new JPanel();
-	private JScrollPane scroll = new JScrollPane();
-	// private Receiver receiver = new Receiver();
-	// list -> 내아이피값 가져오기
+	private JButton send = new JButton("전송");
 
 	private String myid = Client.identity; // 내 아이디
 	private String youid = null; // 상대방 아이디
-	private FileDialog fd;
+	private String younick = null;
+	
+	public File target = null;
 
 	private void display() {
-		Container con = super.getContentPane();
+		Container con = getContentPane();
 		con.setLayout(null);
-		panel.setLayout(null);
-
-		scroll.setBounds(10, 10, 420, 500);
-		scroll.setViewportView(textarea);// 자동스크롤 이동
-
-		textarea.setLineWrap(true);// 자동줄바꿈
-		textarea.setEditable(false);// 채팅내용 변경불가
-
-		textfield.setLineWrap(true);
-		panel.add(scroll);
+		
+		scrollPane.setBounds(10, 10, 420, 500);
 		upload.setBounds(10, 520, 420, 30);
-		textfield.setBounds(10, 560, 420, 60);
-		// insert.setBounds(10, 595, 420, 30);
-		chatexit.setBounds(10, 630, 420, 30);
+		textfield.setBounds(10, 560, 340, 60);
+		send.setBounds(362, 560, 68, 60);
+		
+		con.add(scrollPane);
+		scrollPane.setBorder(new LineBorder(Color.BLACK));
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-		add(panel);
-		con.add(scroll);
+		panel.add(msgview);
+		panel.setLayout(new GridLayout());
+		panel.setBackground(Color.WHITE);
+		
+		msgview.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
+		msgview.setEditable(false);
+		
 		con.add(upload);
-		con.add(textfield);
-		// con.add(insert);
-		con.add(chatexit);
+		upload.setBorder(new LineBorder(new Color(0, 0, 0)));
 
+		con.add(textfield);
+		textfield.setBorder(new LineBorder(new Color(0, 0, 0)));
+		textfield.setLineWrap(true);
+		
+		send.setBorder(new LineBorder(new Color(0, 0, 0)));
+		con.add(send);
+
+		loadMessage();
 	}
 
 	private void event() {
-
 		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		chatexit.addActionListener(e -> {
-			this.dispose();
-			// receiver.destroy();
+		msgview.addHyperlinkListener(e->{
+			if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED){
+				if(e.getDescription().startsWith("file:")){
+					long msgtime = Long.parseLong(e.getDescription().substring(5).trim());
+					for(Message msg : msgset){
+						if(msg.getTime_created() == msgtime){
+							String filename = ((File)msg.getMsg()).getName();
+							FileDialog fd = new FileDialog(this, "파일 저장", FileDialog.SAVE);
+							fd.setFile(filename);
+							fd.setVisible(true);
+							
+							if(fd.getFile() != null){
+								target = new File(fd.getDirectory(), fd.getFile());
+								try {
+									Client.conn.sendObject(msg);
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
+								msg.setMsg(filename + " <a href=\"folder:"+ target.getParentFile().getAbsolutePath() +"\">폴더 열기</a>");
+							}
+							break;
+						}
+					}
+					loadMessage();
+				} else if(e.getDescription().startsWith("folder:")){
+					try {
+						Desktop.getDesktop().browse(new URI(URLDecoder.decode("file:///"+e.getDescription().substring(7).replace("\\", "/")+"/", "UTF-8")));
+					} catch (IOException|URISyntaxException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
 		});
-		textfield.addKeyListener(new KeyListener() {
-			// Enter 입력시 전송실행
+		textfield.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyTyped(KeyEvent e) {
-				// 텍스트 전송코드
-				if (e.getKeyChar() == 10) {
-					Message msg = new Message(myid, youid, textfield.getText());
-					textarea.append("보낸사람: " + myid + "\n 내용: " + textfield.getText());
+				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+					Message msg = new Message(myid, youid, textfield.getText().trim());
 					textfield.setText("");
+					
 					try {
 						Client.conn.sendObject(msg);
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyChar() == 65535) {
-					textfield.append("\n");
+					
+					msgset.add(msg);
+					loadMessage();
 				}
 			}
 		});
 		upload.addActionListener(e -> {
-			fd = new FileDialog(this, "업로드 파일", FileDialog.LOAD);
+			FileDialog fd = new FileDialog(this, "업로드 파일", FileDialog.LOAD);
 			fd.setVisible(true);
-			File upfile = new File(fd.getDirectory(), fd.getFile());
-			
-			Message msg = new Message(myid, youid, upfile);
-//			Message msg2 = new Message(myid, youid, "파일을 받으시겠습니까? 예/아니요");
-			try {
-				Client.conn.sendObject(msg);
-				Client.conn.sendFile(upfile);
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			if(fd.getFile() != null){
+				File upfile = new File(fd.getDirectory(), fd.getFile());
+				Message msg = new Message(myid, youid, upfile);
+				
+				try {
+					Client.conn.sendObject(msg);
+					Client.conn.sendFile(upfile);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+				msgset.add(msg);
+				loadMessage();
 			}
 		});
 		//임시폴더에 파일 저장 , 파일 저장 위치 지정
-		
-
 	}
 
 	private void menu() {
@@ -119,12 +184,24 @@ public class ChatRoomGUI extends JFrame {
 	@Override
 	public void dispose() {
 		Client.chatList.remove(youid);
+		saveMessage();
 		super.dispose();
 	}
 
 	public ChatRoomGUI(String youid) {
 		this.youid = youid;
-		String younick = Client.friends.getFriendsList().get(youid);
+		if(!new File("db/" + myid).exists())
+			new File("db/" + myid).mkdirs();
+		chatDB = new File("db/" + myid, "chat_from_" + youid + ".db");
+		if(chatDB.exists()){
+			try {
+				ObjectInputStream oin = new ObjectInputStream(
+						new BufferedInputStream(new FileInputStream(chatDB)));
+				msgset = (TreeSet<Message>)oin.readObject();
+				oin.close();
+			} catch (IOException | ClassNotFoundException e) {}
+		} else msgset = new TreeSet<>();
+		younick = Client.friends.getFriendsList().get(youid);
 		super.setTitle(younick + "님과의 채팅");
 		super.setSize(450, 700);
 		super.setLocationByPlatform(true);
@@ -133,23 +210,58 @@ public class ChatRoomGUI extends JFrame {
 		event();
 		menu();
 		super.setVisible(false);
-
-		// receiver.setDaemon(true);
-		// receiver.start();
 	}
 
 	public void messageHandler(Message msg) {
 		System.out.println(Client.identity + "가 받음 : " + msg.getMsg().getClass().getSimpleName());
-		switch (msg.getMsg().getClass().getSimpleName()) {
-		case "String":
-			textarea.append("보낸사람: " + msg.getSender() + "\n 내용: " + (String) msg.getMsg());
-			break;
-		case "File":
-			File received = (File) msg.getMsg();
-			textarea.append("보낸사람: " + msg.getSender() + "\n 받은 파일: " + received.getName());
-			break;
-		default:
-			System.out.println("default");
+		msgset.add(msg);
+		loadMessage();
+	}
+
+	private void saveMessage() {
+		try {
+			if(chatDB.exists()){
+				chatDB.delete();
+				chatDB.createNewFile();
+			}
+			ObjectOutputStream out = new ObjectOutputStream(
+					new BufferedOutputStream(new FileOutputStream(chatDB)));
+			out.writeObject(msgset);
+			out.close();
+		} catch(IOException e) {}
+	}
+	
+	public void loadMessage(){
+		msgviewhtml = new StringBuilder();
+		Message prev = null;
+		for(Message msg : msgset){
+			if(prev != null)
+				msgviewhtml.append("</br>\n");
+
+			if(msg.getSender().equals(myid)){
+				msgviewhtml.append("<div style=\"text-align:right\">");
+			} else if(msg.getSender().equals(youid)){
+				msgviewhtml.append("<div style=\"text-align:left\">");
+			}
+			
+			if(((prev != null && !msg.getSender().equals(prev.getSender())) || prev == null) && msg.getSender().equals(myid))
+				msgviewhtml.append("<div><font color=#000000>" + myid + "</font></div>");
+			else if(((prev != null && !msg.getSender().equals(prev.getSender())) || prev == null) && msg.getSender().equals(youid))
+				msgviewhtml.append("<div><font color=#000000>" + younick + "</font></div>");
+			
+			switch (msg.getMsg().getClass().getSimpleName()) {
+			case "String":
+				msgviewhtml.append("<div><font color=#101010>: " + (String) msg.getMsg() + "</font></div>");
+				break;
+			case "File":
+				File received = (File) msg.getMsg();
+				msgviewhtml.append("<div><a href=\"file:" + msg.getTime_created() + "\"><font color=#101010>파일: " + received.getName() + "</font></a></div>");
+				break;
+			}
+			
+			msgviewhtml.append("</div>");
+			prev = msg;
 		}
+		msgview.setText(msgviewhtml.toString());
 	}
 }

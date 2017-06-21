@@ -218,6 +218,7 @@ public class FriendsListGUI extends JFrame {
 			Client.chatList = null;
 			Client.conn.close();
 			Client.conn = null;
+			Client.receiver = null;
 		}
 		super.dispose();
 	}

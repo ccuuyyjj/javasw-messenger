@@ -2,7 +2,7 @@ package general.container;
 
 import java.io.Serializable;
 
-public class Message implements Serializable {
+public class Message implements Serializable, Comparable<Message> {
 	private static final long serialVersionUID = -868641557643453348L;
 	private final long time_created;
 	private String sender;
@@ -52,5 +52,18 @@ public class Message implements Serializable {
 
 	public void setMsg(Object msg) {
 		this.msg = msg;
+	}
+
+	@Override
+	public int compareTo(Message o) {
+		Long me = this.time_created;
+		Long you = o.time_created;
+		return me.compareTo(you);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return obj.getClass().equals(this.getClass())
+				&& (this.time_created == ((Message)obj).time_created);
 	}
 }
