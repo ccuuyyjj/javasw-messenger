@@ -8,6 +8,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,47 +35,51 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import client.Client;
-import client.Quiz;
+import general.container.Broadcast;
 import general.container.Message;
 
 public class FriendsListGUI extends JFrame {
+
+	Broadcast bc = new Broadcast();
 	// 내 정보창
-	private String id=Client.identity;// 상단 라벨에 표시될 자기 아이디
+	private String id = Client.identity;// 상단 라벨에 표시될 자기 아이디
 	private int allfriend; // 오프라인+온라인 친구
 	private int connecting; // 온라인친구
-	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + allfriend +"명"+ "<br>접속중인 친구 : " + connecting +"명" +"</html>");
-	
+	private JLabel ss = new JLabel(
+			"<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : " + connecting + "명" + "</html>");
+
 	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
-	private JTree tree = new JTree(list){
+	private JTree tree = new JTree(list) {
 		@Override
 		public String convertValueToText(Object value, boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
 			String id = null;
 			String nick = null;
-			if(value != null && value.getClass().getSimpleName().equals("DefaultMutableTreeNode"))
-				id = ((DefaultMutableTreeNode)value).toString();
-			if(id != null)
+			if (value != null && value.getClass().getSimpleName().equals("DefaultMutableTreeNode"))
+				id = ((DefaultMutableTreeNode) value).toString();
+			if (id != null)
 				nick = Client.friends.getFriendsList().get(id);
-			if(nick != null)
+			if (nick != null)
 				return nick;
 			return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
 		}
-		
+
 	};
 	private DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 	private DefaultMutableTreeNode online = new DefaultMutableTreeNode("접속중");
-	//private DefaultMutableTreeNode offline = new DefaultMutableTreeNode("오프라인");
-	
+	// private DefaultMutableTreeNode offline = new
+	// DefaultMutableTreeNode("오프라인");
+
 	// 팝업
 	private JPopupMenu pop = new JPopupMenu(); // 트리 노트에서 우클릭시 나타날 팝업메뉴
 	private JMenuItem start = new JMenuItem("대화시작");
 	private JMenuItem end = new JMenuItem("친구삭제");
 
-	//메세지 수신확인 팝업
+	// 메세지 수신확인 팝업
 	private JPopupMenu msgpop = new JPopupMenu();
 	private JMenuItem yes = new JMenuItem("대화시작");
 	private JMenuItem no = new JMenuItem("취소");
-	
+
 	private JLabel sname = new JLabel("이름"); // 트리 노드 클릭시 아래에 대화할 상대의 정보
 	private JTextField snames = new JTextField();
 	private JLabel snick = new JLabel("닉네임");
@@ -82,18 +89,17 @@ public class FriendsListGUI extends JFrame {
 
 	private JButton logout = new JButton("로그아웃"); // 로그아웃 버튼
 	private JButton addfriend = new JButton("친구 추가");
-	
+
 	Container con = super.getContentPane();
-	
-	//심심한창
-	private JLabel label=new JLabel("심심한 창");
-	private JTextArea quiz=new JTextArea("?를 입력하시면 도움말을 볼 수 있습니다.");
-	private JTextField answer=new JTextField();
-	private JScrollPane quizscroll =new JScrollPane(quiz);
-	
+
+	// 심심한창
+	private JLabel label = new JLabel("심심한 창");
+	private JTextArea quiz = new JTextArea("?를 입력하시면 도움말을 볼 수 있습니다.");
+	private JTextField answer = new JTextField();
+	private JScrollPane quizscroll = new JScrollPane(quiz);
 
 	private void display() {
-		
+
 		con.setLayout(null);
 		con.add(ss, BorderLayout.NORTH);
 		con.add(scroll, BorderLayout.CENTER);
@@ -116,52 +122,49 @@ public class FriendsListGUI extends JFrame {
 
 		scroll.setBounds(12, 105, 370, 257);
 		scroll.setViewportView(tree);
-		
 
 		// 온라인과 오프라인 구별
 		list.add(online);
-		//list.add(offline);
+		// list.add(offline);
 
-//		// 트리창에서 노드 클릭시 해당 닉네임에 포함된 이름과 아이피를 표시해주는 창
-//		sname.setBounds(12, 368, 57, 28);
-//		snames.setBounds(81, 372, 116, 21);
-//		snick.setBounds(12, 402, 57, 28);
-//		snicks.setBounds(81, 403, 116, 21);
-//
-//		snames.setEditable(false); // 노드 클릭시 나타내는 상대 정보창이 텍스트 필드이므로
-//		snicks.setEditable(false); // 수정 못하게 금지시키기
-		quiz.setEditable(true);//퀴즈창에 수정금지
+		// // 트리창에서 노드 클릭시 해당 닉네임에 포함된 이름과 아이피를 표시해주는 창
+		// sname.setBounds(12, 368, 57, 28);
+		// snames.setBounds(81, 372, 116, 21);
+		// snick.setBounds(12, 402, 57, 28);
+		// snicks.setBounds(81, 403, 116, 21);
+		//
+		// snames.setEditable(false); // 노드 클릭시 나타내는 상대 정보창이 텍스트 필드이므로
+		// snicks.setEditable(false); // 수정 못하게 금지시키기
+		quiz.setEditable(true);// 퀴즈창에 수정금지
 
 		pop.add(start); // 팝업메뉴
 		pop.add(end);
 		add(pop);
-		
+
 		msgpop.add(yes);
 		msgpop.add(no);
 		add(msgpop);
-		
+
 		// 로그아웃 버튼
 		logout.setBounds(12, 636, 370, 35);
 		// 친구 추가 버튼
 		addfriend.setBounds(213, 30, 158, 52);
-		//심심한 창
+		// 심심한 창
 		label.setBounds(12, 365, 370, 29);
 		label.setFont(new Font("맑은 고딕", Font.BOLD, 12));
 		label.setBorder(b3);
-		
+
 		quiz.setBounds(12, 400, 370, 180);
 		answer.setBounds(12, 591, 370, 35);
-		
-		
+
 		quizscroll.setBounds(12, 400, 370, 180);
 		quizscroll.setViewportView(quiz);
-		
 
-		DefaultTreeCellRenderer render=new DefaultTreeCellRenderer();
+		DefaultTreeCellRenderer render = new DefaultTreeCellRenderer();
 		render.setOpenIcon(new ImageIcon("image/적당.jpg"));
 		render.setLeafIcon(new ImageIcon("image/보노보노.jpg"));
 		render.setClosedIcon(new ImageIcon("image/적당.jpg"));
-		
+
 		tree.setCellRenderer(render);
 
 	}
@@ -170,15 +173,17 @@ public class FriendsListGUI extends JFrame {
 
 	private void event() {
 		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		tree.addKeyListener(new KeyAdapter() {@Override
-		public void keyPressed(KeyEvent e) {
-			if(e.getKeyCode()==KeyEvent.VK_F5){
-				System.out.println("새로고침");
-				save();
-				load();
+		tree.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_F5) {
+					System.out.println("새로고침");
+					save();
+					load();
+				}
 			}
-		}});
-		
+		});
+
 		tree.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
@@ -186,58 +191,60 @@ public class FriendsListGUI extends JFrame {
 					if (node == null)
 						return;
 				}
-//				for (String id : Client.friends.getFriendsList().keySet()) { // 노드
-//															// 클릭시
-//					String nodes = node.toString(); // 노드의 내용이
-//					if (nodes.contains(id)) { // 닉네임
-//						// 있는 값들과 비교하여 같은 값이 있다면 해당 주소값에 해당하는 이름과
-//						// 아이디를 출력
-//						snames.setText(id);
-//						snicks.setText(Client.friends.getFriendsList().get(id));
-//						break;
-//					}else{
-//						snames.setText(null);
-//						snicks.setText(null);
-//					}
-//				}
+
+				// for (String id : Client.friends.getFriendsList().keySet()) {
+				// // 노드
+				// // 클릭시
+				// String nodes = node.toString(); // 노드의 내용이
+				// if (nodes.contains(id)) { // 닉네임
+				// // 있는 값들과 비교하여 같은 값이 있다면 해당 주소값에 해당하는 이름과
+				// // 아이디를 출력
+				// snames.setText(id);
+				// snicks.setText(Client.friends.getFriendsList().get(id));
+				// break;
+				// }else{
+				// snames.setText(null);
+				// snicks.setText(null);
+				// }
+				// }
 
 				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 				// 트리 경로 출력ex)[회원,목록,접속중,닉네임2]
 				if (e.getButton() == 3) { // 마우스 우클릭을 하면
 					int iRow = tree.getRowForLocation(e.getX(), e.getY()); // 해당
-															// 마우스
-															// 좌표
-															// 위치
+					// 마우스
+					// 좌표
+					// 위치
 					tree.setSelectionRow(iRow); // 트리 노드를 좌클릭
-					
+
 					if (path != null) // 트리 경로가 널이 아니라면(값이 있다면)
-						for(String id : Client.friends.getFriendsList().keySet()){
-						if (node.toString().contains(id)) {
-							pop.show(tree, e.getX(), e.getY()); // 팝업
-													// 메뉴창
-													// 출력
-						} 
+						for (String id : Client.friends.getFriendsList().keySet()) {
+							if (node.toString().contains(id)) {
+								pop.show(tree, e.getX(), e.getY()); // 팝업
+								// 메뉴창
+								// 출력
+							}
 						}
-					}
+				}
 			}
 		});
-		
+
 		addfriend.addActionListener(e -> {
 			String listname = JOptionPane.showInputDialog("친구의 아이디를 입력하세요.");
-			for(String id:Client.friends.getFriendsList().keySet()){
-				if(listname.equals(id)){
+			for (String id : Client.friends.getFriendsList().keySet()) {
+				if (listname.equals(id)) {
 					listname = null;
 					break;
 				}
 			}
-			if(listname == null || listname.isEmpty()) {
+			if (listname == null || listname.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "입력이 올바르지 않습니다.");
 			} else if (Client.identity.equals(listname)) {
 				JOptionPane.showMessageDialog(null, "자기자신은 추가할 수 없습니다.");
 			} else {
-				//System.out.println("들어온거" + listname);
+				// System.out.println("들어온거" + listname);
 				String nickname = JOptionPane.showInputDialog("친구의 이름을 설정하세요");
-				if(nickname == null | nickname.isEmpty()){
+				if (nickname == null | nickname.isEmpty()) {
 					nickname = listname;
 				}
 				Client.friends.add(listname, nickname);
@@ -245,9 +252,9 @@ public class FriendsListGUI extends JFrame {
 			save();
 		});
 		start.addActionListener(e -> {// 채팅방
-			
+
 			ChatRoomGUI room = Client.chatList.get(node.toString());
-			if(room == null){
+			if (room == null) {
 				room = new ChatRoomGUI(node.toString());
 				Client.chatList.put(node.toString(), room);
 			}
@@ -264,44 +271,19 @@ public class FriendsListGUI extends JFrame {
 		answer.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode()==KeyEvent.VK_ENTER){
-					String key=answer.getText();
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					String key = answer.getText();
 					answer.setText("");
-					switch(key){
-						case "청소":
-							quiz.setText("");
-							answer.setText("");
-							break;
-						case "?":
-							quiz.append("\n청소 : 해당 창을 청소합니다.\n역사 : 역사에 관한 문제를 냅니다. "
-									+ "\n수도 : 국가 수도 맞추기 입니다.\n덧셈 : 덧셈에 관한 문제를 냅니다.");
-							break;
-						case "역사":
-							quiz.setText("역사 문제를 시작합니다.\n");
-							history();
-							Quiz qz=new Quiz();
-							
-							break;
-						case "수도":
-							quiz.setText("수도 문제를 시작합니다.\n");
-							country();
-							quiz.append("문제를 종료합니다");
-							break;
-						case "덧셈":
-							quiz.setText("덧셈 문제를 시작합니다.\n");
-							plus();
-							break;
-					}
-					
+					bc.caster(key);
 				}
 			}
 		});
-		
+
 	}
 
 	private void menu() {
 	}
-	
+
 	@Override
 	public void dispose() {
 		if (Client.conn != null && !Client.conn.getSocket().isClosed()) {
@@ -309,7 +291,7 @@ public class FriendsListGUI extends JFrame {
 			Client.friends.getFriendsList().clear();
 			Client.friends = null;
 			Client.identity = null;
-			for(ChatRoomGUI gui : Client.chatList.values()){
+			for (ChatRoomGUI gui : Client.chatList.values()) {
 				gui.dispose();
 			}
 			Client.chatList = null;
@@ -333,94 +315,118 @@ public class FriendsListGUI extends JFrame {
 		count();
 		super.setVisible(true);
 		Client.receiver.start();
+		BcReceiver br = new BcReceiver();
+		br.setDaemon(true);
+		br.start();
+		bc.setDaemon(true);
+		bc.start();
 	}
-	
-
 
 	private void count() {
-		int i=online.getChildCount();
-	//	i+=offline.getChildCount();
-		allfriend=i;
-		ss.setText("<html>이름 : " + id + "<br>전체 친구 : " + allfriend +"명"+ "<br>접속중인 친구 : " + connecting +"명" +"</html>");
+		int i = online.getChildCount();
+		// i+=offline.getChildCount();
+		allfriend = i;
+		ss.setText("<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : " + connecting + "명"
+				+ "</html>");
 	}
 
 	private void save() {
 		try {
 			Message msg = new Message(Client.identity, "=[SERVER]=", Client.friends);
 			Client.conn.sendObject(msg);
-		} catch (IOException  e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-			
+
 		}
 	}
 
 	public void load() {
 		online.removeAllChildren();
-	//	offline.removeAllChildren();
-	    for(String id : Client.friends.getFriendsList().keySet()){
-	        online.add(new DefaultMutableTreeNode(id+"("+Client.friends.getFriendsList().get(id)+")"));
-	       
-	        
-	    }
+		// offline.removeAllChildren();
+		for (String id : Client.friends.getFriendsList().keySet()) {
+			online.add(new DefaultMutableTreeNode(id + "(" + Client.friends.getFriendsList().get(id) + ")"));
+
+		}
 	}
 
 	public DefaultTreeModel getModel() {
 		return model;
 	}
-	public void msgcheck(){
+
+	public void msgcheck() {
 		msgpop.show(this, 10, 10);
 	}
-	private void country(){
-		 Map<Integer, String> q = new HashMap<Integer, String>(); 
-		 q.put(0, "영국의 수도는");
-		 q.put(1, "미국의 수도는");
-		 q.put(2, "중국의 수도는");
-		 q.put(3, "한국의 수도는");
-		 q.put(4, "일본의 수도는");
-		 q.put(5, "브라질의 수도는");
-		 q.put(6, "우리집은");
-		 List<String> a=new ArrayList<>();
-		 a.add(0,"런던");
-		 a.add(1,"워싱턴");
-		 a.add(2,"베이징");
-		 a.add(3,"서울");
-		 a.add(4,"도쿄");
-		 a.add(5,"브라질리아");
-		 a.add(6, "인천");
-		 int count=0;
-		 int i=0;
-		while(true){
-		 int num=(int)(Math.random()*a.size());
-		 quiz.append(q.get(num)+"?\n");
-		 String an=JOptionPane.showInputDialog(q.get(num));
-		 count++;
-						 if(a.get(num).toString().equals(an)){	 
-							 quiz.append("정답입니다.\n\n");
-							 i++;
-						 }else if(an.equals("종료")){
-							 count--;
-							 quiz.append("\n"+"===역사 퀴즈 결과==="+"\n"+"총 문제 수 : "+count+"개\n맞춘 문제 수 : "+i
-									 +"개\n틀린 문제 수 : "+(count-i)+"개\n=================\n");
-							 break;
-						 }else {
-							 quiz.append("오답입니다."+q.get(num)+" "+a.get(num)+"입니다.\n");
-						 }
-						 
-					}
-				 
-		} 
-		 
-		
-	
-	private void history(){
-		
-	}
-	private void plus(){
-		
-	}
+
+	private void country() {
+		Map<Integer, String> q = new HashMap<Integer, String>();
+		q.put(0, "영국의 수도는");
+		q.put(1, "미국의 수도는");
+		q.put(2, "중국의 수도는");
+		q.put(3, "한국의 수도는");
+		q.put(4, "일본의 수도는");
+		q.put(5, "브라질의 수도는");
+		q.put(6, "우리집은");
+		List<String> a = new ArrayList<>();
+		a.add(0, "런던");
+		a.add(1, "워싱턴");
+		a.add(2, "베이징");
+		a.add(3, "서울");
+		a.add(4, "도쿄");
+		a.add(5, "브라질리아");
+		a.add(6, "인천");
+		int count = 0;
+		int i = 0;
+		while (true) {
+			int num = (int) (Math.random() * a.size());
+			quiz.append(q.get(num) + "?\n");
+			String an = JOptionPane.showInputDialog(q.get(num));
+			count++;
+			if (a.get(num).toString().equals(an)) {
+				quiz.append("정답입니다.\n\n");
+				i++;
+			} else if (an.equals("종료")) {
+				count--;
+				quiz.append("\n" + "===역사 퀴즈 결과===" + "\n" + "총 문제 수 : " + count + "개\n맞춘 문제 수 : " + i + "개\n틀린 문제 수 : "
+						+ (count - i) + "개\n=================\n");
+				break;
+			} else {
+				quiz.append("오답입니다." + q.get(num) + " " + a.get(num) + "입니다.\n");
+			}
 
 		}
 
+	}
 
-	
+	private void history() {
 
+	}
+
+	private void plus() {
+
+	}
+
+	private class BcReceiver extends Thread {
+		@Override
+		public void run() {
+			DatagramSocket ds = null;
+			try {
+				ds = new DatagramSocket(20000);
+			} catch (SocketException e) {
+				e.printStackTrace();
+			}
+
+			byte[] buffer = new byte[1024];
+			DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
+
+			while (true) {
+				try {
+					ds.receive(dp);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				String s = new String(dp.getData(), 0, dp.getLength());
+				quiz.append(s+"\n");
+			}
+		}
+	}
+}

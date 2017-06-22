@@ -34,8 +34,10 @@ public class LoginGUI extends JFrame {
 	private JLabel lbPw = new JLabel("PASSWORD : ");
 	private JPasswordField pw = new JPasswordField("aaaaaa"); // 비밀번호
 	private JLabel lbAddr = new JLabel("ADDRESS : ");
-	private JTextField address = new JTextField("warrock.iptime.org"); // 서버 주소
 
+	private String ip = "192.168.0.16";
+	private JTextField address = new JTextField(ip); // 서버 주소
+	
 	private JLabel info = new JLabel("ID : 2-10자 PASSWORD : 6-20자 (특수문자 제외)", JLabel.RIGHT);
 
 	private JButton login = new JButton("LOGIN");
