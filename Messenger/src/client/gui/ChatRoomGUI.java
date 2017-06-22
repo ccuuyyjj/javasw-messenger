@@ -23,8 +23,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.TreeSet;
@@ -38,6 +40,8 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 import client.Client;
 import general.container.Message;
@@ -48,7 +52,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 	private JEditorPane msgview = new JEditorPane();
 	private StringBuilder msgviewhtml = null;
 	private JPanel panel = new JPanel();
-	private JScrollPane scrollPane = new JScrollPane(panel);
+	private JScrollPane scrollPane = new JScrollPane(msgview);
 	private JTextArea textfield = new JTextArea();
 	private JButton upload = new JButton("파일 올리기");
 	private JButton send = new JButton("전송");
@@ -67,21 +71,29 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		Container con = getContentPane();
 		con.setLayout(null);
 
-		scrollPane.setBounds(10, 10, 420, 500);
+		panel.setBounds(10, 10, 420, 500);
 		upload.setBounds(10, 520, 420, 30);
 		textfield.setBounds(10, 560, 340, 60);
 		send.setBounds(362, 560, 68, 60);
 
-		con.add(scrollPane);
-		scrollPane.setBorder(new LineBorder(Color.BLACK));
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-		panel.add(msgview);
+		con.add(panel);
 		panel.setLayout(new GridLayout());
 		panel.setBackground(Color.WHITE);
 
+		panel.add(scrollPane);
+		scrollPane.setBorder(new LineBorder(Color.BLACK));
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
 		msgview.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
 		msgview.setEditable(false);
+		StyleSheet style = new StyleSheet();
+		try {
+			style.importStyleSheet(new URL("http://fonts.googleapis.com/earlyaccess/nanumgothic.css"));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		((HTMLEditorKit) msgview.getEditorKit()).setStyleSheet(style);
 
 		con.add(upload);
 		upload.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -99,8 +111,16 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		loadMessage();
 	}
 
+	private boolean scrolling = false;
+
 	private void event() {
 		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
+			if (!e.getValueIsAdjusting() && !scrolling) {
+				e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+			}
+			scrolling = e.getValueIsAdjusting();
+		});
 		msgview.addHyperlinkListener(e -> {
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 				if (e.getDescription().startsWith("file:")) {
@@ -129,9 +149,10 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 					loadMessage();
 				} else if (e.getDescription().startsWith("folder:")) {
 					try {
-						Desktop.getDesktop().browse(new URI(URLDecoder.decode(
-								"file:///" + e.getDescription().substring(7).replace("\\", "/") + "/",
-								"UTF-8")));
+						Desktop.getDesktop()
+								.browse(new URI(URLDecoder.decode("file:///"
+										+ e.getDescription().substring(7).replace("\\", "/"),
+										"UTF-8")));
 					} catch (IOException | URISyntaxException e1) {
 						e1.printStackTrace();
 					}
@@ -236,6 +257,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 
 	public void loadMessage() {
 		msgviewhtml = new StringBuilder();
+		msgviewhtml.append("<div style=\"font-family: 'Nanum Gothic'; font-size: 10px;\">");
 		Message prev = null;
 		for (Message msg : msgset) {
 			if (prev != null)
@@ -260,14 +282,20 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 				break;
 			case "File":
 				File received = (File) msg.getMsg();
-				msgviewhtml.append("<div><a href=\"file:" + msg.getTime_created()
-						+ "\"><font color=#101010>파일: " + received.getName() + "</font></a></div>");
+				if (msg.getReceiver().equals(myid))
+					msgviewhtml.append("<div><a href=\"file:" + msg.getTime_created()
+							+ "\"><font color=#101010>파일: " + received.getName() + "</font></a></div>");
+				else
+
+					msgviewhtml.append(
+							"<div><font color=#101010>파일: " + received.getName() + "</font></div>");
 				break;
 			}
 
 			msgviewhtml.append("</div>");
 			prev = msg;
 		}
+		msgviewhtml.append("</div>");
 		msgview.setText(msgviewhtml.toString());
 	}
 
@@ -322,6 +350,5 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 	@Override
 	public void dropActionChanged(DropTargetDragEvent dtde) {
 		// System.out.println("dragActionChanged");
-
 	}
 }

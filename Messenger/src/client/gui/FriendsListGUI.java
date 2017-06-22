@@ -8,8 +8,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -41,8 +39,8 @@ public class FriendsListGUI extends JFrame {
 	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : "
 			+ connecting + "명" + "</html>");
 
-	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
-	private JTree tree = new JTree(list) {
+	private DefaultMutableTreeNode friendlist = new DefaultMutableTreeNode("회원 목록");
+	private JTree tree = new JTree(friendlist) {
 		@Override
 		public String convertValueToText(Object value, boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
@@ -50,8 +48,8 @@ public class FriendsListGUI extends JFrame {
 			String nick = null;
 			if (value != null && value.getClass().getSimpleName().equals("DefaultMutableTreeNode"))
 				id = ((DefaultMutableTreeNode) value).toString();
-			if (id != null)
-				nick = Client.friends.getFriendsList().get(id);
+			if (id != null && Client.friends.getFriendsList().get(id) != null)
+				nick = id + "(" + Client.friends.getFriendsList().get(id) + ")";
 			if (nick != null)
 				return nick;
 			return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
@@ -60,8 +58,6 @@ public class FriendsListGUI extends JFrame {
 	};
 	private DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 	private DefaultMutableTreeNode online = new DefaultMutableTreeNode("접속중");
-	// private DefaultMutableTreeNode offline = new
-	// DefaultMutableTreeNode("오프라인");
 
 	// 팝업
 	private JPopupMenu pop = new JPopupMenu(); // 트리 노트에서 우클릭시 나타날 팝업메뉴
@@ -87,10 +83,10 @@ public class FriendsListGUI extends JFrame {
 
 	
 	//심심한창
-	private JLabel label=new JLabel("심심한 창");
-	private JTextArea multicast=new JTextArea();
-	private JTextField multicasting=new JTextField();
-	private JScrollPane quizscroll =new JScrollPane(multicast);
+	private JLabel label=new JLabel("전체 대화");
+	private JTextArea multichat=new JTextArea();
+	private JTextField multichattext=new JTextField();
+	private JScrollPane multichatscroll =new JScrollPane(multichat);
 	
 
 
@@ -105,9 +101,9 @@ public class FriendsListGUI extends JFrame {
 		con.add(snick, BorderLayout.CENTER);
 		con.add(snicks, BorderLayout.CENTER);
 		con.add(addfriend, BorderLayout.NORTH);
-		con.add(multicast, BorderLayout.CENTER);
-		con.add(multicasting, BorderLayout.CENTER);
-		con.add(quizscroll, BorderLayout.CENTER);
+		con.add(multichat, BorderLayout.CENTER);
+		con.add(multichattext, BorderLayout.CENTER);
+		con.add(multichatscroll, BorderLayout.CENTER);
 		con.add(label, BorderLayout.CENTER);
 
 		// 최상단 로그인 정보창
@@ -120,20 +116,9 @@ public class FriendsListGUI extends JFrame {
 		scroll.setViewportView(tree);
 
 		// 온라인과 오프라인 구별
-		list.add(online);
-		// list.add(offline);
+		friendlist.add(online);
 
-
-//		// 트리창에서 노드 클릭시 해당 닉네임에 포함된 이름과 아이피를 표시해주는 창
-//		sname.setBounds(12, 368, 57, 28);
-//		snames.setBounds(81, 372, 116, 21);
-//		snick.setBounds(12, 402, 57, 28);
-//		snicks.setBounds(81, 403, 116, 21);
-//
-//		snames.setEditable(false); // 노드 클릭시 나타내는 상대 정보창이 텍스트 필드이므로
-//		snicks.setEditable(false); // 수정 못하게 금지시키기
-		multicast.setEditable(true);//퀴즈창에 수정금지
-
+		multichat.setEditable(false);// 퀴즈창에 수정금지
 
 		pop.add(start); // 팝업메뉴
 		pop.add(end);
@@ -155,11 +140,13 @@ public class FriendsListGUI extends JFrame {
 		
 
 		DefaultTreeCellRenderer render = new DefaultTreeCellRenderer();
-		render.setOpenIcon(new ImageIcon("image/적당.jpg"));
-		render.setLeafIcon(new ImageIcon("image/보노보노.jpg"));
-		render.setClosedIcon(new ImageIcon("image/적당.jpg"));
+		render.setOpenIcon(new ImageIcon("image/sampleicon2.jpg"));
+		render.setLeafIcon(new ImageIcon("image/sampleicon1.jpg"));
+		render.setClosedIcon(new ImageIcon("image/sampleicon2.jpg"));
 
 		tree.setCellRenderer(render);
+		multichat.setBounds(12, 401, 370, 180);
+		multichattext.setBounds(12, 591, 370, 35);
 
 	}
 
@@ -185,23 +172,6 @@ public class FriendsListGUI extends JFrame {
 					if (node == null)
 						return;
 				}
-
-				// for (String id :
-				// Client.friends.getFriendsList().keySet()) {
-				// // 노드
-				// // 클릭시
-				// String nodes = node.toString(); // 노드의 내용이
-				// if (nodes.contains(id)) { // 닉네임
-				// // 있는 값들과 비교하여 같은 값이 있다면 해당 주소값에 해당하는 이름과
-				// // 아이디를 출력
-				// snames.setText(id);
-				// snicks.setText(Client.friends.getFriendsList().get(id));
-				// break;
-				// }else{
-				// snames.setText(null);
-				// snicks.setText(null);
-				// }
-				// }
 
 				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 				// 트리 경로 출력ex)[회원,목록,접속중,닉네임2]
@@ -263,29 +233,23 @@ public class FriendsListGUI extends JFrame {
 			Client.friends.getFriendsList().remove(node.toString());
 			save();
 		});
-
-
-	}
-	private class Multicast extends Thread{
-		private boolean running=true;
-		@Override
-		public void run() {
-			multicasting.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
-					while(running){
-					if(e.getKeyCode()==KeyEvent.VK_ENTER){
-						String send=multicasting.getText();
-						multicasting.setText("");
-						multicast.append(send+"\n");
-						break;
+		multichattext.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					String key = multichattext.getText();
+					Message msg = new Message(Client.identity, "=[BROADCAST]=", key);
+					multichattext.setText("");
+					try {
+						Client.conn.sendObject(msg);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
-					else break;
+					// bc.caster(key);
 				}
-				}
-			});
-		
-		}
+			}
+		});
 	}
 	
 	private void menu() {
@@ -323,9 +287,6 @@ public class FriendsListGUI extends JFrame {
 		count();
 		super.setVisible(true);
 		Client.receiver.start();
-
-
-
 	}
 
 	private void count() {
@@ -351,7 +312,6 @@ public class FriendsListGUI extends JFrame {
 		// offline.removeAllChildren();
 		for (String id : Client.friends.getFriendsList().keySet()) {
 			online.add(new DefaultMutableTreeNode(id));
-
 		}
 	}
 
@@ -363,30 +323,11 @@ public class FriendsListGUI extends JFrame {
 		msgpop.show(this, 10, 10);
 	}
 
-//	private class BcReceiver extends Thread {
-//		@Override
-//		public void run() {
-//			DatagramSocket ds = null;
-//			try {
-//				ds = new DatagramSocket(20000);
-//			} catch (SocketException e) {
-//				e.printStackTrace();
-//			}
-//
-//			byte[] buffer = new byte[1024];
-//			DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
-//
-//			while (true) {
-//				try {
-//					ds.receive(dp);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//				String s = new String(dp.getData(), 0, dp.getLength());
-//				quiz.append(s+"\n");
-//			}
-//		}
-//	}
-
-
+	public void messageHandler(Message msg) {
+		String sender = msg.getSender();
+		String text = (String) msg.getMsg();
+		if (!multichat.getText().isEmpty())
+			multichat.append("\n");
+		multichat.append(sender + " : " + text);
+	}
 }

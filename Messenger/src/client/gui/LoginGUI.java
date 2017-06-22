@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
@@ -20,17 +22,19 @@ import client.Client;
 import client.impl.ClientUtil;
 
 public class LoginGUI extends JFrame {
+	private File infoprop = new File("files", "info.prop");
+	private Properties prop = null;
 
 	private ImageIcon img = new ImageIcon("image/normcore.png");
 	private JLabel logo = new JLabel(img);
 
 	private JLabel lbId = new JLabel("IDENTITY　   : ");
-	private JTextField id = new JTextField("aaa"); // 아이디 (전화번호)
+	private JTextField id = new JTextField(""); // 아이디 (전화번호)
 	private JLabel lbPw = new JLabel("PASSWORD : ");
-	private JPasswordField pw = new JPasswordField("aaaaaa"); // 비밀번호
+	private JPasswordField pw = new JPasswordField(""); // 비밀번호
 	private JLabel lbAddr = new JLabel("ADDRESS : ");
 
-	private String ip = "192.168.0.16";
+	private String ip = "";
 	private JTextField address = new JTextField(ip); // 서버 주소
 
 	private JLabel info = new JLabel("ID : 2-10자 PASSWORD : 6-20자 (특수문자 제외)", JLabel.RIGHT);
@@ -45,7 +49,7 @@ public class LoginGUI extends JFrame {
 		super.setResizable(false);
 		super.setVisible(true);
 
-		Container con = super.getContentPane();
+		Container con = getContentPane();
 		con.setLayout(null);
 		con.setBackground(Color.white);
 
@@ -60,8 +64,6 @@ public class LoginGUI extends JFrame {
 
 		id.setBounds(105, 260, 270, 30);
 		id.setFont(font);
-
-		출처: http: // luvstudy.tistory.com/37 [파란하늘의 지식창고]
 
 		// 비밀번호
 		lbPw.setBounds(20, 305, 90, 30);
@@ -99,6 +101,8 @@ public class LoginGUI extends JFrame {
 		con.add(info);
 		con.add(login);
 		con.add(join);
+
+		loadProp();
 	}
 
 	private void event() {
@@ -115,17 +119,10 @@ public class LoginGUI extends JFrame {
 					if (check) {
 						JOptionPane.showMessageDialog(this, "가입 완료되었습니다");
 
-						File target = new File("files", "info.prop");
-						if (!target.exists()) {
-							target.getParentFile().mkdirs();
-							target.createNewFile();
-						}
-						FileOutputStream out = new FileOutputStream(target);
-						Properties prop = new Properties();
 						prop.setProperty("id", id.getText());
 						prop.setProperty("pw", pw.getText());
 						prop.setProperty("addr", address.getText());
-						prop.store(out, "information");
+						saveProp();
 
 						Client.identity = id.getText();
 						this.dispose();
@@ -153,17 +150,10 @@ public class LoginGUI extends JFrame {
 				if (check) {
 					JOptionPane.showMessageDialog(this, "로그인에 성공했습니다");
 
-					File target = new File("files", "info.prop");
-					if (!target.exists()) {
-						target.getParentFile().mkdirs();
-						target.createNewFile();
-					}
-					FileOutputStream out = new FileOutputStream(target);
-					Properties prop = new Properties();
 					prop.setProperty("id", id.getText());
 					prop.setProperty("pw", pw.getText());
 					prop.setProperty("addr", address.getText());
-					prop.store(out, "information");
+					saveProp();
 
 					Client.identity = id.getText();
 					this.dispose();
@@ -196,10 +186,39 @@ public class LoginGUI extends JFrame {
 	}
 
 	public LoginGUI() {
-
 		display();
 		event();
 		menu();
 	}
 
+	private void saveProp() {
+		try {
+			FileOutputStream out = new FileOutputStream(infoprop);
+			prop.store(out, "information");
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void loadProp() {
+		if (prop == null)
+			prop = new Properties();
+		try {
+			if (!infoprop.exists()) {
+				infoprop.getParentFile().mkdirs();
+				infoprop.createNewFile();
+			}
+			FileInputStream in = new FileInputStream(infoprop);
+			prop.load(in);
+			id.setText(prop.getProperty("id", "aaa"));
+			pw.setText(prop.getProperty("pw", "aaaaaa"));
+			address.setText(prop.getProperty("addr", "warrock.iptime.org"));
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

@@ -42,14 +42,19 @@ public class Client {
 						if (header[0].equals("OBJECT")) {
 							if (header[1].equals("Message")) {
 								Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
-								String sender = msg.getSender();
-								ChatRoomGUI gui = chatList.get(sender);
-								if (gui == null) {
-									gui = new ChatRoomGUI(msg.getSender());
-									chatList.put(sender, gui);
-									gui.setVisible(false);
+								String recv = msg.getReceiver();
+								if (recv.equals("=[BROADCAST]="))
+									((FriendsListGUI) currentMainGUI).messageHandler(msg);
+								else {
+									String sender = msg.getSender();
+									ChatRoomGUI gui = chatList.get(sender);
+									if (gui == null) {
+										gui = new ChatRoomGUI(msg.getSender());
+										chatList.put(sender, gui);
+										gui.setVisible(false);
+									}
+									gui.messageHandler(msg);
 								}
-								gui.messageHandler(msg);
 							} else if (header[1].equals("Friends")) {
 								Client.friends = (Friends) Client.conn
 										.getObject(Integer.parseInt(header[2]));
