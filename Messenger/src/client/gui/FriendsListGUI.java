@@ -350,7 +350,7 @@ public class FriendsListGUI extends JFrame {
 		online.removeAllChildren();
 		// offline.removeAllChildren();
 		for (String id : Client.friends.getFriendsList().keySet()) {
-			online.add(new DefaultMutableTreeNode(id + "(" + Client.friends.getFriendsList().get(id) + ")"));
+			online.add(new DefaultMutableTreeNode(id));
 
 		}
 	}
