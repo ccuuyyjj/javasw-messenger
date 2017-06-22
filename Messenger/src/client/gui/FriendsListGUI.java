@@ -8,10 +8,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -85,11 +81,14 @@ public class FriendsListGUI extends JFrame {
 
 	Container con = super.getContentPane();
 
-	// 심심한창
-	private JLabel label = new JLabel("심심한 창");
-	private JTextArea quiz = new JTextArea("?를 입력하시면 도움말을 볼 수 있습니다.");
-	private JTextField answer = new JTextField();
-	private JScrollPane quizscroll = new JScrollPane(quiz);
+	
+	//심심한창
+	private JLabel label=new JLabel("전체 대화");
+	private JTextArea multichat=new JTextArea();
+	private JTextField multichattext=new JTextField();
+	private JScrollPane multichatscroll =new JScrollPane(multichat);
+	
+
 
 	private void display() {
 
@@ -102,9 +101,9 @@ public class FriendsListGUI extends JFrame {
 		con.add(snick, BorderLayout.CENTER);
 		con.add(snicks, BorderLayout.CENTER);
 		con.add(addfriend, BorderLayout.NORTH);
-		con.add(quiz, BorderLayout.CENTER);
-		con.add(answer, BorderLayout.CENTER);
-		con.add(quizscroll, BorderLayout.CENTER);
+		con.add(multichat, BorderLayout.CENTER);
+		con.add(multichattext, BorderLayout.CENTER);
+		con.add(multichatscroll, BorderLayout.CENTER);
 		con.add(label, BorderLayout.CENTER);
 
 		// 최상단 로그인 정보창
@@ -119,7 +118,7 @@ public class FriendsListGUI extends JFrame {
 		// 온라인과 오프라인 구별
 		friendlist.add(online);
 
-		quiz.setEditable(true);// 퀴즈창에 수정금지
+		multichat.setEditable(false);// 퀴즈창에 수정금지
 
 		pop.add(start); // 팝업메뉴
 		pop.add(end);
@@ -138,11 +137,7 @@ public class FriendsListGUI extends JFrame {
 		label.setFont(new Font("맑은 고딕", Font.BOLD, 12));
 		label.setBorder(b3);
 
-		quiz.setBounds(12, 400, 370, 180);
-		answer.setBounds(12, 591, 370, 35);
-
-		quizscroll.setBounds(12, 400, 370, 180);
-		quizscroll.setViewportView(quiz);
+		
 
 		DefaultTreeCellRenderer render = new DefaultTreeCellRenderer();
 		render.setOpenIcon(new ImageIcon("image/sampleicon2.jpg"));
@@ -150,6 +145,8 @@ public class FriendsListGUI extends JFrame {
 		render.setClosedIcon(new ImageIcon("image/sampleicon2.jpg"));
 
 		tree.setCellRenderer(render);
+		multichat.setBounds(12, 401, 370, 180);
+		multichattext.setBounds(12, 591, 370, 35);
 
 	}
 
@@ -236,13 +233,13 @@ public class FriendsListGUI extends JFrame {
 			Client.friends.getFriendsList().remove(node.toString());
 			save();
 		});
-		answer.addKeyListener(new KeyAdapter() {
+		multichattext.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					String key = answer.getText();
+					String key = multichattext.getText();
 					Message msg = new Message(Client.identity, "=[BROADCAST]=", key);
-					answer.setText("");
+					multichattext.setText("");
 					try {
 						Client.conn.sendObject(msg);
 					} catch (IOException e1) {
@@ -253,9 +250,8 @@ public class FriendsListGUI extends JFrame {
 				}
 			}
 		});
-
 	}
-
+	
 	private void menu() {
 	}
 
@@ -273,6 +269,7 @@ public class FriendsListGUI extends JFrame {
 			Client.conn.close();
 			Client.conn = null;
 			Client.receiver = null;
+			
 		}
 		super.dispose();
 	}
@@ -322,63 +319,15 @@ public class FriendsListGUI extends JFrame {
 		return model;
 	}
 
-	public void msgcheck() {
+	public void msgcheck(){
 		msgpop.show(this, 10, 10);
-	}
-
-	private void country() {
-		Map<Integer, String> q = new HashMap<Integer, String>();
-		q.put(0, "영국의 수도는");
-		q.put(1, "미국의 수도는");
-		q.put(2, "중국의 수도는");
-		q.put(3, "한국의 수도는");
-		q.put(4, "일본의 수도는");
-		q.put(5, "브라질의 수도는");
-		q.put(6, "우리집은");
-		List<String> a = new ArrayList<>();
-		a.add(0, "런던");
-		a.add(1, "워싱턴");
-		a.add(2, "베이징");
-		a.add(3, "서울");
-		a.add(4, "도쿄");
-		a.add(5, "브라질리아");
-		a.add(6, "인천");
-		int count = 0;
-		int i = 0;
-		while (true) {
-			int num = (int) (Math.random() * a.size());
-			quiz.append(q.get(num) + "?\n");
-			String an = JOptionPane.showInputDialog(q.get(num));
-			count++;
-			if (a.get(num).toString().equals(an)) {
-				quiz.append("정답입니다.\n\n");
-				i++;
-			} else if (an.equals("종료")) {
-				count--;
-				quiz.append("\n" + "===역사 퀴즈 결과===" + "\n" + "총 문제 수 : " + count + "개\n맞춘 문제 수 : " + i
-						+ "개\n틀린 문제 수 : " + (count - i) + "개\n=================\n");
-				break;
-			} else {
-				quiz.append("오답입니다." + q.get(num) + " " + a.get(num) + "입니다.\n");
-			}
-
-		}
-
-	}
-
-	private void history() {
-
-	}
-
-	private void plus() {
-
 	}
 
 	public void messageHandler(Message msg) {
 		String sender = msg.getSender();
 		String text = (String) msg.getMsg();
-		if (!quiz.getText().isEmpty())
-			quiz.append("\n");
-		quiz.append(sender + " : " + text);
+		if (!multichat.getText().isEmpty())
+			multichat.append("\n");
+		multichat.append(sender + " : " + text);
 	}
 }
