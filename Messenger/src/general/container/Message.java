@@ -60,10 +60,9 @@ public class Message implements Serializable, Comparable<Message> {
 		Long you = o.time_created;
 		return me.compareTo(you);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		return obj.getClass().equals(this.getClass())
-				&& (this.time_created == ((Message)obj).time_created);
+		return obj.getClass().equals(this.getClass()) && (this.time_created == ((Message) obj).time_created);
 	}
 }

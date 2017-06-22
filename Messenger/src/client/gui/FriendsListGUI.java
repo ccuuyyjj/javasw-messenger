@@ -38,8 +38,8 @@ public class FriendsListGUI extends JFrame {
 	private String id = Client.identity;// 상단 라벨에 표시될 자기 아이디
 	private int allfriend; // 오프라인+온라인 친구
 	private int connecting; // 온라인친구
-	private JLabel ss = new JLabel(
-			"<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : " + connecting + "명" + "</html>");
+	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : "
+			+ connecting + "명" + "</html>");
 
 	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
 	private JTree tree = new JTree(list) {
@@ -186,7 +186,8 @@ public class FriendsListGUI extends JFrame {
 						return;
 				}
 
-				// for (String id : Client.friends.getFriendsList().keySet()) {
+				// for (String id :
+				// Client.friends.getFriendsList().keySet()) {
 				// // 노드
 				// // 클릭시
 				// String nodes = node.toString(); // 노드의 내용이
@@ -358,9 +359,10 @@ public class FriendsListGUI extends JFrame {
 		return model;
 	}
 
-	public void msgcheck() {
+	public void msgcheck(){
 		msgpop.show(this, 10, 10);
 	}
+
 //	private class BcReceiver extends Thread {
 //		@Override
 //		public void run() {
@@ -385,4 +387,6 @@ public class FriendsListGUI extends JFrame {
 //			}
 //		}
 //	}
+
+
 }

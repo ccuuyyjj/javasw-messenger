@@ -27,10 +27,11 @@ public class Client {
 	public static void main(String[] args) throws IOException {
 		currentMainGUI = new LoginGUI();
 	}
+
 	// 메세지 수신
 	public static class ClientReceiver extends Thread {
 		private boolean running = true;
-		
+
 		@Override
 		public void run() {
 			while (running) {
@@ -38,41 +39,45 @@ public class Client {
 					String[] header = conn.getHeader();
 					if (header != null) {
 						System.out.println("Client (" + Client.identity + ")에서 받은 header : " + header[1]);
-						if(header[0].equals("OBJECT")){
+						if (header[0].equals("OBJECT")) {
 							if (header[1].equals("Message")) {
 								Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
 								String sender = msg.getSender();
 								ChatRoomGUI gui = chatList.get(sender);
-								if(gui == null){
+								if (gui == null) {
 									gui = new ChatRoomGUI(msg.getSender());
 									chatList.put(sender, gui);
 									gui.setVisible(false);
 								}
 								gui.messageHandler(msg);
-							} else if(header[1].equals("Friends")){
-								Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
+							} else if (header[1].equals("Friends")) {
+								Client.friends = (Friends) Client.conn
+										.getObject(Integer.parseInt(header[2]));
 								((FriendsListGUI) currentMainGUI).load();
 								((FriendsListGUI) currentMainGUI).getModel().reload();
 							}
-						} else if(header[0].equals("FILE")){
+						} else if (header[0].equals("FILE")) {
 							File tmp = Client.conn.getFile(header[1], Long.parseLong(header[2]));
 							File target = null;
-							for(ChatRoomGUI gui : chatList.values()){
-								if(gui.target != null){
+							for (ChatRoomGUI gui : chatList.values()) {
+								if (gui.target != null) {
 									target = gui.target;
 									gui.target = null;
 									break;
 								}
 							}
 							System.out.println("저장 경로 : " + target.getAbsolutePath());
-							if(target != null)
-								Files.move(Paths.get(tmp.getAbsolutePath()), Paths.get(target.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+							if (target != null)
+								Files.move(Paths.get(tmp.getAbsolutePath()),
+										Paths.get(target.getAbsolutePath()),
+										StandardCopyOption.REPLACE_EXISTING);
 						}
 					}
 				} catch (IOException e) {
 					System.out.println("접속 종료");
 					setRunning(false);
-				} catch (ClassNotFoundException e) {}
+				} catch (ClassNotFoundException e) {
+				}
 			}
 		}
 

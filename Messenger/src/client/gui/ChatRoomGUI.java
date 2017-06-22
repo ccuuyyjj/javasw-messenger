@@ -1,31 +1,33 @@
 package client.gui;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.FileDialog;
+import java.awt.GridLayout;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.zip.DataFormatException;
 
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -33,37 +35,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.LineBorder;
+import javax.swing.event.HyperlinkEvent;
 
 import client.Client;
 import general.container.Message;
-import java.awt.FlowLayout;
-import javax.swing.JTextPane;
-import javax.swing.JTree;
-import javax.swing.ListModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkEvent.EventType;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.event.ListDataListener;
-import javax.swing.BoxLayout;
-import java.awt.Component;
-import java.awt.Color;
-import java.awt.Dimension;
-import javax.swing.JList;
-import javax.swing.AbstractListModel;
-import java.awt.GridLayout;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-
-import javax.swing.border.LineBorder;
-import java.awt.BorderLayout;
 
 public class ChatRoomGUI extends JFrame implements DropTargetListener {
 	private File chatDB = null;
@@ -142,7 +119,8 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 								} catch (IOException e1) {
 									e1.printStackTrace();
 								}
-								msg.setMsg(filename + " <a href=\"folder:" + target.getParentFile().getAbsolutePath()
+								msg.setMsg(filename + " <a href=\"folder:"
+										+ target.getParentFile().getAbsolutePath()
 										+ "\">폴더 열기</a>");
 							}
 							break;
@@ -151,10 +129,9 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 					loadMessage();
 				} else if (e.getDescription().startsWith("folder:")) {
 					try {
-						Desktop.getDesktop()
-								.browse(new URI(URLDecoder.decode(
-										"file:///" + e.getDescription().substring(7).replace("\\", "/") + "/",
-										"UTF-8")));
+						Desktop.getDesktop().browse(new URI(URLDecoder.decode(
+								"file:///" + e.getDescription().substring(7).replace("\\", "/") + "/",
+								"UTF-8")));
 					} catch (IOException | URISyntaxException e1) {
 						e1.printStackTrace();
 					}
@@ -218,7 +195,8 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		chatDB = new File("db/" + myid, "chat_from_" + youid + ".db");
 		if (chatDB.exists()) {
 			try {
-				ObjectInputStream oin = new ObjectInputStream(new BufferedInputStream(new FileInputStream(chatDB)));
+				ObjectInputStream oin = new ObjectInputStream(
+						new BufferedInputStream(new FileInputStream(chatDB)));
 				msgset = (TreeSet<Message>) oin.readObject();
 				oin.close();
 			} catch (IOException | ClassNotFoundException e) {
@@ -226,7 +204,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		} else
 			msgset = new TreeSet<>();
 		younick = Client.friends.getFriendsList().get(youid);
-		super.setTitle(this.younick+ "님과의 채팅");
+		super.setTitle(this.younick + "님과의 채팅");
 		super.setSize(450, 700);
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
@@ -248,7 +226,8 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 				chatDB.delete();
 				chatDB.createNewFile();
 			}
-			ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(chatDB)));
+			ObjectOutputStream out = new ObjectOutputStream(
+					new BufferedOutputStream(new FileOutputStream(chatDB)));
 			out.writeObject(msgset);
 			out.close();
 		} catch (IOException e) {
@@ -281,8 +260,8 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 				break;
 			case "File":
 				File received = (File) msg.getMsg();
-				msgviewhtml.append("<div><a href=\"file:" + msg.getTime_created() + "\"><font color=#101010>파일: "
-						+ received.getName() + "</font></a></div>");
+				msgviewhtml.append("<div><a href=\"file:" + msg.getTime_created()
+						+ "\"><font color=#101010>파일: " + received.getName() + "</font></a></div>");
 				break;
 			}
 

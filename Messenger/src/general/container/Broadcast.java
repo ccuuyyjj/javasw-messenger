@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-public class Broadcast extends Thread{
+public class Broadcast extends Thread {
 
 	public void caster(String str) {
 
@@ -41,6 +41,6 @@ public class Broadcast extends Thread{
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 }
