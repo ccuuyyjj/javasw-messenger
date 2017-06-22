@@ -160,6 +160,8 @@ public class FriendsListGUI extends JFrame {
 		render.setClosedIcon(new ImageIcon("image/Àû´ç.jpg"));
 
 		tree.setCellRenderer(render);
+		multicast.setBounds(12, 401, 370, 180);
+		multicasting.setBounds(12, 591, 370, 35);
 
 	}
 
@@ -263,7 +265,7 @@ public class FriendsListGUI extends JFrame {
 			Client.friends.getFriendsList().remove(node.toString());
 			save();
 		});
-
+		
 
 	}
 	private class Multicast extends Thread{
@@ -323,6 +325,9 @@ public class FriendsListGUI extends JFrame {
 		count();
 		super.setVisible(true);
 		Client.receiver.start();
+		Multicast ca=new Multicast();
+		ca.setDaemon(true);
+		ca.start();
 
 
 
@@ -350,7 +355,7 @@ public class FriendsListGUI extends JFrame {
 		online.removeAllChildren();
 		// offline.removeAllChildren();
 		for (String id : Client.friends.getFriendsList().keySet()) {
-			online.add(new DefaultMutableTreeNode(id + "(" + Client.friends.getFriendsList().get(id) + ")"));
+			online.add(new DefaultMutableTreeNode(id));
 
 		}
 	}
