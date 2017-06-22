@@ -13,7 +13,7 @@ public class ClientUtil {
 
 	public final static int JOIN = 0;
 	public final static int LOGIN = 1;
-
+	
 	public static boolean joinNlogin(String id, String pw, String addr, int flag) {
 		boolean result = false;
 		try {
