@@ -26,7 +26,7 @@ import client.impl.ClientUtil;
 
 public class LoginGUI extends JFrame {
 
-	private ImageIcon img = new ImageIcon("normcore.png");
+	private ImageIcon img = new ImageIcon("image/normcore.png");
 	private JLabel logo = new JLabel(img);
 
 	private JLabel lbId = new JLabel("IDENTITY¡¡   : ");
