@@ -26,7 +26,7 @@ public class Server {
 	private static File friendsDB; // ID가 키, 그 아이디의 친구목록이 값인 HashMap이 저장된 DB파일
 	private static File filelistDB; // 아래 filelist의 내용을 저장하는 DB파일
 	private static HashMap<String, Friends> friends = null;
-	private static HashMap<Message, File> filelist = null; // 서버에 저장된 파일들의 목록
+	private static HashMap<Long, File> filelist = null; // 서버에 저장된 파일들의 목록
 	private static HashMap<String, Connection> clientlist = new HashMap<>(); // 연결된
 														// 클라이언트들이
 														// 저장되는
@@ -145,13 +145,14 @@ public class Server {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static HashMap<Message, File> getFileList() {
+	public static HashMap<Long, File> getFileList() {
 		while(filelist == null){
 			try {
 				ObjectInputStream oin = new ObjectInputStream(
 						new BufferedInputStream(new FileInputStream(filelistDB)));
-				filelist = (HashMap<Message, File>) oin.readObject();
+				filelist = (HashMap<Long, File>) oin.readObject();
 				oin.close();
+				System.out.println("return filelist : " + filelist.toString());
 				if(filelist == null){
 					filelistDB.delete();
 					filelistDB.createNewFile();
@@ -159,6 +160,7 @@ public class Server {
 					closeFileList();
 				}
 			} catch (IOException|ClassNotFoundException e) {
+				e.printStackTrace();
 			}
 		}
 		return filelist;
@@ -179,6 +181,7 @@ public class Server {
 					closeFriends();
 				}
 			} catch (IOException|ClassNotFoundException e) {
+				e.printStackTrace();
 			}
 		}
 		return friends;
@@ -193,9 +196,9 @@ public class Server {
 				out.flush();
 				out.close();
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
-		filelist.clear();
 		filelist = null;
 	}
 
@@ -208,9 +211,9 @@ public class Server {
 				out.flush();
 				out.close();
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
-		friends.clear();
 		friends = null;
 	}
 

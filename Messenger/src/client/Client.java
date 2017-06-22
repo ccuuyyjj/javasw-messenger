@@ -1,6 +1,10 @@
 package client;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
@@ -34,20 +38,35 @@ public class Client {
 					String[] header = conn.getHeader();
 					if (header != null) {
 						System.out.println("Client (" + Client.identity + ")에서 받은 header : " + header[1]);
-						if (header[1].equals("Message")) {
-							Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
-							String sender = msg.getSender();
-							ChatRoomGUI gui = chatList.get(sender);
-							if(gui == null){
-								gui = new ChatRoomGUI(msg.getSender());
-								chatList.put(sender, gui);
-								gui.setVisible(false);
+						if(header[0].equals("OBJECT")){
+							if (header[1].equals("Message")) {
+								Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
+								String sender = msg.getSender();
+								ChatRoomGUI gui = chatList.get(sender);
+								if(gui == null){
+									gui = new ChatRoomGUI(msg.getSender());
+									chatList.put(sender, gui);
+									gui.setVisible(false);
+								}
+								gui.messageHandler(msg);
+							} else if(header[1].equals("Friends")){
+								Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
+								((FriendsListGUI) currentMainGUI).load();
+								((FriendsListGUI) currentMainGUI).getModel().reload();
 							}
-							gui.messageHandler(msg);
-						} else if(header[1].equals("Friends")){
-							Client.friends = (Friends) Client.conn.getObject(Integer.parseInt(header[2]));
-							((FriendsListGUI) currentMainGUI).load();
-							((FriendsListGUI) currentMainGUI).getModel().reload();
+						} else if(header[0].equals("FILE")){
+							File tmp = Client.conn.getFile(header[1], Long.parseLong(header[2]));
+							File target = null;
+							for(ChatRoomGUI gui : chatList.values()){
+								if(gui.target != null){
+									target = gui.target;
+									gui.target = null;
+									break;
+								}
+							}
+							System.out.println("저장 경로 : " + target.getAbsolutePath());
+							if(target != null)
+								Files.move(Paths.get(tmp.getAbsolutePath()), Paths.get(target.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
 						}
 					}
 				} catch (IOException e) {

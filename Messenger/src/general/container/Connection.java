@@ -77,45 +77,38 @@ public class Connection implements Closeable {
 			out.write(baos.toByteArray()[i]);
 			out.flush();
 		}
-		// byte[] buffer = new byte[4096];
-		// int sent = 0;
-		// while(sent != length){
-		// if((length - sent) < 4096)
-		// buffer = new byte[(length - sent)];
-		// int read = oin.read(buffer);
-		// if(read == -1) break;
-		// out.write(buffer, 0, read);
-		// out.flush();
-		// sent+=read;
-		// }
 		oin.close();
 	}
 
 	public String[] getHeader() throws IOException { // String[] header =
 										// conn.getHeader();
 		byte[] buffer = new byte[4096];
-		int trial = 1;
-		for (int i = 0; i < buffer.length; i++) {
-			int read = in.read();
-			if (read == -1) {
-				if (trial <= 10) {
-					System.out.println("reached the end of stream (trial : " + trial + " )");
-					try {
-						Thread.sleep(100);
-					} catch (Exception e) {
-					}
-					i--;
-					trial++;
-				} else {
-					System.out.println("stream seems to be closed");
-					this.close();
-					return null;
-				}
-			} else {
-				trial = 1;
-				buffer[i] = (byte) read;
-			}
+		for(int i=0; i<buffer.length; i++){
+			buffer[i] = (byte)in.read();
+			if(buffer[i] == -1) i--;
 		}
+//		int trial = 1;
+//		for (int i = 0; i < buffer.length; i++) {
+//			int read = in.read();
+//			if (read == -1) {
+//				if (trial <= 10) {
+//					System.out.println("reached the end of stream (trial : " + trial + " )");
+//					try {
+//						Thread.sleep(100);
+//					} catch (Exception e) {
+//					}
+//					i--;
+//					trial++;
+//				} else {
+//					System.out.println("stream seems to be closed");
+//					this.close();
+//					return null;
+//				}
+//			} else {
+//				trial = 1;
+//				buffer[i] = (byte) read;
+//			}
+//		}
 		String tmp = new String(buffer, 0, buffer.length);
 		String[] header = tmp.trim().substring(1).split("\\\\");
 		return header;
@@ -123,17 +116,21 @@ public class Connection implements Closeable {
 
 	public File getFile(String name, long length) throws IOException {
 		File target = new File("received", name);
+		if(!target.getParentFile().exists())
+			target.getParentFile().mkdirs();
 		while (target.exists())
 			target = new File("received", "(new)" + target.getName());
 		BufferedOutputStream fout = new BufferedOutputStream(new FileOutputStream(target));
 		byte[] buffer = new byte[4096];
 		long received = 0;
-		while (received != length) {
+		while (received < length) {
 			if ((length - received) < 4096)
 				buffer = new byte[(int) (length - received)];
 			int read = in.read(buffer);
-			if (read == -1)
+			if (read <= 0){
+				System.out.println("received : " + received + " 지점에서 읽기 실패");
 				continue;
+			}
 			received += read;
 			fout.write(buffer, 0, read);
 			fout.flush();
@@ -144,17 +141,6 @@ public class Connection implements Closeable {
 
 	public Object getObject(int length) throws IOException, ClassNotFoundException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		// byte[] buffer = new byte[4096];
-		// int received = 0;
-		// while(received != length){
-		// if((length - received) < 4096)
-		// buffer = new byte[(length - received)];
-		// int read = in.read(buffer);
-		// if(read == -1) continue;
-		// received += read;
-		// baos.write(buffer, 0, read);
-		// baos.flush();
-		// }
 		for (int i = 0; i < length; i++) {
 			baos.write(in.read());
 			baos.flush();
@@ -183,7 +169,7 @@ public class Connection implements Closeable {
 				try {
 					String[] header = conn.getHeader();
 					if (header != null) {
-						System.out.println("header[0] : " + header[0]);
+						System.out.println("header[0] : " + header[0] + " header[1] : " + header[1]);
 						if (header[0].equals("OBJECT") && header[1].equals("Message")) {
 							Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
 							util.handleMessage(msg);
