@@ -8,10 +8,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -32,7 +30,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import client.Client;
-import client.Quiz;
+import general.container.LoginInfo;
 import general.container.Message;
 
 public class FriendsListGUI extends JFrame {
@@ -87,9 +85,9 @@ public class FriendsListGUI extends JFrame {
 	
 	//심심한창
 	private JLabel label=new JLabel("심심한 창");
-	private JTextArea quiz=new JTextArea("?를 입력하시면 도움말을 볼 수 있습니다.");
-	private JTextField answer=new JTextField();
-	private JScrollPane quizscroll =new JScrollPane(quiz);
+	private JTextArea multicast=new JTextArea();
+	private JTextField multicasting=new JTextField();
+	private JScrollPane quizscroll =new JScrollPane(multicast);
 	
 
 	private void display() {
@@ -103,8 +101,8 @@ public class FriendsListGUI extends JFrame {
 		con.add(snick, BorderLayout.CENTER);
 		con.add(snicks, BorderLayout.CENTER);
 		con.add(addfriend, BorderLayout.NORTH);
-		con.add(quiz, BorderLayout.CENTER);
-		con.add(answer, BorderLayout.CENTER);
+		con.add(multicast, BorderLayout.CENTER);
+		con.add(multicasting, BorderLayout.CENTER);
 		con.add(quizscroll, BorderLayout.CENTER);
 		con.add(label, BorderLayout.CENTER);
 
@@ -130,7 +128,7 @@ public class FriendsListGUI extends JFrame {
 //
 //		snames.setEditable(false); // 노드 클릭시 나타내는 상대 정보창이 텍스트 필드이므로
 //		snicks.setEditable(false); // 수정 못하게 금지시키기
-		quiz.setEditable(true);//퀴즈창에 수정금지
+		multicast.setEditable(true);//퀴즈창에 수정금지
 
 		pop.add(start); // 팝업메뉴
 		pop.add(end);
@@ -149,12 +147,12 @@ public class FriendsListGUI extends JFrame {
 		label.setFont(new Font("맑은 고딕", Font.BOLD, 12));
 		label.setBorder(b3);
 		
-		quiz.setBounds(12, 400, 370, 180);
-		answer.setBounds(12, 591, 370, 35);
+		multicast.setBounds(12, 400, 370, 180);
+		multicasting.setBounds(12, 591, 370, 35);
 		
 		
 		quizscroll.setBounds(12, 400, 370, 180);
-		quizscroll.setViewportView(quiz);
+		quizscroll.setViewportView(multicast);
 		
 
 		DefaultTreeCellRenderer render=new DefaultTreeCellRenderer();
@@ -261,44 +259,30 @@ public class FriendsListGUI extends JFrame {
 			Client.friends.getFriendsList().remove(node.toString());
 			save();
 		});
-		answer.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode()==KeyEvent.VK_ENTER){
-					String key=answer.getText();
-					answer.setText("");
-					switch(key){
-						case "청소":
-							quiz.setText("");
-							answer.setText("");
-							break;
-						case "?":
-							quiz.append("\n청소 : 해당 창을 청소합니다.\n역사 : 역사에 관한 문제를 냅니다. "
-									+ "\n수도 : 국가 수도 맞추기 입니다.\n덧셈 : 덧셈에 관한 문제를 냅니다.");
-							break;
-						case "역사":
-							quiz.setText("역사 문제를 시작합니다.\n");
-							history();
-							Quiz qz=new Quiz();
-							
-							break;
-						case "수도":
-							quiz.setText("수도 문제를 시작합니다.\n");
-							country();
-							quiz.append("문제를 종료합니다");
-							break;
-						case "덧셈":
-							quiz.setText("덧셈 문제를 시작합니다.\n");
-							plus();
-							break;
-					}
-					
-				}
-			}
-		});
 		
 	}
-
+	private class Multicast extends Thread{
+		private boolean running=true;
+		@Override
+		public void run() {
+			multicasting.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					while(running){
+					if(e.getKeyCode()==KeyEvent.VK_ENTER){
+						String send=multicasting.getText();
+						multicasting.setText("");
+						multicast.append(send+"\n");
+						break;
+					}
+					else break;
+				}
+				}
+			});
+		
+		}
+	}
+	
 	private void menu() {
 	}
 	
@@ -316,6 +300,7 @@ public class FriendsListGUI extends JFrame {
 			Client.conn.close();
 			Client.conn = null;
 			Client.receiver = null;
+			
 		}
 		super.dispose();
 	}
@@ -333,6 +318,11 @@ public class FriendsListGUI extends JFrame {
 		count();
 		super.setVisible(true);
 		Client.receiver.start();
+		Multicast mu=new Multicast();
+		mu.setDaemon(true);
+		mu.start();
+
+		
 	}
 	
 
@@ -369,54 +359,6 @@ public class FriendsListGUI extends JFrame {
 	}
 	public void msgcheck(){
 		msgpop.show(this, 10, 10);
-	}
-	private void country(){
-		 Map<Integer, String> q = new HashMap<Integer, String>(); 
-		 q.put(0, "영국의 수도는");
-		 q.put(1, "미국의 수도는");
-		 q.put(2, "중국의 수도는");
-		 q.put(3, "한국의 수도는");
-		 q.put(4, "일본의 수도는");
-		 q.put(5, "브라질의 수도는");
-		 q.put(6, "우리집은");
-		 List<String> a=new ArrayList<>();
-		 a.add(0,"런던");
-		 a.add(1,"워싱턴");
-		 a.add(2,"베이징");
-		 a.add(3,"서울");
-		 a.add(4,"도쿄");
-		 a.add(5,"브라질리아");
-		 a.add(6, "인천");
-		 int count=0;
-		 int i=0;
-		while(true){
-		 int num=(int)(Math.random()*a.size());
-		 quiz.append(q.get(num)+"?\n");
-		 String an=JOptionPane.showInputDialog(q.get(num));
-		 count++;
-						 if(a.get(num).toString().equals(an)){	 
-							 quiz.append("정답입니다.\n\n");
-							 i++;
-						 }else if(an.equals("종료")){
-							 count--;
-							 quiz.append("\n"+"===역사 퀴즈 결과==="+"\n"+"총 문제 수 : "+count+"개\n맞춘 문제 수 : "+i
-									 +"개\n틀린 문제 수 : "+(count-i)+"개\n=================\n");
-							 break;
-						 }else {
-							 quiz.append("오답입니다."+q.get(num)+" "+a.get(num)+"입니다.\n");
-						 }
-						 
-					}
-				 
-		} 
-		 
-		
-	
-	private void history(){
-		
-	}
-	private void plus(){
-		
 	}
 
 		}
