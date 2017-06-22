@@ -8,9 +8,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,12 +32,10 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import client.Client;
-import general.container.Broadcast;
 import general.container.Message;
 
 public class FriendsListGUI extends JFrame {
 
-	Broadcast bc = new Broadcast();
 	// 내 정보창
 	private String id = Client.identity;// 상단 라벨에 표시될 자기 아이디
 	private int allfriend; // 오프라인+온라인 친구
@@ -48,8 +43,8 @@ public class FriendsListGUI extends JFrame {
 	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : "
 			+ connecting + "명" + "</html>");
 
-	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
-	private JTree tree = new JTree(list) {
+	private DefaultMutableTreeNode friendlist = new DefaultMutableTreeNode("회원 목록");
+	private JTree tree = new JTree(friendlist) {
 		@Override
 		public String convertValueToText(Object value, boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
@@ -57,8 +52,8 @@ public class FriendsListGUI extends JFrame {
 			String nick = null;
 			if (value != null && value.getClass().getSimpleName().equals("DefaultMutableTreeNode"))
 				id = ((DefaultMutableTreeNode) value).toString();
-			if (id != null)
-				nick = Client.friends.getFriendsList().get(id);
+			if (id != null && Client.friends.getFriendsList().get(id) != null)
+				nick = id + "(" + Client.friends.getFriendsList().get(id) + ")";
 			if (nick != null)
 				return nick;
 			return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
@@ -67,8 +62,6 @@ public class FriendsListGUI extends JFrame {
 	};
 	private DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 	private DefaultMutableTreeNode online = new DefaultMutableTreeNode("접속중");
-	// private DefaultMutableTreeNode offline = new
-	// DefaultMutableTreeNode("오프라인");
 
 	// 팝업
 	private JPopupMenu pop = new JPopupMenu(); // 트리 노트에서 우클릭시 나타날 팝업메뉴
@@ -124,17 +117,8 @@ public class FriendsListGUI extends JFrame {
 		scroll.setViewportView(tree);
 
 		// 온라인과 오프라인 구별
-		list.add(online);
-		// list.add(offline);
+		friendlist.add(online);
 
-		// // 트리창에서 노드 클릭시 해당 닉네임에 포함된 이름과 아이피를 표시해주는 창
-		// sname.setBounds(12, 368, 57, 28);
-		// snames.setBounds(81, 372, 116, 21);
-		// snick.setBounds(12, 402, 57, 28);
-		// snicks.setBounds(81, 403, 116, 21);
-		//
-		// snames.setEditable(false); // 노드 클릭시 나타내는 상대 정보창이 텍스트 필드이므로
-		// snicks.setEditable(false); // 수정 못하게 금지시키기
 		quiz.setEditable(true);// 퀴즈창에 수정금지
 
 		pop.add(start); // 팝업메뉴
@@ -161,9 +145,9 @@ public class FriendsListGUI extends JFrame {
 		quizscroll.setViewportView(quiz);
 
 		DefaultTreeCellRenderer render = new DefaultTreeCellRenderer();
-		render.setOpenIcon(new ImageIcon("image/적당.jpg"));
-		render.setLeafIcon(new ImageIcon("image/보노보노.jpg"));
-		render.setClosedIcon(new ImageIcon("image/적당.jpg"));
+		render.setOpenIcon(new ImageIcon("image/sampleicon2.jpg"));
+		render.setLeafIcon(new ImageIcon("image/sampleicon1.jpg"));
+		render.setClosedIcon(new ImageIcon("image/sampleicon2.jpg"));
 
 		tree.setCellRenderer(render);
 
@@ -191,23 +175,6 @@ public class FriendsListGUI extends JFrame {
 					if (node == null)
 						return;
 				}
-
-				// for (String id :
-				// Client.friends.getFriendsList().keySet()) {
-				// // 노드
-				// // 클릭시
-				// String nodes = node.toString(); // 노드의 내용이
-				// if (nodes.contains(id)) { // 닉네임
-				// // 있는 값들과 비교하여 같은 값이 있다면 해당 주소값에 해당하는 이름과
-				// // 아이디를 출력
-				// snames.setText(id);
-				// snicks.setText(Client.friends.getFriendsList().get(id));
-				// break;
-				// }else{
-				// snames.setText(null);
-				// snicks.setText(null);
-				// }
-				// }
 
 				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 				// 트리 경로 출력ex)[회원,목록,접속중,닉네임2]
@@ -274,8 +241,15 @@ public class FriendsListGUI extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					String key = answer.getText();
+					Message msg = new Message(Client.identity, "=[BROADCAST]=", key);
 					answer.setText("");
-					bc.caster(key);
+					try {
+						Client.conn.sendObject(msg);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					// bc.caster(key);
 				}
 			}
 		});
@@ -316,11 +290,6 @@ public class FriendsListGUI extends JFrame {
 		count();
 		super.setVisible(true);
 		Client.receiver.start();
-		BcReceiver br = new BcReceiver();
-		br.setDaemon(true);
-		br.start();
-		bc.setDaemon(true);
-		bc.start();
 	}
 
 	private void count() {
@@ -345,8 +314,7 @@ public class FriendsListGUI extends JFrame {
 		online.removeAllChildren();
 		// offline.removeAllChildren();
 		for (String id : Client.friends.getFriendsList().keySet()) {
-			online.add(new DefaultMutableTreeNode(id + "(" + Client.friends.getFriendsList().get(id) + ")"));
-
+			online.add(new DefaultMutableTreeNode(id));
 		}
 	}
 
@@ -406,28 +374,11 @@ public class FriendsListGUI extends JFrame {
 
 	}
 
-	private class BcReceiver extends Thread {
-		@Override
-		public void run() {
-			DatagramSocket ds = null;
-			try {
-				ds = new DatagramSocket(20000);
-			} catch (SocketException e) {
-				e.printStackTrace();
-			}
-
-			byte[] buffer = new byte[1024];
-			DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
-
-			while (true) {
-				try {
-					ds.receive(dp);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				String s = new String(dp.getData(), 0, dp.getLength());
-				quiz.append(s + "\n");
-			}
-		}
+	public void messageHandler(Message msg) {
+		String sender = msg.getSender();
+		String text = (String) msg.getMsg();
+		if (!quiz.getText().isEmpty())
+			quiz.append("\n");
+		quiz.append(sender + " : " + text);
 	}
 }

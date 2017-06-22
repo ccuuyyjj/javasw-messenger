@@ -132,11 +132,18 @@ public class ServerUtil {
 		case "String":
 			try {
 				String receiver = msg.getReceiver();
-				Connection conn = Server.getClientList().get(receiver);
-				if (conn != null)
-					conn.sendObject(msg);
-				else
-					System.out.println(receiver + "는 접속중이 아님.");
+				if (receiver.equals("=[BROADCAST]=")) {
+					System.out.println("Broadcast msg received");
+					for (Connection conn : Server.getClientList().values())
+						conn.sendObject(msg);
+					System.out.println("Broadcast msg sent");
+				} else {
+					Connection conn = Server.getClientList().get(receiver);
+					if (conn != null)
+						conn.sendObject(msg);
+					else
+						System.out.println(receiver + "는 접속중이 아님.");
+				}
 			} catch (IOException e) {
 			}
 			break;
@@ -172,6 +179,7 @@ public class ServerUtil {
 					File tmp = Server.getFileList().remove(msg.getTime_created());
 					System.out.println(tmp.getAbsolutePath() + " 전송 시작");
 					conn.sendFile(tmp);
+					tmp.delete();
 					Server.closeFileList();
 				}
 			} catch (IOException e) {
