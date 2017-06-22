@@ -39,7 +39,7 @@ public class Server {
 	private class ServerListener extends Thread {
 		private boolean running; // 접속 대기 스레드가 계속 돌아가야하는지
 		{
-			//this.setDaemon(true);
+			// this.setDaemon(true);
 		}
 
 		@SuppressWarnings("unused")
@@ -129,7 +129,7 @@ public class Server {
 		System.out.println("서버 구동 완료!");
 		Scanner s = new Scanner(System.in);
 		while (true)
-			if (s.nextLine().equalsIgnoreCase("EXIT")){
+			if (s.nextLine().equalsIgnoreCase("EXIT")) {
 				Server.listener.setRunning(false);
 				break;
 			}
@@ -146,20 +146,20 @@ public class Server {
 
 	@SuppressWarnings("unchecked")
 	public static HashMap<Long, File> getFileList() {
-		while(filelist == null){
+		while (filelist == null) {
 			try {
 				ObjectInputStream oin = new ObjectInputStream(
 						new BufferedInputStream(new FileInputStream(filelistDB)));
 				filelist = (HashMap<Long, File>) oin.readObject();
 				oin.close();
 				System.out.println("return filelist : " + filelist.toString());
-				if(filelist == null){
+				if (filelist == null) {
 					filelistDB.delete();
 					filelistDB.createNewFile();
 					filelist = new HashMap<>();
 					closeFileList();
 				}
-			} catch (IOException|ClassNotFoundException e) {
+			} catch (IOException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
@@ -168,19 +168,19 @@ public class Server {
 
 	@SuppressWarnings("unchecked")
 	public static HashMap<String, Friends> getFriends() {
-		while(friends == null){
+		while (friends == null) {
 			try {
 				ObjectInputStream oin = new ObjectInputStream(
 						new BufferedInputStream(new FileInputStream(friendsDB)));
 				friends = (HashMap<String, Friends>) oin.readObject();
 				oin.close();
-				if(friends == null){
+				if (friends == null) {
 					friendsDB.delete();
 					friendsDB.createNewFile();
 					friends = new HashMap<>();
 					closeFriends();
 				}
-			} catch (IOException|ClassNotFoundException e) {
+			} catch (IOException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}

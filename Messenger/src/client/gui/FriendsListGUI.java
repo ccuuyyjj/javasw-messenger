@@ -45,8 +45,8 @@ public class FriendsListGUI extends JFrame {
 	private String id = Client.identity;// 상단 라벨에 표시될 자기 아이디
 	private int allfriend; // 오프라인+온라인 친구
 	private int connecting; // 온라인친구
-	private JLabel ss = new JLabel(
-			"<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : " + connecting + "명" + "</html>");
+	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : "
+			+ connecting + "명" + "</html>");
 
 	private DefaultMutableTreeNode list = new DefaultMutableTreeNode("회원 목록");
 	private JTree tree = new JTree(list) {
@@ -192,7 +192,8 @@ public class FriendsListGUI extends JFrame {
 						return;
 				}
 
-				// for (String id : Client.friends.getFriendsList().keySet()) {
+				// for (String id :
+				// Client.friends.getFriendsList().keySet()) {
 				// // 노드
 				// // 클릭시
 				// String nodes = node.toString(); // 노드의 내용이
@@ -386,8 +387,8 @@ public class FriendsListGUI extends JFrame {
 				i++;
 			} else if (an.equals("종료")) {
 				count--;
-				quiz.append("\n" + "===역사 퀴즈 결과===" + "\n" + "총 문제 수 : " + count + "개\n맞춘 문제 수 : " + i + "개\n틀린 문제 수 : "
-						+ (count - i) + "개\n=================\n");
+				quiz.append("\n" + "===역사 퀴즈 결과===" + "\n" + "총 문제 수 : " + count + "개\n맞춘 문제 수 : " + i
+						+ "개\n틀린 문제 수 : " + (count - i) + "개\n=================\n");
 				break;
 			} else {
 				quiz.append("오답입니다." + q.get(num) + " " + a.get(num) + "입니다.\n");
@@ -425,7 +426,7 @@ public class FriendsListGUI extends JFrame {
 					e.printStackTrace();
 				}
 				String s = new String(dp.getData(), 0, dp.getLength());
-				quiz.append(s+"\n");
+				quiz.append(s + "\n");
 			}
 		}
 	}

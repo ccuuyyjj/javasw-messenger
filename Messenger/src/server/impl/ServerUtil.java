@@ -40,7 +40,8 @@ public class ServerUtil {
 			} else {
 				result = true;
 				while (s.hasNext()) {
-					String id = s.next().trim(); s.next();
+					String id = s.next().trim();
+					s.next();
 					if (id.equals(identity)) {
 						result = false;
 						break;
@@ -105,14 +106,17 @@ public class ServerUtil {
 					Scanner s = new Scanner(Server.getLoginDB());
 					s.useDelimiter("[\t\n]");
 					while (s.hasNext()) {
-						String str = s.next().trim(); s.next();
+						String str = s.next().trim();
+						s.next();
 						if (str.equals(id)) {
 							result = true;
 							break;
-						} else result = false;
+						} else
+							result = false;
 					}
 					s.close();
-					if(!result) break;
+					if (!result)
+						break;
 				}
 				if (result) {
 					Server.getFriends().put(identity, friends);
@@ -129,7 +133,7 @@ public class ServerUtil {
 			try {
 				String receiver = msg.getReceiver();
 				Connection conn = Server.getClientList().get(receiver);
-				if(conn != null)
+				if (conn != null)
 					conn.sendObject(msg);
 				else
 					System.out.println(receiver + "는 접속중이 아님.");
@@ -159,7 +163,7 @@ public class ServerUtil {
 					System.out.println("파일 수신 완료");
 					String receiver = msg.getReceiver();
 					Connection conn = Server.getClientList().get(receiver);
-					if(conn != null)
+					if (conn != null)
 						conn.sendObject(msg);
 					else
 						System.out.println(receiver + "는 접속중이 아님.");

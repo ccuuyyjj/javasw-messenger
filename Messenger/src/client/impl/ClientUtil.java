@@ -13,7 +13,7 @@ public class ClientUtil {
 
 	public final static int JOIN = 0;
 	public final static int LOGIN = 1;
-	
+
 	public static boolean joinNlogin(String id, String pw, String addr, int flag) {
 		boolean result = false;
 		try {
@@ -36,7 +36,7 @@ public class ClientUtil {
 							if (fheader[0].equals("OBJECT") && fheader[1].equals("Friends"))
 								Client.friends = (Friends) Client.conn
 										.getObject(Integer.parseInt(fheader[2]));
-							//System.out.println(Client.friends.getFriendsList().toString());
+							// System.out.println(Client.friends.getFriendsList().toString());
 							break;
 						}
 					}

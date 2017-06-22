@@ -83,32 +83,34 @@ public class Connection implements Closeable {
 	public String[] getHeader() throws IOException { // String[] header =
 										// conn.getHeader();
 		byte[] buffer = new byte[4096];
-		for(int i=0; i<buffer.length; i++){
-			buffer[i] = (byte)in.read();
-			if(buffer[i] == -1) i--;
+		for (int i = 0; i < buffer.length; i++) {
+			buffer[i] = (byte) in.read();
+			if (buffer[i] == -1)
+				i--;
 		}
-//		int trial = 1;
-//		for (int i = 0; i < buffer.length; i++) {
-//			int read = in.read();
-//			if (read == -1) {
-//				if (trial <= 10) {
-//					System.out.println("reached the end of stream (trial : " + trial + " )");
-//					try {
-//						Thread.sleep(100);
-//					} catch (Exception e) {
-//					}
-//					i--;
-//					trial++;
-//				} else {
-//					System.out.println("stream seems to be closed");
-//					this.close();
-//					return null;
-//				}
-//			} else {
-//				trial = 1;
-//				buffer[i] = (byte) read;
-//			}
-//		}
+		// int trial = 1;
+		// for (int i = 0; i < buffer.length; i++) {
+		// int read = in.read();
+		// if (read == -1) {
+		// if (trial <= 10) {
+		// System.out.println("reached the end of stream (trial : " + trial
+		// + " )");
+		// try {
+		// Thread.sleep(100);
+		// } catch (Exception e) {
+		// }
+		// i--;
+		// trial++;
+		// } else {
+		// System.out.println("stream seems to be closed");
+		// this.close();
+		// return null;
+		// }
+		// } else {
+		// trial = 1;
+		// buffer[i] = (byte) read;
+		// }
+		// }
 		String tmp = new String(buffer, 0, buffer.length);
 		String[] header = tmp.trim().substring(1).split("\\\\");
 		return header;
@@ -116,7 +118,7 @@ public class Connection implements Closeable {
 
 	public File getFile(String name, long length) throws IOException {
 		File target = new File("received", name);
-		if(!target.getParentFile().exists())
+		if (!target.getParentFile().exists())
 			target.getParentFile().mkdirs();
 		while (target.exists())
 			target = new File("received", "(new)" + target.getName());
@@ -127,7 +129,7 @@ public class Connection implements Closeable {
 			if ((length - received) < 4096)
 				buffer = new byte[(int) (length - received)];
 			int read = in.read(buffer);
-			if (read <= 0){
+			if (read <= 0) {
 				System.out.println("received : " + received + " 지점에서 읽기 실패");
 				continue;
 			}
@@ -234,14 +236,14 @@ public class Connection implements Closeable {
 
 	@Override
 	public void close() {
-		try{
+		try {
 			if (receiver != null) {
 				if (Server.getClientList().remove(identity) != null)
 					receiver.setRunning(false);
 			} else
 				sendHeader(new String[] { "CLOSE" });
 			socket.close();
-		}catch(IOException e){
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
