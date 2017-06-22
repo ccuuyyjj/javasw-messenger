@@ -171,8 +171,8 @@ public class Connection implements Closeable {
 				try {
 					String[] header = conn.getHeader();
 					if (header != null) {
-						System.out.println("header[0] : " + header[0] + " header[1] : " + header[1]);
 						if (header[0].equals("OBJECT") && header[1].equals("Message")) {
+							System.out.println("header[0] : " + header[0] + " header[1] : " + header[1]);
 							Message msg = (Message) conn.getObject(Integer.parseInt(header[2]));
 							util.handleMessage(msg);
 						} else if (header[0].equals("CLOSE")) {
@@ -241,7 +241,7 @@ public class Connection implements Closeable {
 				if (Server.getClientList().remove(identity) != null)
 					receiver.setRunning(false);
 			} else
-				sendHeader(new String[] { "CLOSE" });
+				sendHeader(new String[] { "CLOSE", "CLOSE", "CLOSE" });
 			socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
