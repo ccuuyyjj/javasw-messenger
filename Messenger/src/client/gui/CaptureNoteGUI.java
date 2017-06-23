@@ -8,6 +8,7 @@ import java.awt.MenuItem;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -21,7 +22,7 @@ import javax.swing.JFrame;
 import client.Client;
 import general.container.Message;
 
-class CaptureNoteGUI extends JFrame {
+public class CaptureNoteGUI extends JFrame {
 	private MenuBar mb = new MenuBar();
 	private Menu menu = new Menu("메뉴");
 	private MenuItem save = new MenuItem("저장");
@@ -93,20 +94,11 @@ class CaptureNoteGUI extends JFrame {
 		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 		save.addActionListener(e ->{
-			try { Thread.sleep(1000); } catch (Exception e2) {}
-			Point current = this.getLocation();
-			Rectangle area = new Rectangle(current.x + 3, current.y + 47, width, height);
-			try {
-				Robot robot = new Robot();
-				BufferedImage bufferedImage = robot.createScreenCapture(area);
-				ImageIO.write(bufferedImage, "png", capture);
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
+			save();
 		});
 		
 		send.addActionListener(e -> {
-			save.getActionListeners();
+			save();
 			
 			Message msg = new Message(myid, youid, capture);
 			
@@ -126,10 +118,24 @@ class CaptureNoteGUI extends JFrame {
 	
 	private void menu() {}
 	
+	private void save() {
+		try { Thread.sleep(1000); } catch (Exception e2) {}
+		Point current = this.getLocation();
+		Rectangle area = new Rectangle(current.x + 3, current.y + 47, width, height);
+		try {
+			Robot robot = new Robot();
+			BufferedImage bufferedImage = robot.createScreenCapture(area);
+			ImageIO.write(bufferedImage, "png", capture);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+	
 	public CaptureNoteGUI(int width, int height, String myid, String youid) throws IOException {
 		super.setTitle("캡쳐 이미지");
 		super.setSize(width+5, height+50);
-		super.setLocation(0, 0);
+		Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+		super.setLocation(area.width - (width + 5), 0);
 		super.setResizable(false);
 		this.width = width;
 		this.height = height;
