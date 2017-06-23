@@ -21,8 +21,8 @@ public class Client {
 	public static JFrame currentMainGUI = null;
 	public static Friends friends = null;
 	public static String identity = null;
-	public static HashMap<String, ChatRoomGUI> chatList = new HashMap<>();
-	public static ClientReceiver receiver = new ClientReceiver();
+	public static HashMap<String, ChatRoomGUI> chatList = null;
+	public static ClientReceiver receiver = null;
 
 	public static void main(String[] args) throws IOException {
 		currentMainGUI = new LoginGUI();

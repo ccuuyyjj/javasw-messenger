@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -17,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -28,6 +30,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import client.Client;
+import client.Client.ClientReceiver;
 import general.container.Message;
 
 public class FriendsListGUI extends JFrame {
@@ -81,14 +84,11 @@ public class FriendsListGUI extends JFrame {
 
 	Container con = super.getContentPane();
 
-	
-	//심심한창
-	private JLabel label=new JLabel("전체 대화");
-	private JTextArea multichat=new JTextArea();
-	private JTextField multichattext=new JTextField();
-	private JScrollPane multichatscroll =new JScrollPane(multichat);
-	
-
+	// 심심한창
+	private JLabel label = new JLabel("전체 대화");
+	private JTextArea multichat = new JTextArea();
+	private JTextField multichattext = new JTextField();
+	private JScrollPane multichatscroll = new JScrollPane(multichat);
 
 	private void display() {
 
@@ -101,9 +101,9 @@ public class FriendsListGUI extends JFrame {
 		con.add(snick, BorderLayout.CENTER);
 		con.add(snicks, BorderLayout.CENTER);
 		con.add(addfriend, BorderLayout.NORTH);
-		con.add(multichat, BorderLayout.CENTER);
-		con.add(multichattext, BorderLayout.CENTER);
+		// con.add(multichat, BorderLayout.CENTER);
 		con.add(multichatscroll, BorderLayout.CENTER);
+		con.add(multichattext, BorderLayout.CENTER);
 		con.add(label, BorderLayout.CENTER);
 
 		// 최상단 로그인 정보창
@@ -137,15 +137,13 @@ public class FriendsListGUI extends JFrame {
 		label.setFont(new Font("맑은 고딕", Font.BOLD, 12));
 		label.setBorder(b3);
 
-		
-
 		DefaultTreeCellRenderer render = new DefaultTreeCellRenderer();
 		render.setOpenIcon(new ImageIcon("image/sampleicon2.jpg"));
 		render.setLeafIcon(new ImageIcon("image/sampleicon1.jpg"));
 		render.setClosedIcon(new ImageIcon("image/sampleicon2.jpg"));
 
 		tree.setCellRenderer(render);
-		multichat.setBounds(12, 401, 370, 180);
+		multichatscroll.setBounds(12, 401, 370, 180);
 		multichattext.setBounds(12, 591, 370, 35);
 
 	}
@@ -226,8 +224,8 @@ public class FriendsListGUI extends JFrame {
 			room.setVisible(true);
 		});
 		logout.addActionListener(e -> {// 로그아웃
-			Client.currentMainGUI = new LoginGUI();
 			dispose();
+			Client.currentMainGUI = new LoginGUI();
 		});
 		end.addActionListener(e -> {// 친구삭제
 			Client.friends.getFriendsList().remove(node.toString());
@@ -246,12 +244,11 @@ public class FriendsListGUI extends JFrame {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					// bc.caster(key);
 				}
 			}
 		});
 	}
-	
+
 	private void menu() {
 	}
 
@@ -269,8 +266,8 @@ public class FriendsListGUI extends JFrame {
 			Client.conn.close();
 			Client.conn = null;
 			Client.receiver = null;
-			
 		}
+		System.gc();
 		super.dispose();
 	}
 
@@ -286,6 +283,9 @@ public class FriendsListGUI extends JFrame {
 		menu();
 		count();
 		super.setVisible(true);
+		Client.chatList = new HashMap<>();
+		Client.receiver = new ClientReceiver();
+		Client.receiver.setRunning(true);
 		Client.receiver.start();
 	}
 
@@ -319,15 +319,19 @@ public class FriendsListGUI extends JFrame {
 		return model;
 	}
 
-	public void msgcheck(){
+	public void msgcheck() {
 		msgpop.show(this, 10, 10);
 	}
 
 	public void messageHandler(Message msg) {
 		String sender = msg.getSender();
+		if (Client.friends.getFriendsList().get(sender) != null)
+			sender = Client.friends.getFriendsList().get(sender) + "(" + sender + ")";
 		String text = (String) msg.getMsg();
 		if (!multichat.getText().isEmpty())
 			multichat.append("\n");
 		multichat.append(sender + " : " + text);
+		JScrollBar scroll = multichatscroll.getVerticalScrollBar();
+		scroll.setValue(scroll.getMaximum());
 	}
 }

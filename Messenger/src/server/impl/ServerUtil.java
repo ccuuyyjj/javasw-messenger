@@ -179,6 +179,7 @@ public class ServerUtil {
 					File tmp = Server.getFileList().remove(msg.getTime_created());
 					System.out.println(tmp.getAbsolutePath() + " 전송 시작");
 					conn.sendFile(tmp);
+					System.out.println("파일 전송 완료");
 					tmp.delete();
 					Server.closeFileList();
 				}
