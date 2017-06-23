@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashSet;
 
 import server.Server;
 import server.impl.ServerUtil;
@@ -215,8 +216,22 @@ public class Connection implements Closeable {
 	public void close() {
 		try {
 			if (receiver != null) {
-				if (Server.getClientList().remove(identity) != null)
+				if (Server.getClientList().remove(identity) != null){
 					receiver.setRunning(false);
+					for(Connection conn : Server.getClientList().values()){
+						String id = conn.getIdentity();
+						Friends fr = Server.getFriends().get(id);
+						if(id != null && fr.getFriendsList().containsKey(identity)){
+							conn.sendObject(fr);
+							HashSet<String> online = new HashSet<>();
+							for(String fid : fr.getFriendsList().keySet()){
+								if(Server.getClientList().containsKey(fid))
+									online.add(fid);
+							}
+							conn.sendObject(online);
+						}
+					}
+				}
 			} else
 				sendHeader(new String[] { "CLOSE", "CLOSE", "CLOSE" });
 			socket.close();
