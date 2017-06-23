@@ -148,6 +148,11 @@ public class Server {
 	public static HashMap<Long, File> getFileList() {
 		while (filelist == null) {
 			try {
+				if(!filelistDB.exists()){
+					filelistDB.createNewFile();
+					filelist = new HashMap<>();
+					closeFileList();
+				}
 				ObjectInputStream oin = new ObjectInputStream(
 						new BufferedInputStream(new FileInputStream(filelistDB)));
 				filelist = (HashMap<Long, File>) oin.readObject();
@@ -170,6 +175,11 @@ public class Server {
 	public static HashMap<String, Friends> getFriends() {
 		while (friends == null) {
 			try {
+				if(!friendsDB.exists()){
+					friendsDB.createNewFile();
+					friends = new HashMap<>();
+					closeFriends();
+				}
 				ObjectInputStream oin = new ObjectInputStream(
 						new BufferedInputStream(new FileInputStream(friendsDB)));
 				friends = (HashMap<String, Friends>) oin.readObject();

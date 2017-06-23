@@ -86,31 +86,8 @@ public class Connection implements Closeable {
 		for (int i = 0; i < buffer.length; i++) {
 			buffer[i] = (byte) in.read();
 			if (buffer[i] == -1)
-				i--;
+				return null;
 		}
-		// int trial = 1;
-		// for (int i = 0; i < buffer.length; i++) {
-		// int read = in.read();
-		// if (read == -1) {
-		// if (trial <= 10) {
-		// System.out.println("reached the end of stream (trial : " + trial
-		// + " )");
-		// try {
-		// Thread.sleep(100);
-		// } catch (Exception e) {
-		// }
-		// i--;
-		// trial++;
-		// } else {
-		// System.out.println("stream seems to be closed");
-		// this.close();
-		// return null;
-		// }
-		// } else {
-		// trial = 1;
-		// buffer[i] = (byte) read;
-		// }
-		// }
 		String tmp = new String(buffer, 0, buffer.length);
 		String[] header = tmp.trim().substring(1).split("\\\\");
 		return header;

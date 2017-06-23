@@ -133,14 +133,25 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 							fd.setVisible(true);
 
 							if (fd.getFile() != null) {
+								
 								target = new File(fd.getDirectory(), fd.getFile());
+								String filepath = target.getAbsolutePath().replace("\\", "/");
+								
 								try {
 									Client.conn.sendObject(msg);
-								} catch (IOException e1) {
+									while(target != null)
+										Thread.sleep(100);
+								} catch (IOException | InterruptedException e1) {
 									e1.printStackTrace();
 								}
-								msg.setMsg(filename + " <a href=\"folder:"
-										+ target.getParentFile().getAbsolutePath()
+								System.out.println("\"file:///" + filepath + "\"");
+								if(fd.getFile().toLowerCase().endsWith(".png") || fd.getFile().toLowerCase().endsWith(".jpg") || fd.getFile().toLowerCase().endsWith(".gif"))
+									msg.setMsg(filename + "<img src=\"file:///" + filepath + "\" width=400px> <a href=\"folder:"
+											+ fd.getDirectory()
+											+ "\">폴더 열기</a>");
+								else
+									msg.setMsg(filename + " <a href=\"folder:"
+										+ fd.getDirectory()
 										+ "\">폴더 열기</a>");
 							}
 							break;
@@ -297,6 +308,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		}
 		msgviewhtml.append("</div>");
 		msgview.setText(msgviewhtml.toString());
+		msgview.repaint();
 	}
 
 	@Override
