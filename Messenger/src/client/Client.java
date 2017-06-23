@@ -64,6 +64,7 @@ public class Client {
 										gui = new ChatRoomGUI(msg.getSender());
 										chatList.put(sender, gui);
 										gui.setVisible(false);
+										((FriendsListGUI) currentMainGUI).selectUser(sender);
 									}
 									gui.messageHandler(msg);
 								}
