@@ -1,10 +1,15 @@
 package client.gui;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.FileDialog;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -15,6 +20,7 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -65,6 +71,10 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 	// µå·Î±× ¾Ø µå·Ó º¯¼ö
 	DropTarget dt;
 	JTextArea ta;
+	
+	public TreeSet<Message> getMsgset() {
+		return msgset;
+	}
 
 	private void display() {
 
@@ -163,6 +173,17 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+					if (textfield.getText().trim().equals("Ä¸ÃÄ")) {
+						try {
+							Robot robot = new Robot();
+							Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+						    BufferedImage img = robot.createScreenCapture(area);
+						    CaptureGUI t = new CaptureGUI((Image)img, myid, youid);
+						} catch (AWTException e1) {
+							e1.printStackTrace();
+						}
+					}
+					
 					Message msg = new Message(myid, youid, textfield.getText().trim());
 					textfield.setText("");
 
