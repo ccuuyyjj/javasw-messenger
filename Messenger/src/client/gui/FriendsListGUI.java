@@ -4,14 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,7 +19,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -41,10 +39,10 @@ public class FriendsListGUI extends JFrame {
 
 	// 내 정보창
 	private String id = Client.identity;// 상단 라벨에 표시될 자기 아이디
-	private int allfriend; // 오프라인+온라인 친구
-	private int connecting; // 온라인친구
-	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : "
-			+ connecting + "명" + "</html>");
+	private int friendscount; // 오프라인+온라인 친구
+	private int onlinecount; // 온라인친구
+	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + friendscount + "명" + "<br>접속중인 친구 : "
+			+ onlinecount + "명" + "</html>");
 
 	private DefaultMutableTreeNode friendlist = new DefaultMutableTreeNode("회원 목록");
 	private JTree tree = new JTree(friendlist) {
@@ -64,7 +62,8 @@ public class FriendsListGUI extends JFrame {
 
 	};
 	private DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-	private DefaultMutableTreeNode online = new DefaultMutableTreeNode("접속중");
+	private DefaultMutableTreeNode online = new DefaultMutableTreeNode("온라인");
+	private DefaultMutableTreeNode offline = new DefaultMutableTreeNode("오프라인");
 
 	// 팝업
 	private JPopupMenu pop = new JPopupMenu(); // 트리 노트에서 우클릭시 나타날 팝업메뉴
@@ -126,6 +125,7 @@ public class FriendsListGUI extends JFrame {
 
 		// 온라인과 오프라인 구별
 		friendlist.add(online);
+		friendlist.add(offline);
 
 		multichat.setEditable(false);// 퀴즈창에 수정금지
 
@@ -175,7 +175,6 @@ public class FriendsListGUI extends JFrame {
 				if (e.getKeyCode() == KeyEvent.VK_F5) {
 					System.out.println("새로고침");
 					save();
-					load();
 				}
 			}
 		});
@@ -184,7 +183,7 @@ public class FriendsListGUI extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 				if (e.getButton() == 1) {
-					if (node == null || Client.friends.getFriendsList().get(node.toString()) == null)
+					if (node == null || !Client.online.contains(node.toString()))
 						return;
 					else if(e.getClickCount() == 2){
 						ChatRoomGUI room = Client.chatList.get(node.toString());
@@ -240,12 +239,14 @@ public class FriendsListGUI extends JFrame {
 			save();
 		});
 		start.addActionListener(e -> {// 채팅방
-			ChatRoomGUI room = Client.chatList.get(node.toString());
-			if (room == null) {
-				room = new ChatRoomGUI(node.toString());
-				Client.chatList.put(node.toString(), room);
+			if(Client.online.contains(node.toString())){
+				ChatRoomGUI room = Client.chatList.get(node.toString());
+				if (room == null) {
+					room = new ChatRoomGUI(node.toString());
+					Client.chatList.put(node.toString(), room);
+				}
+				room.setVisible(true);
 			}
-			room.setVisible(true);
 		});
 		logout.addActionListener(e -> {// 로그아웃
 			dispose();
@@ -282,6 +283,7 @@ public class FriendsListGUI extends JFrame {
 			Client.receiver.setRunning(false);
 			Client.friends.getFriendsList().clear();
 			Client.friends = null;
+			Client.online = null;
 			Client.identity = null;
 			for (ChatRoomGUI gui : Client.chatList.values()) {
 				gui.dispose();
@@ -301,24 +303,22 @@ public class FriendsListGUI extends JFrame {
 		// 운영체제의 창 배치 형식에 따라 배치
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
-		load();
+		Client.chatList = new HashMap<>();
 		display();
 		event();
 		menu();
-		count();
+		load();
 		super.setVisible(true);
-		Client.chatList = new HashMap<>();
 		Client.receiver = new ClientReceiver();
 		Client.receiver.setRunning(true);
 		Client.receiver.start();
 	}
 
 	private void count() {
-		int i = online.getChildCount();
-		// i+=offline.getChildCount();
-		allfriend = i;
-		ss.setText("<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : " + connecting + "명"
-				+ "</html>");
+		friendscount = Client.friends.getFriendsList().size();
+		onlinecount = Client.online.size();
+		ss.setText("<html>이름 : " + id + "<br>전체 친구 : " + friendscount + "명" + "<br>접속중인 친구 : "
+				+ onlinecount + "명" + "</html>");
 	}
 
 	private void save() {
@@ -327,20 +327,23 @@ public class FriendsListGUI extends JFrame {
 			Client.conn.sendObject(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
-
 		}
 	}
 
 	public void load() {
-		online.removeAllChildren();
-		// offline.removeAllChildren();
-		for (String id : Client.friends.getFriendsList().keySet()) {
-			online.add(new DefaultMutableTreeNode(id));
+		while(Client.friends == null || Client.online == null){
+			try{Thread.sleep(100);}catch(Exception e){}
 		}
-	}
-
-	public DefaultTreeModel getModel() {
-		return model;
+		online.removeAllChildren();
+		offline.removeAllChildren();
+		count();
+		for (String id : Client.friends.getFriendsList().keySet()) {
+			if(Client.online != null && Client.online.contains(id))
+				online.add(new DefaultMutableTreeNode(id));
+			else
+				offline.add(new DefaultMutableTreeNode(id));
+		}
+		model.reload();
 	}
 
 	public void msgcheck() {
