@@ -1,8 +1,11 @@
 package client.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -17,6 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -81,9 +85,21 @@ public class FriendsListGUI extends JFrame {
 
 	private JButton logout = new JButton("로그아웃"); // 로그아웃 버튼
 	private JButton addfriend = new JButton("친구 추가");
-
-	Container con = super.getContentPane();
-
+	
+	//배경화면 이미지
+//	private ImageIcon imgicon = new ImageIcon("image/1.png");
+//	private JPanel back = new JPanel(){
+//		protected void paintComponent(Graphics g) {
+//			g.drawImage(imgicon.getImage(), 0, 0, null);
+//			
+//			setOpaque(false);
+//			super.paintComponent(g);
+//		}
+//	};
+	
+	Font font = new Font("", Font.PLAIN, 15);
+	Font font2 = new Font("", Font.BOLD, 15);
+	
 	// 심심한창
 	private JLabel label = new JLabel("전체 대화");
 	private JTextArea multichat = new JTextArea();
@@ -91,7 +107,10 @@ public class FriendsListGUI extends JFrame {
 	private JScrollPane multichatscroll = new JScrollPane(multichat);
 
 	private void display() {
-
+		this.setContentPane(new JLabel(new ImageIcon("image/back4.png")));
+		Container con = getContentPane();
+		//con.add(back, BorderLayout.CENTER);
+		con.setBackground(Color.WHITE);
 		con.setLayout(null);
 		con.add(ss, BorderLayout.NORTH);
 		con.add(scroll, BorderLayout.CENTER);
@@ -105,12 +124,15 @@ public class FriendsListGUI extends JFrame {
 		con.add(multichatscroll, BorderLayout.CENTER);
 		con.add(multichattext, BorderLayout.CENTER);
 		con.add(label, BorderLayout.CENTER);
-
+		
+//		tree.setOpaque(false);
 		// 최상단 로그인 정보창
 		Border b2 = BorderFactory.createTitledBorder("내 로그인 정보");
 		Border b3 = BorderFactory.createTitledBorder("");
 		ss.setBorder(b2);
 		ss.setBounds(12, 10, 370, 85);
+		ss.setForeground(Color.WHITE);
+		ss.setFont(font2);
 
 		scroll.setBounds(12, 105, 370, 257);
 		scroll.setViewportView(tree);
@@ -130,22 +152,30 @@ public class FriendsListGUI extends JFrame {
 
 		// 로그아웃 버튼
 		logout.setBounds(12, 636, 370, 35);
+		logout.setBackground(Color.BLACK);
+		logout.setForeground(Color.WHITE);
+		logout.setFont(font2);
+		
 		// 친구 추가 버튼
 		addfriend.setBounds(213, 30, 158, 52);
+		addfriend.setBackground(Color.BLACK);
+		addfriend.setForeground(Color.WHITE);
+		addfriend.setFont(font2);
 		// 심심한 창
 		label.setBounds(12, 365, 370, 29);
 		label.setFont(new Font("맑은 고딕", Font.BOLD, 12));
 		label.setBorder(b3);
 
 		DefaultTreeCellRenderer render = new DefaultTreeCellRenderer();
-		render.setOpenIcon(new ImageIcon("image/sampleicon2.jpg"));
-		render.setLeafIcon(new ImageIcon("image/sampleicon1.jpg"));
-		render.setClosedIcon(new ImageIcon("image/sampleicon2.jpg"));
-
+		render.setOpenIcon(new ImageIcon("image/flist.png"));
+		render.setLeafIcon(new ImageIcon("image/f.png"));
+		render.setClosedIcon(new ImageIcon("image/home.png"));
+		render.setFont(font);
 		tree.setCellRenderer(render);
 		multichatscroll.setBounds(12, 401, 370, 180);
 		multichattext.setBounds(12, 591, 370, 35);
-
+		
+		//배경화면
 	}
 
 	DefaultMutableTreeNode node;// 노드 클릭시 해당 노드의 이름을 알려주는 코드
