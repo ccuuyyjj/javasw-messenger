@@ -82,7 +82,6 @@ public class FriendsListGUI extends JFrame {
 	private JButton logout = new JButton("로그아웃"); // 로그아웃 버튼
 	private JButton addfriend = new JButton("친구 추가");
 
-	Container con = super.getContentPane();
 
 	// 심심한창
 	private JLabel label = new JLabel("전체 대화");
@@ -91,7 +90,7 @@ public class FriendsListGUI extends JFrame {
 	private JScrollPane multichatscroll = new JScrollPane(multichat);
 
 	private void display() {
-
+		Container con = getContentPane();
 		con.setLayout(null);
 		con.add(ss, BorderLayout.NORTH);
 		con.add(scroll, BorderLayout.CENTER);
