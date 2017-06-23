@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.color.ColorSpace;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -176,6 +178,21 @@ public class LoginGUI extends JFrame {
 				e1.printStackTrace();
 			}
 		});
+		
+		KeyListener listener = new KeyListener() {
+			
+			public void keyTyped(KeyEvent e) {
+				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+					login.doClick();
+				}
+			}
+			
+			public void keyReleased(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {}
+		};
+		id.addKeyListener(listener);
+		pw.addKeyListener(listener);
+		address.addKeyListener(listener);
 	}
 
 	private void menu() {
