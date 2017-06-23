@@ -52,7 +52,7 @@ public class FriendsListGUI extends JFrame {
 			if (value != null && value.getClass().getSimpleName().equals("DefaultMutableTreeNode"))
 				id = ((DefaultMutableTreeNode) value).toString();
 			if (id != null && Client.friends.getFriendsList().get(id) != null)
-				nick = id + "(" + Client.friends.getFriendsList().get(id) + ")";
+				nick = Client.friends.getFriendsList().get(id) + "(" + id + ")";
 			if (nick != null)
 				return nick;
 			return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
