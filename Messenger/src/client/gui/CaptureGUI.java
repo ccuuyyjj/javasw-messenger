@@ -21,6 +21,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+
+import com.jtattoo.plaf.DecorationHelper;
 
 public class CaptureGUI extends JFrame {
 	private Rectangle area;
@@ -98,14 +101,11 @@ public class CaptureGUI extends JFrame {
 			} //지정한 범위 캡쳐 후 저장
 		    CaptureNoteGUI t = new CaptureNoteGUI(width, height, myid, youid);
 		    dispose();
-//		    LoadImageApp.main(null);
 		} else JOptionPane.showMessageDialog(lb, "범위가 잘못 설정되었습니다");
-		
-//		Runtime.getRuntime().exec("c:\\windows\\system32\\mspaint.exe");
 	}
 	
 	public CaptureGUI(Image img, String myid, String youid) {
-		super.setTitle("캡쳐 스크린샷");
+//		super.setTitle("캡쳐 스크린샷");
 		super.setSize(Toolkit.getDefaultToolkit().getScreenSize());
 //		운영체제(window)의 창 배치 형식에 따라 배치
 		super.setLocation(0, 0);		// 각각의 운영체제에 따라
