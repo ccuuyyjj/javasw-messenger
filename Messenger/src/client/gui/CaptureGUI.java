@@ -99,6 +99,7 @@ public class CaptureGUI extends JFrame {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			} //지정한 범위 캡쳐 후 저장
+		    DecorationHelper.decorateWindows(true);
 		    CaptureNoteGUI t = new CaptureNoteGUI(width, height, myid, youid);
 		    dispose();
 		} else JOptionPane.showMessageDialog(lb, "범위가 잘못 설정되었습니다");
