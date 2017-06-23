@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.FileDialog;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -37,9 +38,11 @@ import java.net.URLDecoder;
 import java.util.List;
 import java.util.TreeSet;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -72,12 +75,14 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 	DropTarget dt;
 	JTextArea ta;
 	
+	Font font = new Font("", Font.PLAIN, 15);
+	Font font2 = new Font("", Font.BOLD, 15);
 	public TreeSet<Message> getMsgset() {
 		return msgset;
 	}
 
 	private void display() {
-
+		this.setContentPane(new JLabel(new ImageIcon("image/back4.png")));
 		Container con = getContentPane();
 		con.setLayout(null);
 
@@ -93,7 +98,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		panel.add(scrollPane);
 		scrollPane.setBorder(new LineBorder(Color.BLACK));
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
+		scrollPane.setBackground(Color.BLACK);
 		msgview.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
 		msgview.setEditable(false);
 		StyleSheet style = new StyleSheet();
@@ -107,18 +112,27 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 
 		con.add(upload);
 		upload.setBorder(new LineBorder(new Color(0, 0, 0)));
-
+		upload.setBackground(Color.BLACK);
+		upload.setForeground(Color.white);
+		upload.setFont(font2);
+		
 		con.add(textfield);
 		textfield.setBorder(new LineBorder(new Color(0, 0, 0)));
 		textfield.setLineWrap(true);
 
 		send.setBorder(new LineBorder(new Color(0, 0, 0)));
 		con.add(send);
+		send.setBackground(Color.BLACK);
+		send.setForeground(Color.white);
+		send.setFont(font2);
 
 		ta = this.textfield;
 		dt = new DropTarget(ta, DnDConstants.ACTION_COPY_OR_MOVE, this, true, null);
 
 		loadMessage();
+		
+		con.setBackground(Color.WHITE);
+		con.setForeground(Color.black);
 	}
 
 	private boolean scrolling = false;

@@ -3,6 +3,7 @@ package client.gui;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.color.ColorSpace;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,6 +44,7 @@ public class LoginGUI extends JFrame {
 	private JButton join = new JButton("JOIN");
 
 	private void display() {
+		this.setContentPane(new JLabel(new ImageIcon("image/back4.png")));
 		super.setTitle("NORMCORE TALK");
 		super.setSize(400, 500);
 		super.setLocationByPlatform(true);
@@ -53,34 +55,38 @@ public class LoginGUI extends JFrame {
 		con.setLayout(null);
 		con.setBackground(Color.white);
 
-		logo.setBounds(20, 20, 355, 230);
+		logo.setBounds(35, 20, 330, 210);
 		logo.setOpaque(true);
 
 		Font font = new Font("", Font.PLAIN, 15);
 		Font font2 = new Font("", Font.BOLD, 15);
-
+		
 		// 아이디
 		lbId.setBounds(20, 260, 90, 30);
-
+		lbId.setForeground(Color.white);
+		
 		id.setBounds(105, 260, 270, 30);
 		id.setFont(font);
-
+		
 		// 비밀번호
 		lbPw.setBounds(20, 305, 90, 30);
-
+		lbPw.setForeground(Color.white);
+		
 		pw.setBounds(105, 305, 270, 30);
 		pw.setFont(font);
 
 		// 서버주소
 		lbAddr.setBounds(20, 350, 90, 30);
-
+		lbAddr.setForeground(Color.white);
 		address.setBounds(105, 350, 270, 30);
 		address.setFont(font);
 
 		info.setBounds(23, 390, 350, 20);
 		info.setOpaque(true);
-		info.setBackground(Color.white);
-
+		info.setForeground(Color.ORANGE);
+		info.setOpaque(false);
+		
+		
 		join.setBounds(180, 420, 100, 30);
 		join.setBackground(Color.black);
 		join.setForeground(Color.white);

@@ -8,6 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
+import javax.swing.UIManager;
 
 import client.gui.ChatRoomGUI;
 import client.gui.FriendsListGUI;
@@ -25,7 +26,15 @@ public class Client {
 	public static ClientReceiver receiver = null;
 
 	public static void main(String[] args) throws IOException {
+		
+		/*lookNfell 설정*/
+		try{
+			UIManager.setLookAndFeel("com.jtattoo.plaf.aluminium.AluminiumLookAndFeel");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		currentMainGUI = new LoginGUI();
+		
 	}
 
 	// 메세지 수신
