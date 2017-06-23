@@ -1,11 +1,16 @@
 package client.gui;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -16,6 +21,7 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -71,6 +77,9 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 	
 	Font font = new Font("", Font.PLAIN, 15);
 	Font font2 = new Font("", Font.BOLD, 15);
+	public TreeSet<Message> getMsgset() {
+		return msgset;
+	}
 
 	private void display() {
 		this.setContentPane(new JLabel(new ImageIcon("image/back4.png")));
@@ -148,14 +157,25 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 							fd.setVisible(true);
 
 							if (fd.getFile() != null) {
+								
 								target = new File(fd.getDirectory(), fd.getFile());
+								String filepath = target.getAbsolutePath().replace("\\", "/");
+								
 								try {
 									Client.conn.sendObject(msg);
-								} catch (IOException e1) {
+									while(target != null)
+										Thread.sleep(100);
+								} catch (IOException | InterruptedException e1) {
 									e1.printStackTrace();
 								}
-								msg.setMsg(filename + " <a href=\"folder:"
-										+ target.getParentFile().getAbsolutePath()
+								System.out.println("\"file:///" + filepath + "\"");
+								if(fd.getFile().toLowerCase().endsWith(".png") || fd.getFile().toLowerCase().endsWith(".jpg") || fd.getFile().toLowerCase().endsWith(".gif"))
+									msg.setMsg(filename + "<img src=\"file:///" + filepath + "\" width=400px> <a href=\"folder:"
+											+ fd.getDirectory()
+											+ "\">폴더 열기</a>");
+								else
+									msg.setMsg(filename + " <a href=\"folder:"
+										+ fd.getDirectory()
 										+ "\">폴더 열기</a>");
 							}
 							break;
@@ -178,6 +198,17 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+					if (textfield.getText().trim().equals("캡쳐")) {
+						try {
+							Robot robot = new Robot();
+							Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+						    BufferedImage img = robot.createScreenCapture(area);
+						    CaptureGUI t = new CaptureGUI((Image)img, myid, youid);
+						} catch (AWTException e1) {
+							e1.printStackTrace();
+						}
+					}
+					
 					Message msg = new Message(myid, youid, textfield.getText().trim());
 					textfield.setText("");
 
@@ -312,6 +343,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		}
 		msgviewhtml.append("</div>");
 		msgview.setText(msgviewhtml.toString());
+		msgview.repaint();
 	}
 
 	@Override

@@ -56,7 +56,7 @@ public class FriendsListGUI extends JFrame {
 			if (value != null && value.getClass().getSimpleName().equals("DefaultMutableTreeNode"))
 				id = ((DefaultMutableTreeNode) value).toString();
 			if (id != null && Client.friends.getFriendsList().get(id) != null)
-				nick = id + "(" + Client.friends.getFriendsList().get(id) + ")";
+				nick = Client.friends.getFriendsList().get(id) + "(" + id + ")";
 			if (nick != null)
 				return nick;
 			return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
@@ -197,8 +197,16 @@ public class FriendsListGUI extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 				if (e.getButton() == 1) {
-					if (node == null)
+					if (node == null || Client.friends.getFriendsList().get(node.toString()) == null)
 						return;
+					else if(e.getClickCount() == 2){
+						ChatRoomGUI room = Client.chatList.get(node.toString());
+						if (room == null) {
+							room = new ChatRoomGUI(node.toString());
+							Client.chatList.put(node.toString(), room);
+						}
+						room.setVisible(true);
+					}
 				}
 
 				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
@@ -245,7 +253,6 @@ public class FriendsListGUI extends JFrame {
 			save();
 		});
 		start.addActionListener(e -> {// Ã¤ÆÃ¹æ
-
 			ChatRoomGUI room = Client.chatList.get(node.toString());
 			if (room == null) {
 				room = new ChatRoomGUI(node.toString());

@@ -76,15 +76,16 @@ public class Client {
 							for (ChatRoomGUI gui : chatList.values()) {
 								if (gui.target != null) {
 									target = gui.target;
+									System.out.println("저장 경로 : " + target.getAbsolutePath());
+									if (target != null){
+										Files.move(Paths.get(tmp.getAbsolutePath()),
+												Paths.get(target.getAbsolutePath()),
+												StandardCopyOption.REPLACE_EXISTING);
+									}
 									gui.target = null;
 									break;
 								}
 							}
-							System.out.println("저장 경로 : " + target.getAbsolutePath());
-							if (target != null)
-								Files.move(Paths.get(tmp.getAbsolutePath()),
-										Paths.get(target.getAbsolutePath()),
-										StandardCopyOption.REPLACE_EXISTING);
 						}
 					}
 				} catch (IOException e) {
