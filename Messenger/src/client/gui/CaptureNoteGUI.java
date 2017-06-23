@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import client.Client;
 import general.container.Message;
@@ -40,6 +41,9 @@ public class CaptureNoteGUI extends JFrame {
 	
 	private String myid;
 	private String youid;
+	
+	private int SAVE = 0;
+	private int SEND = 1;
 	
 	class MyCan extends Canvas implements MouseMotionListener, MouseListener {
 		public MyCan() {
@@ -94,11 +98,11 @@ public class CaptureNoteGUI extends JFrame {
 		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 		save.addActionListener(e ->{
-			save();
+			save(SAVE);
 		});
 		
 		send.addActionListener(e -> {
-			save();
+			save(SEND);
 			
 			Message msg = new Message(myid, youid, capture);
 			
@@ -118,13 +122,17 @@ public class CaptureNoteGUI extends JFrame {
 	
 	private void menu() {}
 	
-	private void save() {
+	private void save(int flag) {
 		try { Thread.sleep(1000); } catch (Exception e2) {}
 		Point current = this.getLocation();
 		Rectangle area = new Rectangle(current.x + 3, current.y + 47, width, height);
 		try {
 			Robot robot = new Robot();
 			BufferedImage bufferedImage = robot.createScreenCapture(area);
+			if (flag == SEND) {
+				String filename = JOptionPane.showInputDialog("파일 이름을 입력하세요", 1);
+				capture = new File("files", filename+".png");
+			}
 			ImageIO.write(bufferedImage, "png", capture);
 		} catch (Exception e1) {
 			e1.printStackTrace();
