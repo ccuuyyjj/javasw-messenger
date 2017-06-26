@@ -139,7 +139,7 @@ public class CaptureNoteGUI extends JFrame {
 	
 	private void save(int flag) {
 		Point current = this.getLocation();
-		Rectangle area = new Rectangle(current.x + 3, current.y + 57, width, height);
+		Rectangle area = new Rectangle(current.x + 3, current.y + 57, width, height+3);
 		try {
 			Robot robot = new Robot();
 			BufferedImage bufferedImage = robot.createScreenCapture(area);
@@ -155,7 +155,7 @@ public class CaptureNoteGUI extends JFrame {
 	
 	public CaptureNoteGUI(int width, int height, String myid, String youid) throws IOException {
 		super.setTitle("캡쳐 이미지");
-		super.setSize(width+5, height+45);
+		super.setSize(width+5, height+60);
 		Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 		super.setLocation(area.width - (width + 5), 0);
 		super.setResizable(false);
