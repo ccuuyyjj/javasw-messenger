@@ -1,5 +1,6 @@
 package client;
 
+import java.awt.Frame;
 import java.awt.TrayIcon.MessageType;
 import java.io.File;
 import java.io.IOException;
@@ -64,13 +65,15 @@ public class Client {
 									if (gui == null) {
 										gui = new ChatRoomGUI(msg.getSender());
 										chatList.put(sender, gui);
-										gui.setVisible(false);
+										gui.setVisible(true);
+										gui.setState(Frame.ICONIFIED);
+										gui.requestFocus();
 									}
-									if(!((FriendsListGUI) currentMainGUI).isActive())
-										((FriendsListGUI) currentMainGUI).setVisible(true);
-									if(!gui.isActive())
-										((FriendsListGUI) currentMainGUI).selectUser(sender);
 									gui.messageHandler(msg);
+//									if(!((FriendsListGUI) currentMainGUI).isVisible())
+//										((FriendsListGUI) currentMainGUI).setVisible(true);
+//									if(!gui.isVisible())
+//										((FriendsListGUI) currentMainGUI).selectUser(sender);
 								}
 							} else if (header[1].equals("Friends")) {
 								Client.friends = (Friends) Client.conn
@@ -124,8 +127,8 @@ public class Client {
 				} catch (ClassNotFoundException e) {
 				}
 			}
+			
 		}
-
 		public void setRunning(boolean running) {
 			this.running = running;
 		}

@@ -27,7 +27,7 @@ public class LoginGUI extends JFrame {
 	private File infoprop = new File("files", "info.prop");
 	private Properties prop = null;
 
-	private ImageIcon img = new ImageIcon("image/normcore.png");
+	private ImageIcon img = new ImageIcon(getClass().getClassLoader().getResource("image/normcore.png"));
 	private JLabel logo = new JLabel(img);
 
 	private JLabel lbId = new JLabel("IDENTITY");
@@ -45,7 +45,7 @@ public class LoginGUI extends JFrame {
 	private JButton join = new JButton("JOIN");
 	
 	private void display() {
-		this.setContentPane(new JLabel(new ImageIcon("image/b3.jpg")));
+		this.setContentPane(new JLabel(new ImageIcon(getClass().getClassLoader().getResource("image/b3.jpg"))));
 		super.setTitle("NORMCORE TALK");
 		super.setSize(400, 500);
 		super.setLocationByPlatform(true);
@@ -242,8 +242,8 @@ public class LoginGUI extends JFrame {
 			}
 			FileInputStream in = new FileInputStream(infoprop);
 			prop.load(in);
-			id.setText(prop.getProperty("id", "aaa"));
-			pw.setText(prop.getProperty("pw", "aaaaaa"));
+			id.setText(prop.getProperty("id", ""));
+			pw.setText(prop.getProperty("pw", ""));
 			address.setText(prop.getProperty("addr", "warrock.iptime.org"));
 			in.close();
 		} catch (IOException e) {

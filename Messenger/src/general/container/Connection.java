@@ -162,6 +162,7 @@ public class Connection implements Closeable {
 						}
 					}
 				} catch (Exception e) {
+					conn.close();
 				}
 			}
 		}

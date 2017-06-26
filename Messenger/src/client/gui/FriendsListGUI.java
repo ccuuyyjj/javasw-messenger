@@ -93,7 +93,7 @@ public class FriendsListGUI extends JFrame {
 	//시스템 트레이
 	private SystemTray tray;
 	private PopupMenu traypop = new PopupMenu();
-	private Image trayimage = Toolkit.getDefaultToolkit().getImage("image/micon.png");
+	private Image trayimage = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("image/micon.png"));
 	private TrayIcon trayIcon = new TrayIcon(trayimage,"NCTok",traypop);
 	private MenuItem open = new MenuItem("열기");
 	private MenuItem close = new MenuItem("종료");
@@ -108,7 +108,7 @@ public class FriendsListGUI extends JFrame {
 	private JScrollPane multichatscroll = new JScrollPane(multichat);
 
 	private void display() {
-		this.setContentPane(new JLabel(new ImageIcon("image/b3.jpg")));
+		this.setContentPane(new JLabel(new ImageIcon(getClass().getClassLoader().getResource("image/b3.jpg"))));
 		Container con = getContentPane();
 		con.setBackground(Color.WHITE);
 		con.setLayout(null);
@@ -170,9 +170,9 @@ public class FriendsListGUI extends JFrame {
 		label.setForeground(Color.WHITE);
 
 		DefaultTreeCellRenderer render = new DefaultTreeCellRenderer();
-		render.setOpenIcon(new ImageIcon("image/flist.png"));
-		render.setLeafIcon(new ImageIcon("image/f.png"));
-		render.setClosedIcon(new ImageIcon("image/home.png"));
+		render.setOpenIcon(new ImageIcon(getClass().getClassLoader().getResource("image/flist.png")));
+		render.setLeafIcon(new ImageIcon(getClass().getClassLoader().getResource("image/f.png")));
+		render.setClosedIcon(new ImageIcon(getClass().getClassLoader().getResource("image/home.png")));
 		render.setFont(font);
 		tree.setCellRenderer(render);
 		tree.setExpandsSelectedPaths(true);
@@ -401,8 +401,9 @@ public class FriendsListGUI extends JFrame {
 	}
 	
 	public void selectUser(String fid){
-		this.setAutoRequestFocus(false);
+		Client.currentMainGUI.setAutoRequestFocus(false);
 		TreePath path = findPath(friendlist, fid);
+		Client.currentMainGUI.toFront();
 		this.toFront();
 		for(int i=0; i<4; i++){
 			tree.setSelectionPath(path);
@@ -411,7 +412,7 @@ public class FriendsListGUI extends JFrame {
 			try{Thread.sleep(500);}catch(Exception e){}
 		}
 		tree.setSelectionPath(path);
-		this.setAutoRequestFocus(true);
+		Client.currentMainGUI.setAutoRequestFocus(true);
 	}
 	
 	private TreePath findPath(DefaultMutableTreeNode root, String s) {

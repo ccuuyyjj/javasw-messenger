@@ -85,7 +85,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 	}
 
 	private void display() {
-		this.setContentPane(new JLabel(new ImageIcon("image/b3.jpg")));
+		this.setContentPane(new JLabel(new ImageIcon(getClass().getClassLoader().getResource("image/b3.jpg"))));
 		Container con = getContentPane();
 		con.setLayout(null);
 
@@ -354,7 +354,6 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		}
 		msgviewhtml.append("</div>");
 		msgview.setText(msgviewhtml.toString());
-		msgview.repaint();
 	}
 
 	@Override
