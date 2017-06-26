@@ -1,5 +1,6 @@
 package client.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Container;
@@ -16,12 +17,13 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import client.Client;
 import general.container.Message;
@@ -29,11 +31,10 @@ import general.container.Message;
 public class CaptureNoteGUI extends JFrame {
 	private Container con = new Container();
 	
-	private JMenuBar mb = new JMenuBar();
-	private JMenu menu = new JMenu("메뉴");
-	private JMenuItem color = new JMenuItem("색 변경");
-	private JMenuItem save = new JMenuItem("저장");
-	private JMenuItem send = new JMenuItem("보내기");
+	private JPanel panel = new JPanel();
+	private JButton color = new JButton("색 변경");
+	private JButton save = new JButton("저장");
+	private JButton send = new JButton("보내기");
 
 	private File capture = new File("files", "capture.png");
 	private BufferedImage image = ImageIO.read(capture);
@@ -49,8 +50,8 @@ public class CaptureNoteGUI extends JFrame {
 	private String myid;
 	private String youid;
 	
-	private int SAVE = 0;
-	private int SEND = 1;
+	private final int SAVE = 0;
+	private final int SEND = 1;
 	
 	class MyCan extends Canvas implements MouseMotionListener, MouseListener {
 		
@@ -96,13 +97,11 @@ public class CaptureNoteGUI extends JFrame {
 	private void display(){
 		can.setVisible(true);
 		this.add(can);
-		setJMenuBar(mb);
-		mb.add(menu);
-		menu.add(color);
-		menu.addSeparator();
-		menu.add(save);
-		menu.add(send);
-		
+
+		this.add(panel, BorderLayout.NORTH);
+		panel.add(color);
+		panel.add(save);
+		panel.add(send);
 	}
 	
 	private void event() {
@@ -113,7 +112,7 @@ public class CaptureNoteGUI extends JFrame {
 			 penColor = selCr;
 		});
 		
-		save.addActionListener(e ->{
+		save.addActionListener(e -> {
 			save(SAVE);
 		});
 		
@@ -139,14 +138,13 @@ public class CaptureNoteGUI extends JFrame {
 	private void menu() {}
 	
 	private void save(int flag) {
-		try { Thread.sleep(1000); } catch (Exception e2) {}
 		Point current = this.getLocation();
-		Rectangle area = new Rectangle(current.x + 3, current.y + 47, width, height);
+		Rectangle area = new Rectangle(current.x + 3, current.y + 57, width, height+3);
 		try {
 			Robot robot = new Robot();
 			BufferedImage bufferedImage = robot.createScreenCapture(area);
 			if (flag == SEND) {
-				String filename = JOptionPane.showInputDialog("파일 이름을 입력하세요", 1);
+				String filename = JOptionPane.showInputDialog("파일 이름을 입력하세요");
 				capture = new File("files", filename+".png");
 			}
 			ImageIO.write(bufferedImage, "png", capture);
@@ -157,7 +155,7 @@ public class CaptureNoteGUI extends JFrame {
 	
 	public CaptureNoteGUI(int width, int height, String myid, String youid) throws IOException {
 		super.setTitle("캡쳐 이미지");
-		super.setSize(width+5, height+50);
+		super.setSize(width+5, height+60);
 		Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 		super.setLocation(area.width - (width + 5), 0);
 		super.setResizable(false);
