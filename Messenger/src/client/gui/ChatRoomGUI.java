@@ -76,9 +76,10 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 	// 드로그 앤 드롭 변수
 	DropTarget dt;
 	JTextArea ta;
-	
+
 	Font font = new Font("", Font.PLAIN, 15);
 	Font font2 = new Font("", Font.BOLD, 15);
+
 	public TreeSet<Message> getMsgset() {
 		return msgset;
 	}
@@ -117,7 +118,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		upload.setBackground(Color.BLACK);
 		upload.setForeground(Color.white);
 		upload.setFont(font2);
-		
+
 		con.add(textfield);
 		textfield.setBorder(new LineBorder(new Color(0, 0, 0)));
 		textfield.setLineWrap(true);
@@ -132,7 +133,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		dt = new DropTarget(ta, DnDConstants.ACTION_COPY_OR_MOVE, this, true, null);
 
 		loadMessage();
-		
+
 		con.setBackground(Color.WHITE);
 		con.setForeground(Color.black);
 	}
@@ -159,26 +160,30 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 							fd.setVisible(true);
 
 							if (fd.getFile() != null) {
-								
+
 								target = new File(fd.getDirectory(), fd.getFile());
 								String filepath = target.getAbsolutePath().replace("\\", "/");
-								
+
 								try {
 									Client.conn.sendObject(msg);
-									while(target != null)
+									while (target != null)
 										Thread.sleep(100);
 								} catch (IOException | InterruptedException e1) {
 									e1.printStackTrace();
 								}
 								System.out.println("\"file:///" + filepath + "\"");
-//								if(fd.getFile().toLowerCase().endsWith(".png") || fd.getFile().toLowerCase().endsWith(".jpg") || fd.getFile().toLowerCase().endsWith(".gif"))
-//									msg.setMsg(filename + "<img src=\"file:///" + filepath + "\" width=400px> <a href=\"folder:"
-//											+ fd.getDirectory()
-//											+ "\">폴더 열기</a>");
-//								else
-								msg.setMsg(filename + " <a href=\"folder:"
-										+ fd.getDirectory()
-										+ "\">폴더 열기</a>");
+								// if(fd.getFile().toLowerCase().endsWith(".png")
+								// ||
+								// fd.getFile().toLowerCase().endsWith(".jpg")
+								// ||
+								// fd.getFile().toLowerCase().endsWith(".gif"))
+								// msg.setMsg(filename + "<img src=\"file:///" +
+								// filepath + "\" width=400px> <a
+								// href=\"folder:"
+								// + fd.getDirectory()
+								// + "\">폴더 열기</a>");
+								// else
+								msg.setMsg(filename + " <a href=\"folder:" + fd.getDirectory() + "\">폴더 열기</a>");
 							}
 							break;
 						}
@@ -186,10 +191,8 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 					loadMessage();
 				} else if (e.getDescription().startsWith("folder:")) {
 					try {
-						Desktop.getDesktop()
-								.browse(new URI(URLDecoder.decode("file:///"
-										+ e.getDescription().substring(7).replace("\\", "/"),
-										"UTF-8")));
+						Desktop.getDesktop().browse(new URI(URLDecoder
+								.decode("file:///" + e.getDescription().substring(7).replace("\\", "/"), "UTF-8")));
 					} catch (IOException | URISyntaxException e1) {
 						e1.printStackTrace();
 					}
@@ -203,15 +206,18 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 					if (textfield.getText().trim().equals("캡쳐")) {
 						try {
 							Robot robot = new Robot();
-							Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()); //전체화면 해상도 구하기
-						    BufferedImage img = robot.createScreenCapture(area); //전체화면 스크린샷
+							Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()); // 전체화면
+																											// 해상도
+																											// 구하기
+							BufferedImage img = robot.createScreenCapture(area); // 전체화면
+																					// 스크린샷
 							DecorationHelper.decorateWindows(false);
-						    CaptureGUI t = new CaptureGUI((Image)img, myid, youid);
+							CaptureGUI t = new CaptureGUI((Image) img, myid, youid);
 						} catch (AWTException e1) {
 							e1.printStackTrace();
 						}
 					}
-					
+
 					Message msg = new Message(myid, youid, textfield.getText().trim());
 					textfield.setText("");
 
@@ -223,7 +229,12 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 
 					msgset.add(msg);
 					loadMessage();
+				} else if (textfield.getText().trim().equals("지우기")) {
+					msgset.clear();
+					saveMessage();
+					loadMessage();
 				}
+
 			}
 		});
 		upload.addActionListener(e -> {
@@ -265,8 +276,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		chatDB = new File("db/" + myid, "chat_from_" + youid + ".db");
 		if (chatDB.exists()) {
 			try {
-				ObjectInputStream oin = new ObjectInputStream(
-						new BufferedInputStream(new FileInputStream(chatDB)));
+				ObjectInputStream oin = new ObjectInputStream(new BufferedInputStream(new FileInputStream(chatDB)));
 				msgset = (TreeSet<Message>) oin.readObject();
 				oin.close();
 			} catch (IOException | ClassNotFoundException e) {
@@ -296,8 +306,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 				chatDB.delete();
 				chatDB.createNewFile();
 			}
-			ObjectOutputStream out = new ObjectOutputStream(
-					new BufferedOutputStream(new FileOutputStream(chatDB)));
+			ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(chatDB)));
 			out.writeObject(msgset);
 			out.close();
 		} catch (IOException e) {
@@ -320,10 +329,12 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 
 			if (((prev != null && !msg.getSender().equals(prev.getSender())) || prev == null)
 					&& msg.getSender().equals(myid))
-				msgviewhtml.append("<div style=\"font-color:'#000000'; font-weight:bold; font-size: 15px;\">" + "나" + "</div>");
+				msgviewhtml.append(
+						"<div style=\"font-color:'#000000'; font-weight:bold; font-size: 15px;\">" + "나" + "</div>");
 			else if (((prev != null && !msg.getSender().equals(prev.getSender())) || prev == null)
 					&& msg.getSender().equals(youid))
-				msgviewhtml.append("<div style=\"font-color:'#000000'; font-weight:bold; font-size: 15px;\">" + younick + "</div>");
+				msgviewhtml.append("<div style=\"font-color:'#000000'; font-weight:bold; font-size: 15px;\">" + younick
+						+ "</div>");
 
 			switch (msg.getMsg().getClass().getSimpleName()) {
 			case "String":
@@ -336,8 +347,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 							+ "\">파일: " + received.getName() + "</a></div>");
 				else
 
-					msgviewhtml.append(
-							"<div style=\"font-color:'#202020';\">파일: " + received.getName() + "</div>");
+					msgviewhtml.append("<div style=\"font-color:'#202020';\">파일: " + received.getName() + "</div>");
 				break;
 			}
 

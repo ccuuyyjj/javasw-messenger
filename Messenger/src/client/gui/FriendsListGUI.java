@@ -3,7 +3,6 @@ package client.gui;
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.Image;
@@ -19,12 +18,10 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -40,7 +37,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import client.Client;
@@ -53,7 +49,7 @@ public class FriendsListGUI extends JFrame {
 	private String id = Client.identity;// 상단 라벨에 표시될 자기 아이디
 	private int friendscount; // 오프라인+온라인 친구
 	private int onlinecount; // 온라인친구
-	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + friendscount + "명" + "<br>접속중인 친구 : "
+	private JLabel ss = new JLabel("<html>아이디 : " + id + "<br>전체 친구 : " + friendscount + "명" + "<br>접속중인 친구 : "
 			+ onlinecount + "명" + "</html>");
 
 	
@@ -360,7 +356,7 @@ public class FriendsListGUI extends JFrame {
 	private void count() {
 		friendscount = Client.friends.getFriendsList().size();
 		onlinecount = Client.online.size();
-		ss.setText("<html>이름 : " + id + "<br>전체 친구 : " + friendscount + "명" + "<br>접속중인 친구 : "
+		ss.setText("<html>아이디 : " + id + "<br>전체 친구 : " + friendscount + "명" + "<br>접속중인 친구 : "
 				+ onlinecount + "명" + "</html>");
 	}
 
@@ -403,6 +399,7 @@ public class FriendsListGUI extends JFrame {
 	}
 	
 	public void selectUser(String fid){
+		this.setAutoRequestFocus(false);
 		TreePath path = findPath(friendlist, fid);
 		this.toFront();
 		for(int i=0; i<4; i++){
@@ -412,6 +409,7 @@ public class FriendsListGUI extends JFrame {
 			try{Thread.sleep(500);}catch(Exception e){}
 		}
 		tree.setSelectionPath(path);
+		this.setAutoRequestFocus(true);
 	}
 	
 	private TreePath findPath(DefaultMutableTreeNode root, String s) {
