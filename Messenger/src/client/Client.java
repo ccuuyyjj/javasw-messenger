@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -21,6 +22,7 @@ public class Client {
 	public static Connection conn = null;
 	public static JFrame currentMainGUI = null;
 	public static Friends friends = null;
+	public static HashSet<String> online = null;
 	public static String identity = null;
 	public static HashMap<String, ChatRoomGUI> chatList = null;
 	public static ClientReceiver receiver = null;
@@ -41,6 +43,7 @@ public class Client {
 	public static class ClientReceiver extends Thread {
 		private boolean running = true;
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void run() {
 			while (running) {
@@ -61,14 +64,22 @@ public class Client {
 										gui = new ChatRoomGUI(msg.getSender());
 										chatList.put(sender, gui);
 										gui.setVisible(false);
+										((FriendsListGUI) currentMainGUI).selectUser(sender);
 									}
 									gui.messageHandler(msg);
 								}
 							} else if (header[1].equals("Friends")) {
 								Client.friends = (Friends) Client.conn
 										.getObject(Integer.parseInt(header[2]));
+								while(true){
+									String[] oheader = Client.conn.getHeader();
+									if(oheader != null){
+										Client.online = (HashSet<String>) Client.conn
+												.getObject(Integer.parseInt(oheader[2]));
+										break;
+									}
+								}
 								((FriendsListGUI) currentMainGUI).load();
-								((FriendsListGUI) currentMainGUI).getModel().reload();
 							}
 						} else if (header[0].equals("FILE")) {
 							File tmp = Client.conn.getFile(header[1], Long.parseLong(header[2]));

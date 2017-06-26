@@ -52,6 +52,8 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
+import com.jtattoo.plaf.DecorationHelper;
+
 import client.Client;
 import general.container.Message;
 
@@ -201,8 +203,9 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 					if (textfield.getText().trim().equals("캡쳐")) {
 						try {
 							Robot robot = new Robot();
-							Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-						    BufferedImage img = robot.createScreenCapture(area);
+							Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()); //전체화면 해상도 구하기
+						    BufferedImage img = robot.createScreenCapture(area); //전체화면 스크린샷
+							DecorationHelper.decorateWindows(false);
 						    CaptureGUI t = new CaptureGUI((Image)img, myid, youid);
 						} catch (AWTException e1) {
 							e1.printStackTrace();

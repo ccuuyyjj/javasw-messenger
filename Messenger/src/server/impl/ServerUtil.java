@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import general.container.Connection;
@@ -85,9 +86,29 @@ public class ServerUtil {
 					conn.setIdentity(login.getIdentity());
 					// getFriends(login).getListname().add("asdf");
 					// getFriends(login).getNickname().add("asdf");
-					conn.sendObject(getFriends(login));
-					Server.closeFriends();
+					Friends fr = getFriends(login);
+					conn.sendObject(fr);
+					HashSet<String> online = new HashSet<>();
+					for(String fid : fr.getFriendsList().keySet()){
+						if(Server.getClientList().containsKey(fid))
+							online.add(fid);
+					}
+					conn.sendObject(online);
 					Server.getClientList().put(login.getIdentity(), conn);
+					for(Connection conn : Server.getClientList().values()){
+						String id = conn.getIdentity();
+						fr = Server.getFriends().get(id);
+						if(id != null && fr.getFriendsList().containsKey(login.getIdentity())){
+							conn.sendObject(fr);
+							online = new HashSet<>();
+							for(String fid : fr.getFriendsList().keySet()){
+								if(Server.getClientList().containsKey(fid))
+									online.add(fid);
+							}
+							conn.sendObject(online);
+						}
+					}
+					Server.closeFriends();
 					System.out.println("현재 접속자 수 : " + Server.getClientList().size());
 					conn.InitServerReceiver();
 					conn.getServerReceiver().start();
@@ -121,11 +142,16 @@ public class ServerUtil {
 				if (result) {
 					Server.getFriends().put(identity, friends);
 					conn.sendObject(friends);
-					Server.closeFriends();
 				} else {
 					conn.sendObject(Server.getFriends().get(identity));
-					Server.closeFriends();
 				}
+				HashSet<String> online = new HashSet<>();
+				for(String f : Server.getFriends().get(identity).getFriendsList().keySet()){
+					if(Server.getClientList().containsKey(f))
+						online.add(f);
+				}
+				conn.sendObject(online);
+				Server.closeFriends();
 			} catch (Exception e) {
 			}
 			break;

@@ -2,6 +2,7 @@ package client.impl;
 
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.HashSet;
 
 import client.Client;
 import general.container.Connection;
@@ -14,6 +15,7 @@ public class ClientUtil {
 	public final static int JOIN = 0;
 	public final static int LOGIN = 1;
 
+	@SuppressWarnings("unchecked")
 	public static boolean joinNlogin(String id, String pw, String addr, int flag) {
 		boolean result = false;
 		try {
@@ -33,10 +35,16 @@ public class ClientUtil {
 					while (true) {
 						String[] fheader = Client.conn.getHeader();
 						if (fheader != null) {
-							if (fheader[0].equals("OBJECT") && fheader[1].equals("Friends"))
-								Client.friends = (Friends) Client.conn
-										.getObject(Integer.parseInt(fheader[2]));
-							// System.out.println(Client.friends.getFriendsList().toString());
+							Client.friends = (Friends) Client.conn
+									.getObject(Integer.parseInt(fheader[2]));
+							break;
+						}
+					}
+					while (true) {
+						String[] oheader = Client.conn.getHeader();
+						if (oheader != null) {
+							Client.online = (HashSet<String>) Client.conn
+									.getObject(Integer.parseInt(oheader[2]));
 							break;
 						}
 					}
