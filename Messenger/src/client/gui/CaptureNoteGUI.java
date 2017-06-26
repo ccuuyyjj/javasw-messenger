@@ -22,6 +22,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuKeyEvent;
+import javax.swing.event.MenuKeyListener;
+import javax.swing.event.MenuListener;
 
 import client.Client;
 import general.container.Message;
@@ -34,6 +38,7 @@ public class CaptureNoteGUI extends JFrame {
 	private JMenuItem color = new JMenuItem("색 변경");
 	private JMenuItem save = new JMenuItem("저장");
 	private JMenuItem send = new JMenuItem("보내기");
+	private JMenu m = new JMenu("저장");
 
 	private File capture = new File("files", "capture.png");
 	private BufferedImage image = ImageIO.read(capture);
@@ -102,6 +107,7 @@ public class CaptureNoteGUI extends JFrame {
 		menu.addSeparator();
 		menu.add(save);
 		menu.add(send);
+		mb.add(m);
 		
 	}
 	
@@ -112,6 +118,8 @@ public class CaptureNoteGUI extends JFrame {
 			 Color selCr = JColorChooser.showDialog(null, "색선정", Color.blue);
 			 penColor = selCr;
 		});
+		
+		m.addMenuListener(new SampleMenuListener());
 		
 		save.addActionListener(e ->{
 			save(SAVE);
@@ -140,7 +148,7 @@ public class CaptureNoteGUI extends JFrame {
 	
 	private void save(int flag) {
 		Point current = this.getLocation();
-		Rectangle area = new Rectangle(current.x + 3, current.y + 47, width, height);
+		Rectangle area = new Rectangle(current.x + 3, current.y + 50, width, height);
 		try {
 			Robot robot = new Robot();
 			BufferedImage bufferedImage = robot.createScreenCapture(area);
@@ -170,4 +178,22 @@ public class CaptureNoteGUI extends JFrame {
 		super.setVisible(true);
 		can.repaint();
 	}
+}
+
+class SampleMenuListener implements MenuListener {
+
+    @Override
+    public void menuSelected(MenuEvent e) {
+        System.out.println("menuSelected");
+    }
+
+    @Override
+    public void menuDeselected(MenuEvent e) {
+        System.out.println("menuDeselected");
+    }
+
+    @Override
+    public void menuCanceled(MenuEvent e) {
+        System.out.println("menuCanceled");
+    }
 }

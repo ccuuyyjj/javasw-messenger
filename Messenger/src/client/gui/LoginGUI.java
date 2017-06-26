@@ -174,7 +174,7 @@ public class LoginGUI extends JFrame {
 					this.dispose();
 					Client.currentMainGUI = new FriendsListGUI();
 				} else {
-					JOptionPane.showMessageDialog(this, "일치하는 정보가 없습니다");
+					JOptionPane.showMessageDialog(this, "일치하는 정보가 없거나 이미 접속 중입니다");
 					pw.setText("");
 					if (Client.conn != null && !Client.conn.getSocket().isClosed()) {
 						Client.conn.close();
