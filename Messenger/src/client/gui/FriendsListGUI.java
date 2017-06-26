@@ -385,12 +385,14 @@ public class FriendsListGUI extends JFrame {
 	
 	public void selectUser(String fid){
 		TreePath path = findPath(friendlist, fid);
+		this.toFront();
 		for(int i=0; i<4; i++){
 			tree.setSelectionPath(path);
 			try{Thread.sleep(500);}catch(Exception e){}
 			tree.clearSelection();
 			try{Thread.sleep(500);}catch(Exception e){}
 		}
+		tree.setSelectionPath(path);
 	}
 	
 	private TreePath findPath(DefaultMutableTreeNode root, String s) {
