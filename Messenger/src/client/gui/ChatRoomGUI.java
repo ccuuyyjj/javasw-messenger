@@ -228,37 +228,11 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-					if (textfield.getText().trim().equals("캡쳐")) {
-						try {
-							Robot robot = new Robot();
-							Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()); // 전체화면
-																											// 해상도
-																											// 구하기
-							BufferedImage img = robot.createScreenCapture(area); // 전체화면
-																					// 스크린샷
-							DecorationHelper.decorateWindows(false);
-							CaptureGUI t = new CaptureGUI((Image) img, myid, youid);
-						} catch (AWTException e1) {
-							e1.printStackTrace();
-						}
-					}
-
-					Message msg = new Message(myid, youid, textfield.getText().trim());
-					textfield.setText("");
-
-					try {
-						Client.conn.sendObject(msg);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-
-					msgset.add(msg);
-					loadMessage();
+					send.doClick();
 				} else if (textfield.getText().trim().equals("지우기")) {
 					msgset.clear();
 					saveMessage();
 					loadMessage();
-					send.doClick();
 				}
 
 			}
