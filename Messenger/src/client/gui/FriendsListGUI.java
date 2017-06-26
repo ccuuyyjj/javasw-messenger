@@ -11,6 +11,7 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.TrayIcon.MessageType;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -426,5 +427,9 @@ public class FriendsListGUI extends JFrame {
 			}
 		}
 		return null;
+	}
+	
+	public void showTrayMessage(String caption, String text, MessageType type){
+		trayIcon.displayMessage(caption, text, type);
 	}
 }

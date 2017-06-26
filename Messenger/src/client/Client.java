@@ -1,5 +1,6 @@
 package client;
 
+import java.awt.TrayIcon.MessageType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -71,29 +72,28 @@ public class Client {
 									gui.messageHandler(msg);
 								}
 							} else if (header[1].equals("Friends")) {
-//								Client.friends = (Friends) Client.conn
-//										.getObject(Integer.parseInt(header[2]));
-								Friends tmp = (Friends) Client.conn
+								Client.friends = (Friends) Client.conn
 										.getObject(Integer.parseInt(header[2]));
-								if(tmp.getFriendsList().size() > Client.friends.getFriendsList().size()){
-									//친구가 새로 로그인한 경우
-									for(String id : tmp.getFriendsList().keySet()){
-										if(!Client.friends.getFriendsList().containsKey(id)){
-											//id는 새로 로그인한 친구의 아이디
-											
-											//↑여기에 코드를 작성
-											break;
-										}
-									}
-								}else if(tmp.getFriendsList().size() < Client.friends.getFriendsList().size()){
-									//친구가 로그아웃한 경우
-								}
-								Client.friends = tmp;
 								while(true){
 									String[] oheader = Client.conn.getHeader();
 									if(oheader != null){
-										Client.online = (HashSet<String>) Client.conn
+										HashSet<String> tmp = (HashSet<String>) Client.conn
 												.getObject(Integer.parseInt(oheader[2]));
+										if(tmp.size() > Client.online.size()){
+											//친구가 새로 로그인한 경우
+											for(String id : tmp){
+												if(!Client.online.contains(id)){
+													//id는 새로 로그인한 친구의 아이디
+													String nick = Client.friends.getFriendsList().get(id);
+													((FriendsListGUI) currentMainGUI).showTrayMessage("알림", nick + "(" + id + ")님이 로그인하셨습니다.", MessageType.INFO);
+													//↑여기에 코드를 작성
+													break;
+												}
+											}
+										}else if(tmp.size() < Client.online.size()){
+											//친구가 로그아웃한 경우
+										}
+										Client.online = tmp;
 										break;
 									}
 								}

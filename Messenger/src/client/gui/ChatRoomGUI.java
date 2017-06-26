@@ -210,18 +210,21 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 				} catch (AWTException e1) {
 					e1.printStackTrace();
 				}
+			} else if (textfield.getText().trim().equals("지우기")) {
+				msgset.clear();
+				saveMessage();
+			} else {
+				Message msg = new Message(myid, youid, textfield.getText().trim());
+				textfield.setText("");
+		
+				try {
+					Client.conn.sendObject(msg);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+		
+				msgset.add(msg);
 			}
-			
-			Message msg = new Message(myid, youid, textfield.getText().trim());
-			textfield.setText("");
-	
-			try {
-				Client.conn.sendObject(msg);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-	
-			msgset.add(msg);
 			loadMessage();
 		});
 		textfield.addKeyListener(new KeyAdapter() {
@@ -229,12 +232,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 			public void keyTyped(KeyEvent e) {
 				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
 					send.doClick();
-				} else if (textfield.getText().trim().equals("지우기")) {
-					msgset.clear();
-					saveMessage();
-					loadMessage();
 				}
-
 			}
 		});
 		upload.addActionListener(e -> {
