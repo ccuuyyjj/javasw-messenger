@@ -85,7 +85,7 @@ public class Client {
 												if(!Client.online.contains(id)){
 													//id는 새로 로그인한 친구의 아이디
 													String nick = Client.friends.getFriendsList().get(id);
-													((FriendsListGUI) currentMainGUI).showTrayMessage("알림", nick + "(" + id + ")님이 로그인하셨습니다.", MessageType.INFO);
+													((FriendsListGUI) currentMainGUI).showTrayMessage("알림 ("+Client.identity+")", nick + "(" + id + ")님이 로그인하셨습니다.", MessageType.INFO);
 													//↑여기에 코드를 작성
 													break;
 												}
