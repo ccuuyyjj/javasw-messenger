@@ -144,6 +144,7 @@ public class FriendsListGUI extends JFrame {
 		friendlist.add(offline);
 
 		multichat.setEditable(false);// 퀴즈창에 수정금지
+		multichat.setLineWrap(true);//너무 많이 치면 자동 엔터
 
 		pop.add(start); // 팝업메뉴
 		pop.add(end);
