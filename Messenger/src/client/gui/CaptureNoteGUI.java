@@ -139,7 +139,6 @@ public class CaptureNoteGUI extends JFrame {
 	private void menu() {}
 	
 	private void save(int flag) {
-		try { Thread.sleep(1000); } catch (Exception e2) {}
 		Point current = this.getLocation();
 		Rectangle area = new Rectangle(current.x + 3, current.y + 47, width, height);
 		try {
