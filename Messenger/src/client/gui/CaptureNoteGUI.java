@@ -111,11 +111,11 @@ public class CaptureNoteGUI extends JFrame {
 		});
 		
 		save.addActionListener(e -> {
-			save(SAVE);
+			save();
 		});
 		
 		send.addActionListener(e -> {
-			save(SEND);
+			save();
 			
 			Message msg = new Message(myid, youid, capture);
 			
@@ -135,16 +135,12 @@ public class CaptureNoteGUI extends JFrame {
 	
 	private void menu() {}
 	
-	private void save(int flag) {
+	private void save() {
 		Point current = this.getLocation();
 		Rectangle area = new Rectangle(current.x + 3, current.y + 57, width, height+3);
 		try {
 			Robot robot = new Robot();
 			BufferedImage bufferedImage = robot.createScreenCapture(area);
-			if (flag == SEND) {
-				String filename = JOptionPane.showInputDialog("파일 이름을 입력하세요");
-				capture = new File("files", filename+".png");
-			}
 			ImageIO.write(bufferedImage, "png", capture);
 		} catch (Exception e1) {
 			e1.printStackTrace();

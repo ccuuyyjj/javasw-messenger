@@ -21,6 +21,8 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -43,7 +45,9 @@ import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
@@ -67,6 +71,9 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 	private JTextArea textfield = new JTextArea();
 	private JButton upload = new JButton("파일 올리기");
 	private JButton send = new JButton("전송");
+	private JPopupMenu pop = new JPopupMenu();
+	private JMenuItem capture = new JMenuItem("캡쳐");
+	private JMenuItem delete = new JMenuItem("지우기");
 
 	private String myid = Client.identity; // 내 아이디
 	private String youid = null; // 상대방 아이디
@@ -104,6 +111,8 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		scrollPane.setBackground(Color.BLACK);
 		msgview.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
 		msgview.setEditable(false);
+		pop.add(capture);
+		pop.add(delete);
 		StyleSheet style = new StyleSheet();
 		try {
 			style.importStyleSheet(new URL("http://fonts.googleapis.com/earlyaccess/nanumgothic.css"));
@@ -199,18 +208,32 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 				}
 			}
 		});
+		MouseListener mListener = new MouseListener() {
+			public void mouseReleased(MouseEvent e) {}
+			public void mousePressed(MouseEvent e) {}
+			public void mouseExited(MouseEvent e) {}
+			public void mouseEntered(MouseEvent e) {}
+			
+			public void mouseClicked(MouseEvent e) {
+				if(e.isMetaDown()) pop.show(msgview, e.getX() +20, e.getY() +10);
+			}
+		};
+		msgview.addMouseListener(mListener);
+		capture.addActionListener(e -> {
+			capture();
+			loadMessage();
+		});
+		delete.addActionListener(e -> {
+			textfield.setText("");
+			msgset.clear();
+			saveMessage();
+			loadMessage();
+		});
 		send.addActionListener(e -> {
-			if (textfield.getText().trim().equals("캡쳐")) {
-				try {
-					Robot robot = new Robot();
-					Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()); //전체화면 해상도 구하기
-				    BufferedImage img = robot.createScreenCapture(area); //전체화면 스크린샷
-					DecorationHelper.decorateWindows(false);
-				    CaptureGUI t = new CaptureGUI((Image)img, myid, youid);
-				} catch (AWTException e1) {
-					e1.printStackTrace();
-				}
-			} else if (textfield.getText().trim().equals("지우기")) {
+			if (textfield.getText().trim().equals("/캡쳐")) {
+				capture();
+			} else if (textfield.getText().trim().equals("/지우기")) {
+				textfield.setText("");
 				msgset.clear();
 				saveMessage();
 			} else {
@@ -290,6 +313,19 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 		event();
 		menu();
 		super.setVisible(false);
+	}
+	
+	public void capture() {
+		textfield.setText("");
+		try {
+			Robot robot = new Robot();
+			Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()); //전체화면 해상도 구하기
+		    BufferedImage img = robot.createScreenCapture(area); //전체화면 스크린샷
+			DecorationHelper.decorateWindows(false);
+		    CaptureGUI t = new CaptureGUI((Image)img, myid, youid);
+		} catch (AWTException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	public void messageHandler(Message msg) {
