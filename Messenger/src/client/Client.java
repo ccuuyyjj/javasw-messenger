@@ -64,13 +64,31 @@ public class Client {
 										gui = new ChatRoomGUI(msg.getSender());
 										chatList.put(sender, gui);
 										gui.setVisible(false);
+									}
+									if(!gui.isVisible()){
 										((FriendsListGUI) currentMainGUI).selectUser(sender);
 									}
 									gui.messageHandler(msg);
 								}
 							} else if (header[1].equals("Friends")) {
-								Client.friends = (Friends) Client.conn
+//								Client.friends = (Friends) Client.conn
+//										.getObject(Integer.parseInt(header[2]));
+								Friends tmp = (Friends) Client.conn
 										.getObject(Integer.parseInt(header[2]));
+								if(tmp.getFriendsList().size() > Client.friends.getFriendsList().size()){
+									//친구가 새로 로그인한 경우
+									for(String id : tmp.getFriendsList().keySet()){
+										if(!Client.friends.getFriendsList().containsKey(id)){
+											//id는 새로 로그인한 친구의 아이디
+											
+											//↑여기에 코드를 작성
+											break;
+										}
+									}
+								}else if(tmp.getFriendsList().size() < Client.friends.getFriendsList().size()){
+									//친구가 로그아웃한 경우
+								}
+								Client.friends = tmp;
 								while(true){
 									String[] oheader = Client.conn.getHeader();
 									if(oheader != null){

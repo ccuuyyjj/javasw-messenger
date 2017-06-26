@@ -3,7 +3,6 @@ package client.gui;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.color.ColorSpace;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -31,11 +30,11 @@ public class LoginGUI extends JFrame {
 	private ImageIcon img = new ImageIcon("image/normcore.png");
 	private JLabel logo = new JLabel(img);
 
-	private JLabel lbId = new JLabel("IDENTITY　   : ");
+	private JLabel lbId = new JLabel("IDENTITY");
 	private JTextField id = new JTextField(""); // 아이디 (전화번호)
-	private JLabel lbPw = new JLabel("PASSWORD : ");
+	private JLabel lbPw = new JLabel("PASSWORD");
 	private JPasswordField pw = new JPasswordField(""); // 비밀번호
-	private JLabel lbAddr = new JLabel("ADDRESS : ");
+	private JLabel lbAddr = new JLabel("ADDRESS");
 
 	private String ip = "";
 	private JTextField address = new JTextField(ip); // 서버 주소

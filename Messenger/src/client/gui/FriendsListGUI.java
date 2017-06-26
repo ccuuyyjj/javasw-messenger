@@ -97,8 +97,8 @@ public class FriendsListGUI extends JFrame {
 	private MenuItem open = new MenuItem("열기");
 	private MenuItem close = new MenuItem("종료");
 	
-	Font font = new Font("", Font.PLAIN, 15);
-	Font font2 = new Font("", Font.BOLD, 15);
+	Font font = new Font("맑은 고딕", Font.PLAIN, 14);
+	Font font2 = new Font("맑은 고딕", Font.BOLD, 15);
 
 	// 심심한창
 	private JLabel label = new JLabel("전체 대화");
