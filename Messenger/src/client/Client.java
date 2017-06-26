@@ -60,7 +60,7 @@ public class Client {
 								else {
 									String sender = msg.getSender();
 									ChatRoomGUI gui = chatList.get(sender);
-									if (gui == null) {
+									if (gui == null || !gui.isVisible()) {
 										gui = new ChatRoomGUI(msg.getSender());
 										chatList.put(sender, gui);
 										gui.setVisible(false);
