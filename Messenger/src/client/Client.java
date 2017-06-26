@@ -66,9 +66,10 @@ public class Client {
 										chatList.put(sender, gui);
 										gui.setVisible(false);
 									}
-									if(!gui.isVisible()){
+									if(!((FriendsListGUI) currentMainGUI).isActive())
+										((FriendsListGUI) currentMainGUI).setVisible(true);
+									if(!gui.isActive())
 										((FriendsListGUI) currentMainGUI).selectUser(sender);
-									}
 									gui.messageHandler(msg);
 								}
 							} else if (header[1].equals("Friends")) {
