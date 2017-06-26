@@ -44,19 +44,21 @@ public class LoginGUI extends JFrame {
 
 	private JButton login = new JButton("LOGIN");
 	private JButton join = new JButton("JOIN");
-
+	
 	private void display() {
-		this.setContentPane(new JLabel(new ImageIcon("image/back4.png")));
+		this.setContentPane(new JLabel(new ImageIcon("image/b3.jpg")));
 		super.setTitle("NORMCORE TALK");
 		super.setSize(400, 500);
 		super.setLocationByPlatform(true);
 		super.setResizable(false);
 		super.setVisible(true);
-
+		
+		
 		Container con = getContentPane();
 		con.setLayout(null);
 		con.setBackground(Color.white);
-
+		
+		
 		logo.setBounds(35, 20, 330, 210);
 		logo.setOpaque(true);
 
@@ -111,6 +113,11 @@ public class LoginGUI extends JFrame {
 		con.add(join);
 
 		loadProp();
+	}
+
+	private void imageUpdate(ImageIcon imageIcon, Container con, int i, int j, int k, int l) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void event() {
@@ -212,6 +219,7 @@ public class LoginGUI extends JFrame {
 		display();
 		event();
 		menu();
+		
 	}
 
 	private void saveProp() {

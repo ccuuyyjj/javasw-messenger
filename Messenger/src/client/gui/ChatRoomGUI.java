@@ -84,7 +84,7 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 	}
 
 	private void display() {
-		this.setContentPane(new JLabel(new ImageIcon("image/back4.png")));
+		this.setContentPane(new JLabel(new ImageIcon("image/b3.jpg")));
 		Container con = getContentPane();
 		con.setLayout(null);
 

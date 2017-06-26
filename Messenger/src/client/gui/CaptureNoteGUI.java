@@ -93,7 +93,9 @@ public class CaptureNoteGUI extends JFrame {
 		}
 	};
 	
-	private void display() throws IOException {
+	private void display(){
+		can.setVisible(true);
+		this.add(can);
 		setJMenuBar(mb);
 		mb.add(menu);
 		menu.add(color);
@@ -101,8 +103,6 @@ public class CaptureNoteGUI extends JFrame {
 		menu.add(save);
 		menu.add(send);
 		
-		can.setVisible(true);
-		this.add(can);
 	}
 	
 	private void event() {
