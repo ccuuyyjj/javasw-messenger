@@ -60,10 +60,12 @@ public class Client {
 								else {
 									String sender = msg.getSender();
 									ChatRoomGUI gui = chatList.get(sender);
-									if (gui == null || !gui.isVisible()) {
+									if (gui == null) {
 										gui = new ChatRoomGUI(msg.getSender());
 										chatList.put(sender, gui);
 										gui.setVisible(false);
+									}
+									if(!gui.isVisible()){
 										((FriendsListGUI) currentMainGUI).selectUser(sender);
 									}
 									gui.messageHandler(msg);
