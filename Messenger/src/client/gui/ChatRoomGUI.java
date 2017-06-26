@@ -171,12 +171,12 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 									e1.printStackTrace();
 								}
 								System.out.println("\"file:///" + filepath + "\"");
-								if(fd.getFile().toLowerCase().endsWith(".png") || fd.getFile().toLowerCase().endsWith(".jpg") || fd.getFile().toLowerCase().endsWith(".gif"))
-									msg.setMsg(filename + "<img src=\"file:///" + filepath + "\" width=400px> <a href=\"folder:"
-											+ fd.getDirectory()
-											+ "\">폴더 열기</a>");
-								else
-									msg.setMsg(filename + " <a href=\"folder:"
+//								if(fd.getFile().toLowerCase().endsWith(".png") || fd.getFile().toLowerCase().endsWith(".jpg") || fd.getFile().toLowerCase().endsWith(".gif"))
+//									msg.setMsg(filename + "<img src=\"file:///" + filepath + "\" width=400px> <a href=\"folder:"
+//											+ fd.getDirectory()
+//											+ "\">폴더 열기</a>");
+//								else
+								msg.setMsg(filename + " <a href=\"folder:"
 										+ fd.getDirectory()
 										+ "\">폴더 열기</a>");
 							}
@@ -320,24 +320,24 @@ public class ChatRoomGUI extends JFrame implements DropTargetListener {
 
 			if (((prev != null && !msg.getSender().equals(prev.getSender())) || prev == null)
 					&& msg.getSender().equals(myid))
-				msgviewhtml.append("<div><font color=#000000>" + myid + "</font></div>");
+				msgviewhtml.append("<div style=\"font-color:'#000000'; font-weight:bold; font-size: 15px;\">" + "나" + "</div>");
 			else if (((prev != null && !msg.getSender().equals(prev.getSender())) || prev == null)
 					&& msg.getSender().equals(youid))
-				msgviewhtml.append("<div><font color=#000000>" + younick + "</font></div>");
+				msgviewhtml.append("<div style=\"font-color:'#000000'; font-weight:bold; font-size: 15px;\">" + younick + "</div>");
 
 			switch (msg.getMsg().getClass().getSimpleName()) {
 			case "String":
-				msgviewhtml.append("<div><font color=#101010>: " + (String) msg.getMsg() + "</font></div>");
+				msgviewhtml.append("<div style=\"font-color:'#202020';\">" + (String) msg.getMsg() + "</div>");
 				break;
 			case "File":
 				File received = (File) msg.getMsg();
 				if (msg.getReceiver().equals(myid))
-					msgviewhtml.append("<div><a href=\"file:" + msg.getTime_created()
-							+ "\"><font color=#101010>파일: " + received.getName() + "</font></a></div>");
+					msgviewhtml.append("<div style=\"font-color:'#202020';\"><a href=\"file:" + msg.getTime_created()
+							+ "\">파일: " + received.getName() + "</a></div>");
 				else
 
 					msgviewhtml.append(
-							"<div><font color=#101010>파일: " + received.getName() + "</font></div>");
+							"<div style=\"font-color:'#202020';\">파일: " + received.getName() + "</div>");
 				break;
 			}
 

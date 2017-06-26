@@ -1,10 +1,17 @@
 package client.gui;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -29,6 +36,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -75,13 +83,6 @@ public class FriendsListGUI extends JFrame {
 	private JMenuItem start = new JMenuItem("대화시작");
 	private JMenuItem end = new JMenuItem("친구삭제");
 
-	// 메세지 수신확인 팝업
-	private JPopupMenu msgpop = new JPopupMenu();
-	private JMenuItem yes = new JMenuItem("대화시작");
-	private JMenuItem no = new JMenuItem("취소");
-
-	private int msgnum;
-
 	private JLabel sname = new JLabel("이름"); // 트리 노드 클릭시 아래에 대화할 상대의 정보
 	private JTextField snames = new JTextField();
 	private JLabel snick = new JLabel("닉네임");
@@ -92,17 +93,14 @@ public class FriendsListGUI extends JFrame {
 	private JButton logout = new JButton("로그아웃"); // 로그아웃 버튼
 	private JButton addfriend = new JButton("친구 추가");
 
-	// 배경화면 이미지
-	// private ImageIcon imgicon = new ImageIcon("image/1.png");
-	// private JPanel back = new JPanel(){
-	// protected void paintComponent(Graphics g) {
-	// g.drawImage(imgicon.getImage(), 0, 0, null);
-	//
-	// setOpaque(false);
-	// super.paintComponent(g);
-	// }
-	// };
-
+	//시스템 트레이
+	private SystemTray tray;
+	private PopupMenu traypop = new PopupMenu();
+	private Image trayimage = Toolkit.getDefaultToolkit().getImage("image/micon.png");
+	private TrayIcon trayIcon = new TrayIcon(trayimage,"NCTok",traypop);
+	private MenuItem open = new MenuItem("열기");
+	private MenuItem close = new MenuItem("종료");
+	
 	Font font = new Font("", Font.PLAIN, 15);
 	Font font2 = new Font("", Font.BOLD, 15);
 
@@ -132,13 +130,16 @@ public class FriendsListGUI extends JFrame {
 
 		// tree.setOpaque(false);
 		// 최상단 로그인 정보창
-		Border b2 = BorderFactory.createTitledBorder("내 로그인 정보");
+		TitledBorder b2 = BorderFactory.createTitledBorder("내 정보창");
 		Border b3 = BorderFactory.createTitledBorder("");
+		b2.setTitleFont(font2);
+		b2.setTitleColor(Color.WHITE);
+		ss.setForeground(Color.WHITE);
 		ss.setBorder(b2);
 		ss.setBounds(12, 10, 370, 85);
-		ss.setForeground(Color.WHITE);
-		ss.setFont(font2);
-
+		ss.setFont(font);
+		
+		
 		scroll.setBounds(12, 105, 370, 257);
 		scroll.setViewportView(tree);
 
@@ -152,9 +153,6 @@ public class FriendsListGUI extends JFrame {
 		pop.add(end);
 		add(pop);
 
-		msgpop.add(yes);
-		msgpop.add(no);
-		add(msgpop);
 
 		// 로그아웃 버튼
 		logout.setBounds(12, 636, 370, 35);
@@ -167,7 +165,7 @@ public class FriendsListGUI extends JFrame {
 		addfriend.setBackground(Color.BLACK);
 		addfriend.setForeground(Color.WHITE);
 		addfriend.setFont(font2);
-		// 심심한 창
+		// 전체 채팅창
 		label.setBounds(12, 365, 370, 29);
 		label.setFont(new Font("맑은 고딕", Font.BOLD, 12));
 		label.setBorder(b3);
@@ -183,11 +181,22 @@ public class FriendsListGUI extends JFrame {
 		multichatscroll.setBounds(12, 401, 370, 180);
 		multichattext.setBounds(12, 591, 370, 35);
 
-		// 배경화면
+		//트레이아이콘
+		traypop.add(open);
+		traypop.add(close);
+		add(traypop);
+		trayIcon.setImageAutoSize(true);
+		
+		tray = SystemTray.getSystemTray();
+		try {
+			tray.add(trayIcon);
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void event() {
-		super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		//super.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		tree.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -291,6 +300,20 @@ public class FriendsListGUI extends JFrame {
 				}
 			}
 		});
+		trayIcon.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount() == 2)
+					setVisible(true);
+			}
+		});
+		
+		open.addActionListener(e->{
+			this.setVisible(true);
+		});
+		close.addActionListener(e->{
+			dispose();
+		});
 	}
 
 	private void menu() {
@@ -311,6 +334,7 @@ public class FriendsListGUI extends JFrame {
 			Client.conn.close();
 			Client.conn = null;
 			Client.receiver = null;
+			tray.remove(trayIcon);
 		}
 		System.gc();
 		super.dispose();
@@ -365,22 +389,17 @@ public class FriendsListGUI extends JFrame {
 		model.reload();
 	}
 
-	public void msgcheck() {
-		msgpop.show(this, 10, 10);
-	}
 
 	public void messageHandler(Message msg) {
 		String sender = msg.getSender();
-		if (Client.friends.getFriendsList().get(sender) != null) {
+		if (Client.friends.getFriendsList().get(sender) != null)
 			sender = Client.friends.getFriendsList().get(sender) + "(" + sender + ")";
-			String text = (String) msg.getMsg();
-			this.msgnum++;
-			if (!multichat.getText().isEmpty())
-				multichat.append("\n");
-			multichat.append(sender + " : " + text);
-			JScrollBar scroll = multichatscroll.getVerticalScrollBar();
-			scroll.setValue(scroll.getMaximum());
-		}
+		String text = (String) msg.getMsg();
+		if (!multichat.getText().isEmpty())
+			multichat.append("\n");
+		multichat.append(sender + " : " + text);
+		JScrollBar scroll = multichatscroll.getVerticalScrollBar();
+		scroll.setValue(scroll.getMaximum());
 	}
 	
 	public void selectUser(String fid){
