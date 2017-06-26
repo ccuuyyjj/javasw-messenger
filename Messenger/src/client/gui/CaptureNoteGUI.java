@@ -17,7 +17,9 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import client.Client;
 import general.container.Message;
@@ -81,13 +83,13 @@ public class CaptureNoteGUI extends JFrame {
 	};
 	
 	private void display() throws IOException {
+		can.setVisible(true);
+		this.add(can);
 		setMenuBar(mb);
 		mb.add(menu);
 		menu.add(save);
 		menu.add(send);
 		
-		can.setVisible(true);
-		this.add(can);
 	}
 	
 	private void event() {

@@ -43,9 +43,10 @@ public class FriendsListGUI extends JFrame {
 	private String id = Client.identity;// 상단 라벨에 표시될 자기 아이디
 	private int allfriend; // 오프라인+온라인 친구
 	private int connecting; // 온라인친구
-	private JLabel ss = new JLabel("<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : "
-			+ connecting + "명" + "</html>");
+	private JLabel ss = new JLabel(
+			"<html>이름 : " + id + "<br>전체 친구 : " + allfriend + "명" + "<br>접속중인 친구 : " + connecting + "명" + "</html>");
 
+	
 	private DefaultMutableTreeNode friendlist = new DefaultMutableTreeNode("회원 목록");
 	private JTree tree = new JTree(friendlist) {
 		@Override
@@ -76,6 +77,8 @@ public class FriendsListGUI extends JFrame {
 	private JMenuItem yes = new JMenuItem("대화시작");
 	private JMenuItem no = new JMenuItem("취소");
 
+	private int msgnum;
+
 	private JLabel sname = new JLabel("이름"); // 트리 노드 클릭시 아래에 대화할 상대의 정보
 	private JTextField snames = new JTextField();
 	private JLabel snick = new JLabel("닉네임");
@@ -85,21 +88,21 @@ public class FriendsListGUI extends JFrame {
 
 	private JButton logout = new JButton("로그아웃"); // 로그아웃 버튼
 	private JButton addfriend = new JButton("친구 추가");
-	
-	//배경화면 이미지
-//	private ImageIcon imgicon = new ImageIcon("image/1.png");
-//	private JPanel back = new JPanel(){
-//		protected void paintComponent(Graphics g) {
-//			g.drawImage(imgicon.getImage(), 0, 0, null);
-//			
-//			setOpaque(false);
-//			super.paintComponent(g);
-//		}
-//	};
-	
+
+	// 배경화면 이미지
+	// private ImageIcon imgicon = new ImageIcon("image/1.png");
+	// private JPanel back = new JPanel(){
+	// protected void paintComponent(Graphics g) {
+	// g.drawImage(imgicon.getImage(), 0, 0, null);
+	//
+	// setOpaque(false);
+	// super.paintComponent(g);
+	// }
+	// };
+
 	Font font = new Font("", Font.PLAIN, 15);
 	Font font2 = new Font("", Font.BOLD, 15);
-	
+
 	// 심심한창
 	private JLabel label = new JLabel("전체 대화");
 	private JTextArea multichat = new JTextArea();
@@ -107,9 +110,9 @@ public class FriendsListGUI extends JFrame {
 	private JScrollPane multichatscroll = new JScrollPane(multichat);
 
 	private void display() {
-		this.setContentPane(new JLabel(new ImageIcon("image/back4.png")));
+		this.setContentPane(new JLabel(new ImageIcon("image/b3.jpg")));
 		Container con = getContentPane();
-		//con.add(back, BorderLayout.CENTER);
+		// con.add(back, BorderLayout.CENTER);
 		con.setBackground(Color.WHITE);
 		con.setLayout(null);
 		con.add(ss, BorderLayout.NORTH);
@@ -124,8 +127,8 @@ public class FriendsListGUI extends JFrame {
 		con.add(multichatscroll, BorderLayout.CENTER);
 		con.add(multichattext, BorderLayout.CENTER);
 		con.add(label, BorderLayout.CENTER);
-		
-//		tree.setOpaque(false);
+
+		// tree.setOpaque(false);
 		// 최상단 로그인 정보창
 		Border b2 = BorderFactory.createTitledBorder("내 로그인 정보");
 		Border b3 = BorderFactory.createTitledBorder("");
@@ -155,7 +158,7 @@ public class FriendsListGUI extends JFrame {
 		logout.setBackground(Color.BLACK);
 		logout.setForeground(Color.WHITE);
 		logout.setFont(font2);
-		
+
 		// 친구 추가 버튼
 		addfriend.setBounds(213, 30, 158, 52);
 		addfriend.setBackground(Color.BLACK);
@@ -174,8 +177,8 @@ public class FriendsListGUI extends JFrame {
 		tree.setCellRenderer(render);
 		multichatscroll.setBounds(12, 401, 370, 180);
 		multichattext.setBounds(12, 591, 370, 35);
-		
-		//배경화면
+
+		// 배경화면
 	}
 
 	DefaultMutableTreeNode node;// 노드 클릭시 해당 노드의 이름을 알려주는 코드
@@ -199,7 +202,7 @@ public class FriendsListGUI extends JFrame {
 				if (e.getButton() == 1) {
 					if (node == null || Client.friends.getFriendsList().get(node.toString()) == null)
 						return;
-					else if(e.getClickCount() == 2){
+					else if (e.getClickCount() == 2) {
 						ChatRoomGUI room = Client.chatList.get(node.toString());
 						if (room == null) {
 							room = new ChatRoomGUI(node.toString());
@@ -362,13 +365,15 @@ public class FriendsListGUI extends JFrame {
 
 	public void messageHandler(Message msg) {
 		String sender = msg.getSender();
-		if (Client.friends.getFriendsList().get(sender) != null)
+		if (Client.friends.getFriendsList().get(sender) != null) {
 			sender = Client.friends.getFriendsList().get(sender) + "(" + sender + ")";
-		String text = (String) msg.getMsg();
-		if (!multichat.getText().isEmpty())
-			multichat.append("\n");
-		multichat.append(sender + " : " + text);
-		JScrollBar scroll = multichatscroll.getVerticalScrollBar();
-		scroll.setValue(scroll.getMaximum());
+			String text = (String) msg.getMsg();
+			this.msgnum++;
+			if (!multichat.getText().isEmpty())
+				multichat.append("\n");
+			multichat.append(sender + " : " + text);
+			JScrollBar scroll = multichatscroll.getVerticalScrollBar();
+			scroll.setValue(scroll.getMaximum());
+		}
 	}
 }
