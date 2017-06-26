@@ -61,6 +61,14 @@ public class ServerUtil {
 			s.close();
 		} catch (IOException e) {
 		}
+		
+		for(String id : Server.getClientList().keySet()){
+			if(identity.equals(id)){
+				result = false;
+				break;
+			}
+		}
+		
 		return result;
 	}
 
